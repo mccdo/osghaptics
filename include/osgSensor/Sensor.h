@@ -32,8 +32,8 @@
 
 /**
 * \mainpage
-* Sensors is a set of libraries/classes for accessing sensor devices such as 6DOF tracking systems
-* and interaction devices such as PinchGloves.
+* osgSensor is a set of libraries/classes for using sensor devices such as 6DOF tracking systems in
+the OpenSceneGraph rendering library.
 */
 
 namespace osgSensor {
