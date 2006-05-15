@@ -47,7 +47,7 @@
       HapticSpringNode() {}
 
 
-      META_Node(osgHaptics ,HapticSpringNode);
+      META_Node(osg ,Transform);
 
       osgHaptics::SpringForceOperator *getForceOperator() { return m_force_operator.get(); }
 

@@ -77,6 +77,7 @@ public:
 
     void set(const osg::Vec3& start, const osg::Vec3& end) {
       m_start = start; m_end = end;
+      dirtyBound();
     }
 
     void setColor(float r, float g, float b ) { m_color.set(r,g,b); }
@@ -98,8 +99,8 @@ public:
     osg::BoundingBox computeBound() const 
     {
       osg::BoundingBox bbox;
-      bbox.expandBy(osg::Vec3(-10,-10,-10));
-      bbox.expandBy(osg::Vec3(10,10,10));
+      bbox.expandBy(m_start);
+      bbox.expandBy(m_end);
       return bbox;
     }
 private:

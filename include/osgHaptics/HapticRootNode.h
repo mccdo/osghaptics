@@ -62,7 +62,7 @@
     */
     HapticRootNode( osgProducer::Viewer *viewer=0L );
 
-    META_Node(osgHaptics ,Group);
+    META_Node(osg ,Group);
 
     /*!
     Executed during traversal of the scenegraph.

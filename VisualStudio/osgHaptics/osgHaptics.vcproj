@@ -215,9 +215,6 @@
 				RelativePath="..\..\include\osgHaptics\HapticRootNode.h">
 			</File>
 			<File
-				RelativePath="..\..\include\osgHaptics\HapticShapeGroup.h">
-			</File>
-			<File
 				RelativePath="..\..\include\osgHaptics\HapticSpringNode.h">
 			</File>
 			<File

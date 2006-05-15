@@ -8,9 +8,20 @@
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
+
+/*!
+  Author: Anders Backman, VRlab, Umeå University 2006-05-15
+
+  Demonstrates different surface properties in osgHaptics.
+  Uses a visitor (HapticMaterialVisitor that parses strings in node-descriptions
+  to create an set properties on surfaces.
+*/
+
+
 #include <osgSensor/OsgSensorCallback.h>
 #include <osgSensor/SensorMgr.h>
 
+#include "HapticMaterialVisitor.h"
 
 #include <osgHaptics/HapticDevice.h>
 #include <osgHaptics/osgHaptics.h>
@@ -63,7 +74,7 @@ public:
       dirtyBound();
     }
 
-    void setColor(float r, float g, float b ) { m_color.set(r,g,b); }
+    void setColor(float r, float g, float b ) {  m_color.set(r,g,b); }
 
     void drawImplementation(osg::State& state) const
     {
@@ -90,31 +101,6 @@ private:
   osg::Vec3 m_color;
   osg::Vec3 m_start, m_end;
 };
-
-// create contact callback
-class  MyContactEventHandler : public osgHaptics::ContactEventHandler
-{
-public:
-  /// Base constructor
-  MyContactEventHandler(){};
-
-  // Called upon contact between proxy and a specified shape
-  virtual void contact( osgHaptics::ContactState& state){ osg::notify(osg::WARN) << "contact" << state << std::endl; };
-
-  // Called upon separation between proxy and a specified shape
-  virtual void separation( osgHaptics::ContactState& state){ osg::notify(osg::WARN) << "separation" << std::endl; };
-
-  // Called when proxy is moved in contact with a specified shape
-  virtual void motion( osgHaptics::ContactState& state){  osg::notify(osg::INFO) << "motion" << state << std::endl; };
-
-protected:
-
-
-  /// Destructor
-  virtual ~MyContactEventHandler() {}
-
-};
-
 
 
 
@@ -210,40 +196,8 @@ int main( int argc, char **argv )
     osg::ref_ptr<osgHaptics::HapticRootNode> haptic_root = new osgHaptics::HapticRootNode(&viewer);
     root->addChild(haptic_root.get());
 
-
-    // Create a haptic material
-    osg::ref_ptr<osgHaptics::Material> material = new osgHaptics::Material();
-
-    //Set material attributes
-    material->setStiffness(0.8);
-    material->setDamping(0.2);
-    material->setStaticFriction(0.7);
-    material->setDynamicFriction(0.3);
-
-    // Create a visitor that will prepare the Drawables in the subgraph so they can be rendered haptically
-    // It merely attaches a osgHaptics::Shape ontop of each Drawable.
-    // 
-    osgHaptics::HapticRenderPrepareVisitor vis(haptic_device.get());
+    HapticMaterialVisitor vis(haptic_device.get());
     loadedModel->accept(vis);
-
-    // Return the compound shape (can be used for contact tests, disabling haptic rendering for this subgraph etc.
-    osgHaptics::Shape *shape = vis.getShape();
-    osg::StateSet *ss = loadedModel->getOrCreateStateSet();
-
-    // Store the shape.
-    ss->setAttributeAndModes(shape);
-
-    osg::ref_ptr<osgHaptics::TouchModel> touch = new osgHaptics::TouchModel();
-    float snap_force_newtons = 10;
-    touch->setMode(osgHaptics::TouchModel::CONTACT);
-    touch->setSnapDistance(osgHaptics::TouchModel::calcForceToSnapDistance(snap_force_newtons));
-
-
-    // specify a material attribute for this StateAttribute
-    ss->setAttributeAndModes(material.get(), osg::StateAttribute::ON);
-
-    // specify a touch model for this StateAttribute
-    ss->setAttributeAndModes(touch.get(), osg::StateAttribute::ON);
 
 
     // add it to the visual node to be rendered visually
@@ -251,13 +205,6 @@ int main( int argc, char **argv )
 
     // Add it to the haptic root
     haptic_root->addChild(loadedModel.get());
-
-    // Add a contact handler
-    // Whenever contact/separation/movement of the proxy onto the shape occurs, the callbackclass will
-    // be triggered
-    haptic_device->registerContactEventHandler(shape, 
-      new MyContactEventHandler, 
-      osgHaptics::ContactState::All); // React on contact+separation+movement
 
 
     // Create a proxy sphere for rendering
@@ -306,7 +253,9 @@ int main( int argc, char **argv )
     viewer.getCamera(camera_no)->getLens()->getParams(left, right, bottom, top, nearclip, farclip);
 
     osg::BoundingBox bbox;
-    bbox.expandBy(bs);
+    bbox.expandBy(osg::Vec3(4,3,1.5)*(-0.5));
+    bbox.expandBy(osg::Vec3(4,3,1.5)*(0.5));
+    //bbox.expandBy(bs);
 
 
     //osg::Vec3 mmin(-0.5,-0.5, -0.5);

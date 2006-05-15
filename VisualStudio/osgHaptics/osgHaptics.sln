@@ -25,6 +25,18 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dexterity_game", "..\exampl
 		{47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5} = {47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "material_demo", "..\examples\material_demo\material_demo.vcproj", "{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D8A4CF11-F8F4-4138-8E00-000000000000} = {D8A4CF11-F8F4-4138-8E00-000000000000}
+		{47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5} = {47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "forceoperator_demo", "..\examples\forceoperator_demo\forceoperator_demo.vcproj", "{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D8A4CF11-F8F4-4138-8E00-000000000000} = {D8A4CF11-F8F4-4138-8E00-000000000000}
+		{47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5} = {47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -47,6 +59,14 @@ Global
 		{6CF085D4-650F-4D03-B5CF-7A82F5A7AB5F}.Debug.Build.0 = Debug|Win32
 		{6CF085D4-650F-4D03-B5CF-7A82F5A7AB5F}.Release.ActiveCfg = Release|Win32
 		{6CF085D4-650F-4D03-B5CF-7A82F5A7AB5F}.Release.Build.0 = Release|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Debug.ActiveCfg = Debug|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Debug.Build.0 = Debug|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Release.ActiveCfg = Release|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Release.Build.0 = Release|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Debug.ActiveCfg = Debug|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Debug.Build.0 = Debug|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Release.ActiveCfg = Release|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Release.Build.0 = Release|Win32
 		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Debug.ActiveCfg = Debug|Win32
 		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Debug.Build.0 = Debug|Win32
 		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Release.ActiveCfg = Release|Win32

@@ -37,6 +37,9 @@ HapticSpringNode::HapticSpringNode(HapticDevice *device) : Transform(), m_device
 
 void HapticSpringNode::traverse(osg::NodeVisitor &nv)
 {
+  if (!m_force_operator.valid())
+    return;
+
   if (!nv.getVisitorType()==osg::NodeVisitor::UPDATE_VISITOR) 
     return;
 
@@ -49,6 +52,7 @@ void HapticSpringNode::traverse(osg::NodeVisitor &nv)
 HapticSpringNode & HapticSpringNode::operator=(const HapticSpringNode &node)
 { 
   if (this == &node) return *this; 
+
 
   return *this;
 }
@@ -63,7 +67,9 @@ HapticSpringNode::HapticSpringNode(const HapticSpringNode &copy, const osg::Copy
 
 HapticSpringNode::~HapticSpringNode()
 {
-  m_force_operator->setEnable(false);
-  m_device->removeForceOperator(m_force_operator.get());
+  if (m_force_operator.valid()) {
+    m_force_operator->setEnable(false);
+    m_device->removeForceOperator(m_force_operator.get());
+  }
 }
 

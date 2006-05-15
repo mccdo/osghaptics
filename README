@@ -43,9 +43,34 @@ a wire without touching it.
 
 Usage: dexterity_game <background model>
 Example: dexterity_game room.ac
+
 Make sure your current directory is the data sub-directory, or that you have OSG_FILE_PATH
 referring to that directory.
 
+material_demo
+--------------
+Description:   Demonstrates different surface properties in osgHaptics.
+Uses a visitor (HapticMaterialVisitor that parses strings in node-descriptions 
+to create an set properties on surfaces.
+
+Usage: material_demo material_demo.osg
+
+Make sure your current directory is the data sub-directory, or that you have OSG_FILE_PATH
+referring to that directory.
+
+forceoperator_demo
+--------------------
+Description: Demonstrates the use of a SpringForce operator (inside a HapticSpringNode)
+to generate spring forces. In this example an animated named node is found, and the 
+HapticSpringNode is attached as a child. The motion of the animated node is then transferred automatically
+to the haptic spring. When enabled (F1) the haptic device will follow the motion.
+
+Keys: F1 - Toggle spring on/off
+F2 - Increase spring stiffness
+Shift+F2 - Decrease spring stiffness
+
+
+Usage: forceoperator_demo forceoperator_scene.osg
 
 
 Contact:

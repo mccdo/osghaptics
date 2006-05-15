@@ -1,0 +1,4 @@
+* 060515, Anders Backman:
+ - Added material_demo, forceoperator_demo
+ - Added consistent BBOX updates in all demos
+ - Added pointer checks in HapticSpringNode
