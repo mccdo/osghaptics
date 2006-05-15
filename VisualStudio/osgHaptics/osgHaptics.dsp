@@ -202,10 +202,6 @@ SOURCE=..\..\include\osgHaptics\HapticRootNode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\osgHaptics\HapticShapeGroup.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\osgHaptics\HapticSpringNode.h
 # End Source File
 # Begin Source File

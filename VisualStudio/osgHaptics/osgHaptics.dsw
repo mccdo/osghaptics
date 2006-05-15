@@ -63,6 +63,30 @@ Package=<4>
 
 ###############################################################################
 
+Project: "material_demo"=..\examples\material_demo\material_demo.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "forceoperator_demo"=..\examples\forceoperator_demo\forceoperator_demo.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Global:
 
 Package=<5>
