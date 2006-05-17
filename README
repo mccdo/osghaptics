@@ -35,7 +35,17 @@ Loads any model that osg supports and allows the user to touch it with the proxy
 Usage: osgHapticViewer <modelfile>
 Example: osgHapticViewer cow.osg
 
+Command-line options: 
+  --proxy_scale <float>  - Scale the size of the model used as a visual proxy
+  --constraint <float>   - Set the surface to be a constraint surface with snap_force specified
+  --dynamic_friction <float> - Set the dynamic friction of the haptic surface 
+  --static_friction <float> - Set the static friction of the haptic surface
+  --damping <float> - Set the damping in the friction equation (spring)
+  --stiffness <float> - Set the stiffness in the friction equation (spring)
 
+Example: osgHapticViewer cow.osg --dynamic_friction 0 --static_friction 0 --stiffness 1 --damping 1
+
+  
 dexterity_game
 --------------
 Description: A very simple version of the dexterity game. Try to move the ring object over

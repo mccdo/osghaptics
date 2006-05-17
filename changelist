@@ -2,3 +2,14 @@
  - Added material_demo, forceoperator_demo
  - Added consistent BBOX updates in all demos
  - Added pointer checks in HapticSpringNode
+* 060515
+ - osgHapticViewer: 
+  Added command-line options: 
+  
+  --proxy_scale <float>  - Scale the size of the model used as a visual proxy
+  --constraint <float>   - Set the surface to be a constraint surface with snap_force specified
+  --dynamic_friction <float> - Set the dynamic friction of the haptic surface 
+  --static_friction <float> - Set the static friction of the haptic surface
+  --damping <float> - Set the damping in the friction equation (spring)
+  --stiffness <float> - Set the stiffness in the friction equation (spring)
+  

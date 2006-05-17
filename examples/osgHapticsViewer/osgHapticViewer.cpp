@@ -134,6 +134,12 @@ int main( int argc, char **argv )
   arguments.getApplicationUsage()->addCommandLineOption("--help-env","Display environmental variables available");
   arguments.getApplicationUsage()->addCommandLineOption("--help-keys","Display keyboard & mouse bindings available");
   arguments.getApplicationUsage()->addCommandLineOption("--help-all","Display all command line, env vars and keyboard & mouse bindigs.");
+  arguments.getApplicationUsage()->addCommandLineOption("--constraint <distance>","Set the material TouchMode to Constraint with specified distance");
+  arguments.getApplicationUsage()->addCommandLineOption("--proxy_scale <scale>","Set the size of the proxy pen");
+  arguments.getApplicationUsage()->addCommandLineOption("--dynamic_friction <float>","Set the dynamic friction of the haptic surface");
+  arguments.getApplicationUsage()->addCommandLineOption("--static_friction <float>","Set the static friction of the haptic surface");
+  arguments.getApplicationUsage()->addCommandLineOption("--stiffness <float>","Set the stiffness in the friction equation (spring)");
+  arguments.getApplicationUsage()->addCommandLineOption("--damping <float>","Set the damping in the friction equation (spring)");
 
 
   // construct the viewer.
@@ -155,6 +161,30 @@ int main( int argc, char **argv )
     arguments.getApplicationUsage()->write(std::cout, helpType);
     return 1;
   }
+
+  // See if scale for proxy pen is specified as an argument
+  float proxy_scale=1.0f;
+  bool set_proxy_scale = arguments.read("--proxy_scale", proxy_scale);
+
+  // See if constraint mode is specified for the surface
+  float constraint_force_newton=0;
+  bool use_constraint = arguments.read("--constraint", constraint_force_newton);
+
+  // See if dynamic_friction is specified
+  float dynamic_friction=0.5;
+  bool set_dynamic_friction = arguments.read("--dynamic_friction", dynamic_friction);
+
+  // See if static_friction is specified
+  float static_friction=0.5;
+  bool set_static_friction = arguments.read("--static_friction", static_friction);
+
+  // See if damping is specified
+  float damping=0.5;
+  bool set_damping = arguments.read("--damping", damping);
+
+  // See if stiffness is specified
+  float stiffness=0.5;
+  bool set_stiffness = arguments.read("--stiffness", stiffness);
 
   // report any errors if they have occured when parsing the program aguments.
   if (arguments.errors())
@@ -180,6 +210,7 @@ int main( int argc, char **argv )
   if (arguments.errors())
   {
     arguments.writeErrorMessages(std::cout);
+    return 1;
   }
 
   // Overall scene root
@@ -215,10 +246,26 @@ int main( int argc, char **argv )
     osg::ref_ptr<osgHaptics::Material> material = new osgHaptics::Material();
 
     //Set material attributes
-    material->setStiffness(0.8);
+    if (set_stiffness)
+      material->setStiffness(stiffness);
+    else
+      material->setStiffness(0.8);
+
+    if (set_damping)
+      material->setDamping(damping);
+    else
     material->setDamping(0.2);
-    material->setStaticFriction(0.7);
-    material->setDynamicFriction(0.3);
+
+    if (set_static_friction)
+      material->setStaticFriction(static_friction);
+    else
+      material->setStaticFriction(0.7);
+
+    if (set_dynamic_friction)
+      material->setDynamicFriction(dynamic_friction);
+    else
+      material->setDynamicFriction(0.3);
+
 
     // Create a visitor that will prepare the Drawables in the subgraph so they can be rendered haptically
     // It merely attaches a osgHaptics::Shape ontop of each Drawable.
@@ -234,9 +281,13 @@ int main( int argc, char **argv )
     ss->setAttributeAndModes(shape);
 
     osg::ref_ptr<osgHaptics::TouchModel> touch = new osgHaptics::TouchModel();
-    float snap_force_newtons = 10;
-    touch->setMode(osgHaptics::TouchModel::CONTACT);
-    touch->setSnapDistance(osgHaptics::TouchModel::calcForceToSnapDistance(snap_force_newtons));
+    
+    if (use_constraint)
+      touch->setMode(osgHaptics::TouchModel::CONSTRAINT);
+    else
+      touch->setMode(osgHaptics::TouchModel::CONTACT);
+
+    touch->setSnapDistance(osgHaptics::TouchModel::calcForceToSnapDistance(constraint_force_newton));
 
 
     // specify a material attribute for this StateAttribute
@@ -261,7 +312,13 @@ int main( int argc, char **argv )
 
 
     // Create a proxy sphere for rendering
-    osg::ref_ptr<osg::Node> proxy_sphere = osgDB::readNodeFile("pen.ac"); // Load a pen geometry
+    std::ostringstream str;
+    if (set_proxy_scale)
+      str << "pen.ac.[" << proxy_scale << "].scale";
+    else
+      str << "pen.ac";
+
+    osg::ref_ptr<osg::Node> proxy_sphere = osgDB::readNodeFile(str.str()); // Load a pen geometry
     osg::ref_ptr<osg::MatrixTransform> proxy_transform = new osg::MatrixTransform;    
     proxy_transform->addChild(proxy_sphere.get());
 
