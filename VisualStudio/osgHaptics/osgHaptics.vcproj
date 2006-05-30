@@ -129,6 +129,9 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
+				RelativePath="..\..\src\osgHaptics\Array.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\osgHaptics\ContactState.cpp">
 			</File>
 			<File
@@ -159,6 +162,18 @@
 				RelativePath="..\..\src\osgHaptics\Material.cpp">
 			</File>
 			<File
+				RelativePath="..\..\src\osgHaptics\Octree.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\osgHaptics\OctreeAuxiliary.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\osgHaptics\OctreeImplementation.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\osgHaptics\OctreeStreamOut.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\osgHaptics\osgHaptics.cpp">
 			</File>
 			<File
@@ -174,6 +189,9 @@
 				RelativePath="..\..\src\osgHaptics\TouchModel.cpp">
 			</File>
 			<File
+				RelativePath="..\..\src\osgHaptics\Vector3f.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\osgHaptics\VibrationForceOperator.cpp">
 			</File>
 		</Filter>
@@ -181,6 +199,9 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath="..\..\include\osgHaptics\Array.h">
+			</File>
 			<File
 				RelativePath="..\..\include\osgHaptics\ContactEventHandler.h">
 			</File>
@@ -224,7 +245,22 @@
 				RelativePath="..\..\include\osgHaptics\MonoCullCallback.h">
 			</File>
 			<File
+				RelativePath="..\..\include\osgHaptics\Octree.h">
+			</File>
+			<File
+				RelativePath="..\..\include\osgHaptics\OctreeAuxiliary.h">
+			</File>
+			<File
+				RelativePath="..\..\include\osgHaptics\OctreeImplementation.h">
+			</File>
+			<File
+				RelativePath="..\..\include\osgHaptics\OctreeStreamOut.h">
+			</File>
+			<File
 				RelativePath="..\..\include\osgHaptics\osgHaptics.h">
+			</File>
+			<File
+				RelativePath="..\..\include\osgHaptics\Primitives.h">
 			</File>
 			<File
 				RelativePath="..\..\include\osgHaptics\RenderTriangleOperator.h">
@@ -246,6 +282,9 @@
 			</File>
 			<File
 				RelativePath="..\..\include\osgHaptics\UpdateDeviceCallback.h">
+			</File>
+			<File
+				RelativePath="..\..\include\osgHaptics\Vector3f.h">
 			</File>
 			<File
 				RelativePath="..\..\include\osgHaptics\VibrationForceOperator.h">
