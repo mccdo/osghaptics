@@ -114,7 +114,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies=" osg.lib osgGA.lib openthreadswin32d.lib"
+				AdditionalDependencies=" osg.lib osgGA.lib openthreadswin32.lib"
 				OutputFile="$(OutDir)/$(ProjectName).dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

@@ -140,6 +140,7 @@ int main( int argc, char **argv )
   arguments.getApplicationUsage()->addCommandLineOption("--static_friction <float>","Set the static friction of the haptic surface");
   arguments.getApplicationUsage()->addCommandLineOption("--stiffness <float>","Set the stiffness in the friction equation (spring)");
   arguments.getApplicationUsage()->addCommandLineOption("--damping <float>","Set the damping in the friction equation (spring)");
+  arguments.getApplicationUsage()->addCommandLineOption("--remove_instances","Do a deep copy and remove any instances of the haptic scenegraph");
 
 
   // construct the viewer.
@@ -185,6 +186,8 @@ int main( int argc, char **argv )
   // See if stiffness is specified
   float stiffness=0.5;
   bool set_stiffness = arguments.read("--stiffness", stiffness);
+
+  bool remove_instances = arguments.read("--remove_instances");
 
   // report any errors if they have occured when parsing the program aguments.
   if (arguments.errors())
@@ -271,6 +274,12 @@ int main( int argc, char **argv )
     // It merely attaches a osgHaptics::Shape ontop of each Drawable.
     // 
     osgHaptics::HapticRenderPrepareVisitor vis(haptic_device.get());
+    
+    if (remove_instances) {
+      osg::Object *clone = loadedModel->clone(osg::CopyOp(osg::CopyOp::DEEP_COPY_ALL));
+      osg::ref_ptr<osg::Node> node = dynamic_cast<osg::Node *>(clone);
+      loadedModel = node;
+    }
     loadedModel->accept(vis);
 
     // Return the compound shape (can be used for contact tests, disabling haptic rendering for this subgraph etc.

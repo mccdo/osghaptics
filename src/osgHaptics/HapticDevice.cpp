@@ -582,6 +582,9 @@ HDCallbackCode HDCALLBACK HapticDevice::DeviceDataCB( void *data ) {
 
 void HapticDevice::update()
 {
+  if (!m_initialized)
+    return;
+
   hdScheduleSynchronous( HapticDevice::DeviceDataCB,
                          &m_current_state,
                          HD_DEFAULT_SCHEDULER_PRIORITY ); 

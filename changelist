@@ -2,7 +2,8 @@
  - Added material_demo, forceoperator_demo
  - Added consistent BBOX updates in all demos
  - Added pointer checks in HapticSpringNode
-* 060515
+
+* 060515, Anders Backman
  - osgHapticViewer: 
   Added command-line options: 
   
@@ -12,4 +13,11 @@
   --static_friction <float> - Set the static friction of the haptic surface
   --damping <float> - Set the damping in the friction equation (spring)
   --stiffness <float> - Set the stiffness in the friction equation (spring)
+
+*060519, Anders Backman
+  - osgHapticViewer
   
+  Added command-line option:
+  --remove_instances - Will do a deep copy of the loaded scene which will then be used as the haptic subgraph.
+    This will effectively remove any instances that can cause problem with haptic rendering.
+    
