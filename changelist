@@ -20,4 +20,32 @@
   Added command-line option:
   --remove_instances - Will do a deep copy of the loaded scene which will then be used as the haptic subgraph.
     This will effectively remove any instances that can cause problem with haptic rendering.
+
+* 060602, Anders Backman
+
+ - osgHapticViewer: 
+ 
+  Added a simple Hash test for large meshes, including arguments for osgHapticViewer:
+ 
+  --hash              - Hash the loaded model for intersection test
+  --cell-size         - Size of the hash cell
+  --render-triangles  - Do not render the triangles that are intersected with the proxy
+
+  The hash test is an example of how to store triangles in a hash datastructure and to 
+  only haptically render the triangles in proximity to the Haptic proxy.
+  It has been tested with models with 300.000 triangles.
+  Without hash I get: 
+ 
+  Renamed arguments, using - instead of _
+  
+  --proxy-scale <float>  - Scale the size of the model used as a visual proxy
+  --constraint <float>   - Set the surface to be a constraint surface with snap_force specified
+  --dynamic-friction <float> - Set the dynamic friction of the haptic surface 
+  --static-friction <float> - Set the static friction of the haptic surface
+  --damping <float> - Set the damping in the friction equation (spring)
+  --stiffness <float> - Set the stiffness in the friction equation (spring)
+  --remove-instances
+  
+- Added arguments:
+
     
