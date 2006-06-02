@@ -1,3 +1,118 @@
+
+#include  <osgHaptics/HashedGrid.h>
+#include  <osgHaptics/HashedGridDrawable.h>
+#include  <osgHaptics/TriangleExtractor.h>
+
+#include <osg/ref_ptr>
+#include <time.h>
+#include <iostream>
+#include <osg/io_utils>
+
+class  HashGridTriangleExtractOperator : public osgHaptics::TriangleExtractOperator
+{
+
+public:
+
+  /// Constructor
+  HashGridTriangleExtractOperator(osgHaptics::HashedGridDrawable::TriangleHashGrid *grid) : m_hash_grid(grid) { }
+
+  /*!
+  This method is a pure virtual method that has to be inherited. 
+  This method will be called for each triangle. The vertices are given in
+  world coordinates using the accumulated matrix.
+  */
+  virtual void triangle(const osg::Vec3& v1,const osg::Vec3& v2,const osg::Vec3& v3)
+  {
+    osgHaptics::HashedGridDrawable::Triangle *triangle = new osgHaptics::HashedGridDrawable::Triangle(v1,v2,v3);
+    m_hash_grid->insert(v1, triangle, triangle);
+    m_hash_grid->insert(v2, triangle, triangle);
+    m_hash_grid->insert(v3, triangle, triangle);
+  }
+
+
+private:
+  osg::ref_ptr<osgHaptics::HashedGridDrawable::TriangleHashGrid> m_hash_grid;
+};
+
+
+
+#if 0
+
+double randInterval(double low, double high)
+{
+  static bool first=true;
+
+  if (first) {
+    first = false;
+    srand(time(0));
+  }
+  if (low > high) {
+    double t = high;
+    high = low;
+    low = t;
+  }
+
+  double length = high - low; // Length of interval
+
+  double a = rand() / (double)RAND_MAX; // // Rand between 0.0 and 1.0
+  double b = length * a + low;  // Rand between low and high
+
+  return b;
+}
+
+struct Triangle : osg::Referenced {
+  Triangle(const osg::Vec3& p1, const osg::Vec3& p2, const osg::Vec3& p3): m_p1(p1), m_p2(p2), m_p3(p3) {}
+  osg::Vec3 m_p1, m_p2, m_p3;
+//  virtual ~Triangle() { std::cerr << this << std::endl; }
+};
+
+
+
+void main()
+{
+  using namespace osgHaptics;
+  osg::Vec3 bounds;
+  osg::ref_ptr<HashedGridDrawable::TriangleHashGrid> grid = new HashedGridDrawable::TriangleHashGrid(bounds, 10);
+
+  HashGridTriangleExtractOperator hteo(grid.get());
+  TriangleExtractor te(hteo);
+  osg::ref_ptr<HashedGridDrawable> grid_drawable = new HashedGridDrawable(grid.get(), 0L);
+  osg::Geode *geode = new osg::Geode;
+  geode->addDrawable(grid_drawable.get());
+
+/*  typedef osgHaptics::HashedGrid< osg::ref_ptr<Triangle> > HashedGridTriangle;
+  HashedGridTriangle grid(osg::Vec3(10,10,10), 10);
+  grid.setCenter(osg::Vec3(0,0,0));
+  
+  srand(234);
+  for (unsigned int i=0; i < 2000; i++) {
+    
+    float x = randInterval(-10, 10);
+    float y = randInterval(-10, 10);
+    float z = randInterval(-10, 10);
+    float f = (float)i;
+    osg::Vec3 p1(x,y,z);
+    Triangle *t = new Triangle(p1,p1,p1);
+    grid.insert(osg::Vec3(x,y,z), t);
+  }
+
+  HashedGridTriangle::iterator it = grid.begin();
+  for(; it != grid.end(); it++) {
+    std::cerr << "size: " << (*it).size() << std::endl;
+
+  }
+
+  osg::Vec3 p;
+  HashedGridTriangle::const_reference cit = grid.intersect(p);
+
+  std::cerr << "There are " << cit.size() << " triangles in proximity to position " << p << std::endl;
+  
+  grid.clear();
+  */
+}
+
+#else
+
 /* -*-c++-*- OpenSceneGraph Haptics Library - * Copyright (C) 2006 VRlab, Umeå University
 *
 * This application is open source and may be redistributed and/or modified   
@@ -135,12 +250,15 @@ int main( int argc, char **argv )
   arguments.getApplicationUsage()->addCommandLineOption("--help-keys","Display keyboard & mouse bindings available");
   arguments.getApplicationUsage()->addCommandLineOption("--help-all","Display all command line, env vars and keyboard & mouse bindigs.");
   arguments.getApplicationUsage()->addCommandLineOption("--constraint <distance>","Set the material TouchMode to Constraint with specified distance");
-  arguments.getApplicationUsage()->addCommandLineOption("--proxy_scale <scale>","Set the size of the proxy pen");
-  arguments.getApplicationUsage()->addCommandLineOption("--dynamic_friction <float>","Set the dynamic friction of the haptic surface");
-  arguments.getApplicationUsage()->addCommandLineOption("--static_friction <float>","Set the static friction of the haptic surface");
+  arguments.getApplicationUsage()->addCommandLineOption("--proxy-scale <scale>","Set the size of the proxy pen");
+  arguments.getApplicationUsage()->addCommandLineOption("--dynamic-friction <float>","Set the dynamic friction of the haptic surface");
+  arguments.getApplicationUsage()->addCommandLineOption("--static-friction <float>","Set the static friction of the haptic surface");
   arguments.getApplicationUsage()->addCommandLineOption("--stiffness <float>","Set the stiffness in the friction equation (spring)");
   arguments.getApplicationUsage()->addCommandLineOption("--damping <float>","Set the damping in the friction equation (spring)");
-  arguments.getApplicationUsage()->addCommandLineOption("--remove_instances","Do a deep copy and remove any instances of the haptic scenegraph");
+  arguments.getApplicationUsage()->addCommandLineOption("--hash ","Hash the loaded model for intersection test");
+  arguments.getApplicationUsage()->addCommandLineOption("--cell-size", "Size of the hash cell");
+  arguments.getApplicationUsage()->addCommandLineOption("--render-triangles", "Do not render the triangles that are intersected with the proxy");
+  arguments.getApplicationUsage()->addCommandLineOption("--remove-instances","Do a deep copy and remove any instances of the haptic scenegraph");
 
 
   // construct the viewer.
@@ -165,19 +283,29 @@ int main( int argc, char **argv )
 
   // See if scale for proxy pen is specified as an argument
   float proxy_scale=1.0f;
-  bool set_proxy_scale = arguments.read("--proxy_scale", proxy_scale);
+  bool set_proxy_scale = arguments.read("--proxy-scale", proxy_scale);
 
   // See if constraint mode is specified for the surface
   float constraint_force_newton=0;
   bool use_constraint = arguments.read("--constraint", constraint_force_newton);
 
+  bool use_hash = arguments.read("--hash");
+
+  int render_hash_triangles=0;
+  arguments.read("--render-triangles", render_hash_triangles);
+
+  int cell_size=10;
+  arguments.read("--cell-size", cell_size);
+  if (use_hash)
+    std::cerr << "Cell size: " << cell_size << std::endl;
+
   // See if dynamic_friction is specified
   float dynamic_friction=0.5;
-  bool set_dynamic_friction = arguments.read("--dynamic_friction", dynamic_friction);
+  bool set_dynamic_friction = arguments.read("--dynamic-friction", dynamic_friction);
 
   // See if static_friction is specified
   float static_friction=0.5;
-  bool set_static_friction = arguments.read("--static_friction", static_friction);
+  bool set_static_friction = arguments.read("--static-friction", static_friction);
 
   // See if damping is specified
   float damping=0.5;
@@ -187,9 +315,9 @@ int main( int argc, char **argv )
   float stiffness=0.5;
   bool set_stiffness = arguments.read("--stiffness", stiffness);
 
-  bool remove_instances = arguments.read("--remove_instances");
+  bool remove_instances = arguments.read("--remove-instances");
 
-  // report any errors if they have occured when parsing the program aguments.
+  // report any errors if they have occured when parsing the program arguments.
   if (arguments.errors())
   {
     arguments.writeErrorMessages(std::cout);
@@ -273,18 +401,61 @@ int main( int argc, char **argv )
     // Create a visitor that will prepare the Drawables in the subgraph so they can be rendered haptically
     // It merely attaches a osgHaptics::Shape ontop of each Drawable.
     // 
-    osgHaptics::HapticRenderPrepareVisitor vis(haptic_device.get());
-    
+
     if (remove_instances) {
+      std::cerr << "Removing instances" << std::endl;
       osg::Object *clone = loadedModel->clone(osg::CopyOp(osg::CopyOp::DEEP_COPY_ALL));
       osg::ref_ptr<osg::Node> node = dynamic_cast<osg::Node *>(clone);
       loadedModel = node;
     }
+
+    osg::Node *visual_node = loadedModel.get();
+    osg::Node *haptic_node = loadedModel.get();
+  
+    if (use_hash)
+    {
+      std::cerr << "Will hash model " << std::endl;
+      using namespace osgHaptics;
+      osg::Vec3 dim;
+
+      osg::BoundingSphere bs = loadedModel->getBound();
+      osg::BoundingBox bbox;
+      bbox.expandBy(bs);
+
+      dim = bbox._max - bbox._min;
+      osg::Vec3 center = bbox.center();
+      osg::ref_ptr<osgHaptics::HashedGridDrawable::TriangleHashGrid> grid = new osgHaptics::HashedGridDrawable::TriangleHashGrid(dim, cell_size);
+      grid->setCenter(center);
+
+      HashGridTriangleExtractOperator hteo(grid.get());
+    
+      TriangleExtractor te(hteo);
+
+      osg::Timer_t start = osg::Timer::instance()->tick();
+      loadedModel->accept(te);
+      osg::Timer_t stop = osg::Timer::instance()->tick();
+      std::cerr << "Time to hash " << "  t: " << osg::Timer::instance()->delta_m(start,stop) << std::endl;
+      
+      osg::ref_ptr<osgHaptics::HashedGridDrawable> grid_drawable = new osgHaptics::HashedGridDrawable(grid.get(), haptic_device.get());
+
+      osg::Geode *geode = new osg::Geode;
+      geode->addDrawable(grid_drawable.get());
+
+      if (render_hash_triangles)
+        visual_root->addChild(geode);
+
+      haptic_node = geode;
+    }
+
+    osgHaptics::HapticRenderPrepareVisitor vis(haptic_device.get());
+    haptic_node->accept(vis);
+    
     loadedModel->accept(vis);
+
 
     // Return the compound shape (can be used for contact tests, disabling haptic rendering for this subgraph etc.
     osgHaptics::Shape *shape = vis.getShape();
-    osg::StateSet *ss = loadedModel->getOrCreateStateSet();
+    osg::StateSet *ss = haptic_node->getOrCreateStateSet();
 
     // Store the shape.
     ss->setAttributeAndModes(shape);
@@ -307,10 +478,10 @@ int main( int argc, char **argv )
 
 
     // add it to the visual node to be rendered visually
-    visual_root->addChild(loadedModel.get());
+    visual_root->addChild(visual_node);
 
     // Add it to the haptic root
-    haptic_root->addChild(loadedModel.get());
+    haptic_root->addChild(haptic_node);
 
     // Add a contact handler
     // Whenever contact/separation/movement of the proxy onto the shape occurs, the callbackclass will
@@ -355,7 +526,7 @@ int main( int argc, char **argv )
     setWorkspaceMode(VIEW_MODE) will effectively use the viewfrustum as a haptic workspace.
     This will also make the haptic device follow the camera
     */
-    //haptic_device->setWorkspaceMode(osgHaptics::HapticDevice::VIEW_MODE);
+    haptic_device->setWorkspaceMode(osgHaptics::HapticDevice::VIEW_MODE);
 
     double hfov = viewer.getCamera(0)->getLens()->getHorizontalFov();
     double vfov = viewer.getCamera(0)->getLens()->getVerticalFov();
@@ -384,7 +555,7 @@ int main( int argc, char **argv )
     Notice that the haptic device will not follow the camera as it does by default. (VIEW_MODE)
     */
     haptic_device->setWorkspace(bbox._min, bbox._max);
-    haptic_device->setWorkspaceMode(osgHaptics::HapticDevice::BBOX_MODE);
+    //haptic_device->setWorkspaceMode(osgHaptics::HapticDevice::BBOX_MODE);
 
 
     /* 
@@ -410,11 +581,13 @@ int main( int argc, char **argv )
 
 
     // Add a custom drawable that draws the rendered force of the device
-    osg::Geode *geode = new osg::Geode;
-    VectorDrawable *force_drawable = new VectorDrawable();
-    geode->addDrawable(force_drawable);
-    visual_root->addChild(geode);
-
+    VectorDrawable *force_drawable;
+    {
+      osg::Geode *geode = new osg::Geode;
+      force_drawable = new VectorDrawable();
+      geode->addDrawable(force_drawable);
+      visual_root->addChild(geode);
+    }
 
     while( !viewer.done() )
     {
@@ -456,3 +629,4 @@ int main( int argc, char **argv )
 
   return 0;
 }
+#endif
