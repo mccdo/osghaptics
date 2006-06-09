@@ -67,9 +67,9 @@ public:
   virtual void triangle(const osg::Vec3& v1,const osg::Vec3& v2,const osg::Vec3& v3)
   {
     osgHaptics::HashedGridDrawable::Triangle *triangle = new osgHaptics::HashedGridDrawable::Triangle(v1,v2,v3);
-    m_hash_grid->insert(v1, triangle, triangle);
-    m_hash_grid->insert(v2, triangle, triangle);
-    m_hash_grid->insert(v3, triangle, triangle);
+    m_hash_grid->insert(v1, triangle);
+    m_hash_grid->insert(v2, triangle);
+    m_hash_grid->insert(v3, triangle);
   }
 
 
@@ -224,8 +224,8 @@ int main( int argc, char **argv )
   float workspace_scale = 1.0;
   arguments.read("--workspace-scale", workspace_scale);
 
-  int render_hash_triangles=0;
-  arguments.read("--render-triangles", render_hash_triangles);
+  bool render_hash_triangles=false;
+  render_hash_triangles = arguments.read("--render-triangles" );
 
   int cell_size=10;
   arguments.read("--cell-size", cell_size);
@@ -313,7 +313,6 @@ int main( int argc, char **argv )
     material->setStiffness(stiffness);
     material->setDamping(damping);
     material->setStaticFriction(static_friction);
-    std::cerr << dynamic_friction << std::endl;
     material->setDynamicFriction(dynamic_friction);
 
 
@@ -355,7 +354,7 @@ int main( int argc, char **argv )
       osg::Timer_t start = osg::Timer::instance()->tick();
       loadedModel->accept(te);
       osg::Timer_t stop = osg::Timer::instance()->tick();
-      std::cerr << "Time to hash " << "  t: " << osg::Timer::instance()->delta_m(start,stop) << std::endl;
+      std::cerr << "Time to hash " << "  t: " << osg::Timer::instance()->delta_s(start,stop) << std::endl;
       
       osg::ref_ptr<osgHaptics::HashedGridDrawable> grid_drawable = new osgHaptics::HashedGridDrawable(grid.get(), haptic_device.get());
 

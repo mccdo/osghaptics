@@ -29,7 +29,7 @@ public:
     osg::Vec3 m_p1, m_p2, m_p3;
   };
 
-  typedef HashedGrid<Triangle*, osg::ref_ptr<Triangle> > TriangleHashGrid;
+  typedef HashedGrid< osg::ref_ptr<Triangle> > TriangleHashGrid;
 
 public:
 

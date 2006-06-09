@@ -28,7 +28,7 @@ void HashedGridDrawable::drawImplementation(osg::State& state) const
   osg::Timer_t start = osg::Timer::instance()->tick();
   bool found = m_hashed_grid->intersect(pos, result);
   osg::Timer_t stop = osg::Timer::instance()->tick();
-//  std::cerr << "# " << result.size() << "  t: " << osg::Timer::instance()->delta_m(start,stop) << std::endl;
+  std::cerr << "# " << result.size() << "  t: " << osg::Timer::instance()->delta_m(start,stop) << std::endl;
   if (!found)
     return;
 
@@ -39,14 +39,15 @@ void HashedGridDrawable::drawImplementation(osg::State& state) const
 
   // Make sure that triangles are rendered only once
   // So first add them to a set, where only unique triangles are stored.
-  typedef std::set<Triangle *> TriangleSet;
+  typedef std::set<const Triangle *> TriangleSet;
   TriangleSet triangles;
   unsigned int n=0;
   for (; it != result.end(); it++) {
     TriangleHashGrid::HashedDataVector::const_iterator vit = (*it)->begin();  
   
     for(; vit != (*it)->end(); vit++) {
-      triangles.insert((*vit).first);    
+      const Triangle *t = vit->get();
+      triangles.insert(t);    
     }
   }
 

@@ -5,11 +5,12 @@
 #include <osg/BoundingBox>
 #include <osg/Vec3>
 #include <vector>
+#include <set>
 #include <map>
 #include <osg/ref_ptr>
 
 namespace osgHaptics {
-template <class R, class T>
+template <class T>
 
 /// A class to hash data into a spatial hashed grid No explicit grid is stored
 
@@ -22,7 +23,10 @@ class HashedGrid : public osg::Referenced
       setHashSize(m_hash_size);
     }
     
-    struct HashedDataVector : public std::map<R, T >, public osg::Referenced {
+    
+    struct HashedDataVector : public std::set<T>, public osg::Referenced {
+    
+      
     };
 
     typedef std::map< unsigned long, osg::ref_ptr<HashedDataVector> > HashMap;
@@ -53,7 +57,7 @@ class HashedGrid : public osg::Referenced
     void setCenter(const osg::Vec3& center){ m_center = center; }
 
     /// Insert a datapoint into the grid, it will be hashed into the hashvector
-    void insert(const osg::Vec3&, R idx, T data);
+    void insert(const osg::Vec3&, T data);
 
     /*!
       Get a vector with all data items that are in the cell of the point p + all the 26 neighbours
@@ -170,8 +174,8 @@ class HashedGrid : public osg::Referenced
     osg::Vec3 m_center;
   };
 
-  template <class R, class T>  
-  inline void HashedGrid<R,T>::insert(const osg::Vec3& p, R ref, T data)
+  template <class T>  
+  inline void HashedGrid<T>::insert(const osg::Vec3& p, T data)
   {
     int x,y,z;
     calcCell(p,x,y,z);
@@ -181,18 +185,18 @@ class HashedGrid : public osg::Referenced
     
     if (it == m_hash_vector.end()) {
       HashedDataVector *v = new HashedDataVector;
-      v->insert(std::make_pair(ref,data));
+      v->insert(data);
       m_hash_vector.insert(std::make_pair(idx, v));
     }
     else
-      it->second->insert(std::make_pair(ref, data));
+      it->second->insert(data);
 
     //std::cerr << "Added: " << idx << ": " << x << ", " << y << ", " << z << std::endl;
   }
 
 
-  template <class R, class T>  
-    inline unsigned long HashedGrid<R,T>::computeHashBucketIndex (
+  template <class T>  
+    inline unsigned long HashedGrid<T>::computeHashBucketIndex (
       const  int & x, 
       const  int & y, 
       const  int & z) const
