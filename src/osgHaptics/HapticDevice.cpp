@@ -154,7 +154,10 @@ void HapticDevice::updateWorkspace(unsigned int width, unsigned int height, bool
   hlLoadIdentity();
 
   // Use the specified touchworkspace matrix
-  hlMultMatrixd(m_touch_workspace_matrix.ptr());
+  if (getWorkspaceModel() == VIEW_WORKSPACE) 
+    hlMultMatrixd(m_touch_workspace_matrix_inverse.ptr());
+  else
+    hlMultMatrixd(m_touch_workspace_matrix.ptr());
 
   if (getWorkspaceModel() == VIEW_WORKSPACE) {
     glGetDoublev(GL_MODELVIEW_MATRIX, modelview);

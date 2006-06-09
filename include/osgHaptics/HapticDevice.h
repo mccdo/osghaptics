@@ -322,13 +322,13 @@ public:
     getAngularVelocity(), getProxyPosition(), etc...
 
   */
-  void setTouchWorkspaceMatrix(const osg::Matrixd& m) { m_touch_workspace_matrix = m; }
+  void setTouchWorkspaceMatrix(const osg::Matrixd& m) { m_touch_workspace_matrix = m; m_touch_workspace_matrix_inverse = m.inverse(m); }
   const osg::Matrixd& getTouchWorkspaceMatrix() const { return m_touch_workspace_matrix; }
 
 protected:
 
   WorkspaceMode m_workspace_mode;
-  osg::Matrixd m_touch_workspace_matrix;
+  osg::Matrixd m_touch_workspace_matrix, m_touch_workspace_matrix_inverse;
 
   class WorkspaceStruct{
   public:

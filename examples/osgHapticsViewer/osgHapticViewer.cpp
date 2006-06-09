@@ -1,4 +1,47 @@
 
+/* -*-c++-*- OpenSceneGraph Haptics Library - * Copyright (C) 2006 VRlab, Umeå University
+*
+* This application is open source and may be redistributed and/or modified   
+* freely and without restriction, both in commericial and non commericial applications,
+* as long as this copyright notice is maintained.
+* 
+* This application is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
+#include <osgSensor/OsgSensorCallback.h>
+#include <osgSensor/SensorMgr.h>
+
+
+#include <osgHaptics/HapticDevice.h>
+#include <osgHaptics/osgHaptics.h>
+#include <osgHaptics/Shape.h>
+#include <osgHaptics/VibrationForceOperator.h>
+#include <osgHaptics/ForceEffect.h>
+#include <osgHaptics/HapticRootNode.h>
+#include <osgHaptics/HapticRenderPrepareVisitor.h>
+#include <osgHaptics/SpringForceOperator.h>
+#include <osgHaptics/TouchModel.h>
+#include <osgHaptics/Shape.h>
+#include <osgHaptics/Material.h>
+#include <osgHaptics/BBoxVisitor.h>
+
+#include <osgProducer/OsgSceneHandler>
+#include <osgProducer/Viewer>
+
+#include <osgDB/ReadFile>
+#include <osgUtil/Optimizer>
+
+#include <osg/PolygonOffset>
+#include <osg/Drawable>
+#include <osg/PositionAttitudeTransform>
+#include <osg/io_utils>
+#include <osg/ShapeDrawable>
+#include <osg/PolygonMode>
+#include <osg/MatrixTransform>
+
+#include <osg/Notify>
+
 #include  <osgHaptics/HashedGrid.h>
 #include  <osgHaptics/HashedGridDrawable.h>
 #include  <osgHaptics/TriangleExtractor.h>
@@ -36,124 +79,7 @@ private:
 
 
 
-#if 0
 
-double randInterval(double low, double high)
-{
-  static bool first=true;
-
-  if (first) {
-    first = false;
-    srand(time(0));
-  }
-  if (low > high) {
-    double t = high;
-    high = low;
-    low = t;
-  }
-
-  double length = high - low; // Length of interval
-
-  double a = rand() / (double)RAND_MAX; // // Rand between 0.0 and 1.0
-  double b = length * a + low;  // Rand between low and high
-
-  return b;
-}
-
-struct Triangle : osg::Referenced {
-  Triangle(const osg::Vec3& p1, const osg::Vec3& p2, const osg::Vec3& p3): m_p1(p1), m_p2(p2), m_p3(p3) {}
-  osg::Vec3 m_p1, m_p2, m_p3;
-//  virtual ~Triangle() { std::cerr << this << std::endl; }
-};
-
-
-
-void main()
-{
-  using namespace osgHaptics;
-  osg::Vec3 bounds;
-  osg::ref_ptr<HashedGridDrawable::TriangleHashGrid> grid = new HashedGridDrawable::TriangleHashGrid(bounds, 10);
-
-  HashGridTriangleExtractOperator hteo(grid.get());
-  TriangleExtractor te(hteo);
-  osg::ref_ptr<HashedGridDrawable> grid_drawable = new HashedGridDrawable(grid.get(), 0L);
-  osg::Geode *geode = new osg::Geode;
-  geode->addDrawable(grid_drawable.get());
-
-/*  typedef osgHaptics::HashedGrid< osg::ref_ptr<Triangle> > HashedGridTriangle;
-  HashedGridTriangle grid(osg::Vec3(10,10,10), 10);
-  grid.setCenter(osg::Vec3(0,0,0));
-  
-  srand(234);
-  for (unsigned int i=0; i < 2000; i++) {
-    
-    float x = randInterval(-10, 10);
-    float y = randInterval(-10, 10);
-    float z = randInterval(-10, 10);
-    float f = (float)i;
-    osg::Vec3 p1(x,y,z);
-    Triangle *t = new Triangle(p1,p1,p1);
-    grid.insert(osg::Vec3(x,y,z), t);
-  }
-
-  HashedGridTriangle::iterator it = grid.begin();
-  for(; it != grid.end(); it++) {
-    std::cerr << "size: " << (*it).size() << std::endl;
-
-  }
-
-  osg::Vec3 p;
-  HashedGridTriangle::const_reference cit = grid.intersect(p);
-
-  std::cerr << "There are " << cit.size() << " triangles in proximity to position " << p << std::endl;
-  
-  grid.clear();
-  */
-}
-
-#else
-
-/* -*-c++-*- OpenSceneGraph Haptics Library - * Copyright (C) 2006 VRlab, Umeå University
-*
-* This application is open source and may be redistributed and/or modified   
-* freely and without restriction, both in commericial and non commericial applications,
-* as long as this copyright notice is maintained.
-* 
-* This application is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-*/
-#include <osgSensor/OsgSensorCallback.h>
-#include <osgSensor/SensorMgr.h>
-
-
-#include <osgHaptics/HapticDevice.h>
-#include <osgHaptics/osgHaptics.h>
-#include <osgHaptics/Shape.h>
-#include <osgHaptics/VibrationForceOperator.h>
-#include <osgHaptics/ForceEffect.h>
-#include <osgHaptics/HapticRootNode.h>
-#include <osgHaptics/HapticRenderPrepareVisitor.h>
-#include <osgHaptics/SpringForceOperator.h>
-#include <osgHaptics/TouchModel.h>
-#include <osgHaptics/Shape.h>
-#include <osgHaptics/Material.h>
-
-
-#include <osgProducer/OsgSceneHandler>
-#include <osgProducer/Viewer>
-
-#include <osgDB/ReadFile>
-#include <osgUtil/Optimizer>
-
-#include <osg/Drawable>
-#include <osg/PositionAttitudeTransform>
-#include <osg/io_utils>
-#include <osg/ShapeDrawable>
-#include <osg/PolygonMode>
-#include <osg/MatrixTransform>
-
-#include <osg/Notify>
 
 using namespace sensors;
 
@@ -249,17 +175,18 @@ int main( int argc, char **argv )
   arguments.getApplicationUsage()->addCommandLineOption("--help-env","Display environmental variables available");
   arguments.getApplicationUsage()->addCommandLineOption("--help-keys","Display keyboard & mouse bindings available");
   arguments.getApplicationUsage()->addCommandLineOption("--help-all","Display all command line, env vars and keyboard & mouse bindigs.");
-  arguments.getApplicationUsage()->addCommandLineOption("--constraint <distance>","Set the material TouchMode to Constraint with specified distance");
+  arguments.getApplicationUsage()->addCommandLineOption("--constraint <distance>","Set the materials TouchMode to Constraint with specified distance");
   arguments.getApplicationUsage()->addCommandLineOption("--proxy-scale <scale>","Set the size of the proxy pen");
   arguments.getApplicationUsage()->addCommandLineOption("--dynamic-friction <float>","Set the dynamic friction of the haptic surface");
   arguments.getApplicationUsage()->addCommandLineOption("--static-friction <float>","Set the static friction of the haptic surface");
   arguments.getApplicationUsage()->addCommandLineOption("--stiffness <float>","Set the stiffness in the friction equation (spring)");
   arguments.getApplicationUsage()->addCommandLineOption("--damping <float>","Set the damping in the friction equation (spring)");
-  arguments.getApplicationUsage()->addCommandLineOption("--hash ","Hash the loaded model for intersection test");
-  arguments.getApplicationUsage()->addCommandLineOption("--cell-size", "Size of the hash cell");
-  arguments.getApplicationUsage()->addCommandLineOption("--render-triangles", "Do not render the triangles that are intersected with the proxy");
+  arguments.getApplicationUsage()->addCommandLineOption("--hash","Hash the loaded model for faster intersection test.");
+  arguments.getApplicationUsage()->addCommandLineOption("--cell-size", "Number of cells in the hashspace in each dimension.");
+  arguments.getApplicationUsage()->addCommandLineOption("--render-triangles", "Visually render the triangles that are haptically rendered");
   arguments.getApplicationUsage()->addCommandLineOption("--remove-instances","Do a deep copy and remove any instances of the haptic scenegraph");
-
+  arguments.getApplicationUsage()->addCommandLineOption("--bbox-volume","Set the active haptic volume to the bbox of the haptic scene. Default is current ViewFrustum");
+  arguments.getApplicationUsage()->addCommandLineOption("--workspace-scale <float>","Scale the haptic workspace.");
 
   // construct the viewer.
   osgProducer::Viewer viewer(arguments);
@@ -291,6 +218,12 @@ int main( int argc, char **argv )
 
   bool use_hash = arguments.read("--hash");
 
+  bool bbox_volume = false;
+  bbox_volume = arguments.read("--bbox-volume");
+
+  float workspace_scale = 1.0;
+  arguments.read("--workspace-scale", workspace_scale);
+
   int render_hash_triangles=0;
   arguments.read("--render-triangles", render_hash_triangles);
 
@@ -301,19 +234,19 @@ int main( int argc, char **argv )
 
   // See if dynamic_friction is specified
   float dynamic_friction=0.5;
-  bool set_dynamic_friction = arguments.read("--dynamic-friction", dynamic_friction);
+  arguments.read("--dynamic-friction", dynamic_friction);
 
   // See if static_friction is specified
   float static_friction=0.5;
-  bool set_static_friction = arguments.read("--static-friction", static_friction);
+  arguments.read("--static-friction", static_friction);
 
   // See if damping is specified
   float damping=0.5;
-  bool set_damping = arguments.read("--damping", damping);
+  arguments.read("--damping", damping);
 
   // See if stiffness is specified
   float stiffness=0.5;
-  bool set_stiffness = arguments.read("--stiffness", stiffness);
+  arguments.read("--stiffness", stiffness);
 
   bool remove_instances = arguments.read("--remove-instances");
 
@@ -377,25 +310,11 @@ int main( int argc, char **argv )
     osg::ref_ptr<osgHaptics::Material> material = new osgHaptics::Material();
 
     //Set material attributes
-    if (set_stiffness)
-      material->setStiffness(stiffness);
-    else
-      material->setStiffness(0.8);
-
-    if (set_damping)
-      material->setDamping(damping);
-    else
-    material->setDamping(0.2);
-
-    if (set_static_friction)
-      material->setStaticFriction(static_friction);
-    else
-      material->setStaticFriction(0.7);
-
-    if (set_dynamic_friction)
-      material->setDynamicFriction(dynamic_friction);
-    else
-      material->setDynamicFriction(0.3);
+    material->setStiffness(stiffness);
+    material->setDamping(damping);
+    material->setStaticFriction(static_friction);
+    std::cerr << dynamic_friction << std::endl;
+    material->setDynamicFriction(dynamic_friction);
 
 
     // Create a visitor that will prepare the Drawables in the subgraph so they can be rendered haptically
@@ -418,9 +337,11 @@ int main( int argc, char **argv )
       using namespace osgHaptics;
       osg::Vec3 dim;
 
-      osg::BoundingSphere bs = loadedModel->getBound();
-      osg::BoundingBox bbox;
-      bbox.expandBy(bs);
+      osgHaptics::BBoxVisitor bv;
+      loadedModel->accept(bv);
+      
+      
+      osg::BoundingBox bbox = bv.getBoundingBox();
 
       dim = bbox._max - bbox._min;
       osg::Vec3 center = bbox.center();
@@ -441,8 +362,18 @@ int main( int argc, char **argv )
       osg::Geode *geode = new osg::Geode;
       geode->addDrawable(grid_drawable.get());
 
-      if (render_hash_triangles)
-        visual_root->addChild(geode);
+      if (render_hash_triangles) {
+        osg::PolygonOffset *offset = new osg::PolygonOffset;
+        osg::PolygonMode* polymode = new osg::PolygonMode;
+        polymode->setMode(osg::PolygonMode::FRONT_AND_BACK,osg::PolygonMode::LINE);
+        offset->setFactor(-10.0f);
+        offset->setUnits(-2);
+        osg::Group *group = new osg::Group;
+        group->addChild(geode);
+        group->getOrCreateStateSet()->setAttributeAndModes(offset);
+        group->getOrCreateStateSet()->setAttributeAndModes(polymode,osg::StateAttribute::OVERRIDE|osg::StateAttribute::ON);
+        visual_root->addChild(group);
+      }
 
       haptic_node = geode;
     }
@@ -450,9 +381,6 @@ int main( int argc, char **argv )
     osgHaptics::HapticRenderPrepareVisitor vis(haptic_device.get());
     haptic_node->accept(vis);
     
-    loadedModel->accept(vis);
-
-
     // Return the compound shape (can be used for contact tests, disabling haptic rendering for this subgraph etc.
     osgHaptics::Shape *shape = vis.getShape();
     osg::StateSet *ss = haptic_node->getOrCreateStateSet();
@@ -513,8 +441,12 @@ int main( int argc, char **argv )
     /*
     Get the bounding box of the loaded scene
     */
-    osg::BoundingSphere bs = visual_root->getBound();
-    float radius = bs.radius();
+    osg::BoundingBox bbox;
+    osgHaptics::BBoxVisitor bv;
+
+    haptic_root->accept(bv);
+    bbox = bv.getBoundingBox();
+
 
     /*
     There are many ways to specify a working volume for the haptics.
@@ -522,32 +454,14 @@ int main( int argc, char **argv )
     This requires use to set the VF to a limited volume so we dont get extensive scalings in any axis.
     Usually the far-field is set to something like 1000, which is not appropriate.
 
-    Below is a way to restrain the near and far field.
     setWorkspaceMode(VIEW_MODE) will effectively use the viewfrustum as a haptic workspace.
     This will also make the haptic device follow the camera
     */
-    haptic_device->setWorkspaceMode(osgHaptics::HapticDevice::VIEW_MODE);
-
-    double hfov = viewer.getCamera(0)->getLens()->getHorizontalFov();
-    double vfov = viewer.getCamera(0)->getLens()->getVerticalFov();
-    //viewer.getCamera(0)->getLens()->setPerspective( hfov, vfov, 1, 10 );
-
-    int camera_no = 0;
-    double left, right, bottom, top, nearclip, farclip;
-    /*viewer.getCamera(camera_no)->getLens()->getParams(left, right, bottom, top, nearclip, farclip);
-    viewer.getCamera(camera_no)->getLens()->setAutoAspect(false); 
-    viewer.getCamera(camera_no)->getLens()->setFrustum(left, right, bottom, top, 1, 1.2*radius); 
-    */
-    //viewer.getCamera(0)->getLens()->setPerspective( hfov, vfov, 1, bs.radius()*3 );
-
-    viewer.getCamera(camera_no)->getLens()->getParams(left, right, bottom, top, nearclip, farclip);
-
-    osg::BoundingBox bbox;
-    bbox.expandBy(bs);
-
-
-    //osg::Vec3 mmin(-0.5,-0.5, -0.5);
-    //osg::Vec3 mmax(0.5,0.5, 0.5);
+    if (bbox_volume)
+      haptic_device->setWorkspaceMode(osgHaptics::HapticDevice::BBOX_MODE);
+    else
+      haptic_device->setWorkspaceMode(osgHaptics::HapticDevice::VIEW_MODE);
+    
 
     /*
     Another way is to set the workspace of the Haptic working area to enclose the bounding box of the scene.
@@ -569,7 +483,7 @@ int main( int argc, char **argv )
     /*tm.makeRotate(osg::PI_4, osg::Vec3(1,0,0), 
     osg::PI_4*0.4, osg::Vec3(1,0,0), 
     osg::PI_4*1.4, osg::Vec3(1,0,0));*/
-    //tm.makeScale(2,2,2);
+    tm.makeScale(workspace_scale, workspace_scale, workspace_scale);
 
     haptic_device->setTouchWorkspaceMatrix(tm);
     osg::ref_ptr<osgSensor::OsgSensor> sensor = new osgSensor::OsgSensor(haptic_device.get());
@@ -629,4 +543,3 @@ int main( int argc, char **argv )
 
   return 0;
 }
-#endif

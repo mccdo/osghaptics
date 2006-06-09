@@ -36,14 +36,16 @@ Usage: osgHapticViewer <modelfile>
 Example: osgHapticViewer cow.osg
 
 Command-line options: 
-  --proxy_scale <float>  - Scale the size of the model used as a visual proxy
+  --proxy-scale <float>  - Scale the size of the model used as a visual proxy
   --constraint <float>   - Set the surface to be a constraint surface with snap_force specified
-  --dynamic_friction <float> - Set the dynamic friction of the haptic surface 
-  --static_friction <float> - Set the static friction of the haptic surface
+  --dynamic-friction <float> - Set the dynamic friction of the haptic surface 
+  --static-friction <float> - Set the static friction of the haptic surface
   --damping <float> - Set the damping in the friction equation (spring)
   --stiffness <float> - Set the stiffness in the friction equation (spring)
 
-Example: osgHapticViewer cow.osg --dynamic_friction 0 --static_friction 0 --stiffness 1 --damping 1
+Example: osgHapticViewer cow.osg --dynamic-friction 0 --static-friction 0 --stiffness 1 --damping 1
+
+For more information look at: http://www.vrlab.umu.se/research/osgHaptics/osghapticviewer.shtml
 
   
 dexterity_game

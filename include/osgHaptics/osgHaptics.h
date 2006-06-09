@@ -90,7 +90,7 @@ void prepareHapticCamera(osgProducer::Viewer *viewer, HapticDevice *device, int 
     viewer->getCamera(camera_no)->getLens()->getParams(left, right, bottom, top, nearclip, farclip);
     //std::cerr << "left: " << left << " right: " << right << " bottom: " << bottom << " top: " << top << " nearclip: " << nearclip << " farclip: " << farclip << std::endl;
     viewer->getCamera(camera_no)->getLens()->setAutoAspect(false); 
-    viewer->getCamera(camera_no)->getLens()->setFrustum(left, right, bottom, top, nearclip, radius*2); 
+    viewer->getCamera(camera_no)->getLens()->setFrustum(left, right, bottom, top, nearclip, radius*1.3); 
     viewer->getCamera(camera_no)->getLens()->getParams(left, right, bottom, top, nearclip, farclip);
     //std::cerr << "left: " << left << " right: " << right << " bottom: " << bottom << " top: " << top << " nearclip: " << nearclip << " farclip: " << farclip << std::endl;
   }

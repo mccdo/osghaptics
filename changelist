@@ -29,7 +29,7 @@
  
   --hash              - Hash the loaded model for intersection test
   --cell-size         - Size of the hash cell
-  --render-triangles  - Do not render the triangles that are intersected with the proxy
+  --render-triangles  - Render the triangles that are intersected with the proxy
 
   The hash test is an example of how to store triangles in a hash datastructure and to 
   only haptically render the triangles in proximity to the Haptic proxy.
@@ -46,6 +46,14 @@
   --stiffness <float> - Set the stiffness in the friction equation (spring)
   --remove-instances
   
-- Added arguments:
-
-    
+* 060607, Anders Backman
+  - osgHaptics:
+    - Using the inverse of the WorkspaceMatrix for VIEW_WORKSPACE
+  
+  - osgHapticViewer:
+  
+  Added arguments:
+  
+  --bbox-volume - Set the haptic volume to fit the specified bounding box, default is to fit the current view volume
+  --workspace-scale <float> - Uniform scale of the haptic workspace volume. 2 makes the volume twice as large.
+   

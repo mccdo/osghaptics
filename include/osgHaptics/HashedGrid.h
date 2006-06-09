@@ -113,7 +113,7 @@ class HashedGrid : public osg::Referenced
 
       // FOr all neighbours, see if we can find any dataitems
       for(int i=0; i < table_size; i++) {
-        int cell[3] = {table[i][0]+x, table[i][1]+y, table[i][2]+z};
+        unsigned int cell[3] = {table[i][0]+x, table[i][1]+y, table[i][2]+z};
         
         if (cell[0] < 0 ||cell[0] > m_hash_size ||
             cell[1] < 0 ||cell[1] > m_hash_size ||
