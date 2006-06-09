@@ -183,6 +183,9 @@
 				RelativePath="..\..\src\osgHaptics\TriangleExtractor.cpp">
 			</File>
 			<File
+				RelativePath="..\..\src\osgHaptics\Version.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\osgHaptics\VibrationForceOperator.cpp">
 			</File>
 		</Filter>
@@ -264,6 +267,9 @@
 			</File>
 			<File
 				RelativePath="..\..\include\osgHaptics\UpdateDeviceCallback.h">
+			</File>
+			<File
+				RelativePath="..\..\include\osgHaptics\Version.h">
 			</File>
 			<File
 				RelativePath="..\..\include\osgHaptics\VibrationForceOperator.h">
