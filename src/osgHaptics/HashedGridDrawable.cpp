@@ -4,7 +4,7 @@
 using namespace osgHaptics;
 
 HashedGridDrawable::HashedGridDrawable(TriangleHashGrid *grid, HapticDevice *device) : 
-  Drawable(), m_haptic_device(device), m_hashed_grid(grid)
+  Drawable(), m_haptic_device(device), m_hashed_grid(grid), m_number_of_drawn_triangles(0)
 {
   setUseDisplayList(false);
 }
@@ -28,7 +28,7 @@ void HashedGridDrawable::drawImplementation(osg::State& state) const
   osg::Timer_t start = osg::Timer::instance()->tick();
   bool found = m_hashed_grid->intersect(pos, result);
   osg::Timer_t stop = osg::Timer::instance()->tick();
-  std::cerr << "# " << result.size() << "  t: " << osg::Timer::instance()->delta_m(start,stop) << std::endl;
+  //std::cerr << "# " << result.size() << "  t: " << osg::Timer::instance()->delta_m(start,stop) << std::endl;
   if (!found)
     return;
 
@@ -53,6 +53,8 @@ void HashedGridDrawable::drawImplementation(osg::State& state) const
 
   // Now render the triangles
   TriangleSet::const_iterator tit = triangles.begin();
+  m_number_of_drawn_triangles = triangles.size();
+
   glBegin(GL_TRIANGLES);
   for(; tit != triangles.end(); tit++) {
 
@@ -62,7 +64,7 @@ void HashedGridDrawable::drawImplementation(osg::State& state) const
   }
   glEnd();
 
-  n = triangles.size();
+  //n = triangles.size();
   stop = osg::Timer::instance()->tick();
   //std::cerr << "Draw #: " << n <<  "  t: " << osg::Timer::instance()->delta_m(start,stop) << std::endl;
 }

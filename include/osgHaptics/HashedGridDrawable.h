@@ -47,6 +47,9 @@ public:
   void drawImplementation(osg::State& state) const;
 
   osg::BoundingBox computeBound() const;
+
+  /// Return the number of triangles rendered during last draw
+  unsigned int getNumberRenderedTriangles() const { return m_number_of_drawn_triangles; }
 protected:
 
   virtual ~HashedGridDrawable();
@@ -55,6 +58,7 @@ private:
   osg::ref_ptr<TriangleHashGrid> m_hashed_grid;
 
   osg::observer_ptr<HapticDevice> m_haptic_device;
+  mutable unsigned int m_number_of_drawn_triangles;
 };
 
 } // namespace

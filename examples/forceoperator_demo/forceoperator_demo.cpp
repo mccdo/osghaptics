@@ -332,13 +332,13 @@ int main( int argc, char **argv )
       if (!node) {
         osg::notify(osg::FATAL) << "\n*** Unable to find a node named animated_sphere in the loaded scene" << std::endl;
         osg::notify(osg::FATAL) << "*** make sure you read the documentation for the example application and load the right model" << std::endl;
-        return 1;
+        throw std::runtime_error("Unable to find a node named animated_sphere in the loaded scene");
       }
       osg::Group *group = dynamic_cast<osg::Group *>(node);
       if (!group) {
         osg::notify(osg::FATAL) << "\n***Found a node named animated_sphere but its not derived from Group class" << std::endl;
         osg::notify(osg::FATAL) << "*** make sure you read the documentation for the example application and load the right model" << std::endl;
-        return 1;
+        throw std::runtime_error("Found a node named animated_sphere but its not derived from Group class");
       }
 
       osgHaptics::HapticSpringNode *spring_node =new osgHaptics::HapticSpringNode(haptic_device.get());
@@ -445,12 +445,13 @@ int main( int argc, char **argv )
     // wait for all cull and draw threads to complete before exit.
     viewer.sync();
 
-    // Shutdown all registrated sensors
-    osgSensor::SensorMgr::instance()->shutdown();
 
   } catch (std::exception& e) {
     osg::notify(osg::FATAL) << "Caught exception: " << e.what() << std::endl;
   }
+
+  // Shutdown all registrated sensors
+  osgSensor::SensorMgr::instance()->shutdown();
 
   return 0;
 }
