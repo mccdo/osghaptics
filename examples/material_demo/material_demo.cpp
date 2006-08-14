@@ -34,6 +34,7 @@
 #include <osgHaptics/TouchModel.h>
 #include <osgHaptics/Shape.h>
 #include <osgHaptics/Material.h>
+#include <osgHaptics/BBoxVisitor.h>
 
 
 #include <osgProducer/OsgSceneHandler>
@@ -253,8 +254,11 @@ int main( int argc, char **argv )
     viewer.getCamera(camera_no)->getLens()->getParams(left, right, bottom, top, nearclip, farclip);
 
     osg::BoundingBox bbox;
-    bbox.expandBy(osg::Vec3(4,3,1.5)*(-0.5));
-    bbox.expandBy(osg::Vec3(4,3,1.5)*(0.5));
+    osgHaptics::BBoxVisitor bvis;
+    haptic_root->accept(bvis);
+    bbox = bvis.getBoundingBox();
+    //bbox.expandBy(osg::Vec3(4,3,1.5)*(-0.5));
+    //bbox.expandBy(osg::Vec3(4,3,1.5)*(0.5));
     //bbox.expandBy(bs);
 
 
@@ -267,7 +271,7 @@ int main( int argc, char **argv )
     Notice that the haptic device will not follow the camera as it does by default. (VIEW_MODE)
     */
     haptic_device->setWorkspace(bbox._min, bbox._max);
-    haptic_device->setWorkspaceMode(osgHaptics::HapticDevice::BBOX_MODE);
+    //haptic_device->setWorkspaceMode(osgHaptics::HapticDevice::BBOX_MODE);
 
 
     /* 

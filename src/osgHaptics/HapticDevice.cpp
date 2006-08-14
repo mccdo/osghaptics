@@ -153,6 +153,10 @@ void HapticDevice::updateWorkspace(unsigned int width, unsigned int height, bool
   hlMatrixMode(HL_TOUCHWORKSPACE);
   hlLoadIdentity();
 
+  glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+  glGetDoublev(GL_PROJECTION_MATRIX, projection);
+  glGetIntegerv(GL_VIEWPORT, viewport);
+
   // Use the specified touchworkspace matrix
   if (getWorkspaceModel() == VIEW_WORKSPACE) 
     hlMultMatrixd(m_touch_workspace_matrix_inverse.ptr());
@@ -160,12 +164,7 @@ void HapticDevice::updateWorkspace(unsigned int width, unsigned int height, bool
     hlMultMatrixd(m_touch_workspace_matrix.ptr());
 
   if (getWorkspaceModel() == VIEW_WORKSPACE) {
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
-    glGetDoublev(GL_PROJECTION_MATRIX, projection);
-    glGetIntegerv(GL_VIEWPORT, viewport);
 
-
-    
     // Should we fit the haptic workspace to a specified bbox?
     if (getWorkspaceMode() == BBOX_MODE) {
       if (!m_workspace_limits.isSet()) {
