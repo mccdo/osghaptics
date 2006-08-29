@@ -26,7 +26,7 @@
 #include <osg/Group>
 #include <osg/NodeVisitor>
 #include <osg/CopyOp>
-#include <osgProducer/Viewer>
+#include <osgUtil/SceneView>
 
 #include <osgHaptics/export.h>
 
@@ -60,7 +60,7 @@
 
     \param viewer - If set, the subgraph will only be rendered in mono using a cullcallback
     */
-    HapticRootNode( osgProducer::Viewer *viewer=0L );
+    HapticRootNode( osgUtil::SceneView *sceneView=0L );
 
     META_Node(osg ,Group);
 

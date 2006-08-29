@@ -287,7 +287,10 @@ int main( int argc, char **argv )
 
 
     // Root of the haptic scene
-    osg::ref_ptr<osgHaptics::HapticRootNode> haptic_root = new osgHaptics::HapticRootNode(&viewer);
+    osgProducer::OsgSceneHandler* sceneHandler = viewer.getSceneHandlerList().front().get();
+    osgUtil::SceneView *sceneView = sceneHandler->getSceneView();
+
+    osg::ref_ptr<osgHaptics::HapticRootNode> haptic_root = new osgHaptics::HapticRootNode(sceneView);
     root->addChild(haptic_root.get());
 
     // add it to the visual node to be rendered visually
