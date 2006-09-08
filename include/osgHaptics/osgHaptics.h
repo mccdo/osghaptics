@@ -73,9 +73,9 @@ protected:
 };
 
 /// Utility function to attach pre and post draw operations o the default camera
-void prepareHapticCamera(osgProducer::Viewer *viewer, HapticDevice *device, int camera_no=0, osg::Node *scene=0L) {
-  viewer->getCamera(camera_no)->addPreDrawCallback(new osgHaptics::HapticDevicePreRenderCallback(device));
-  viewer->getCamera(camera_no)->addPostDrawCallback(new osgHaptics::HapticDevicePostRenderCallback(device));
+void prepareHapticCamera(Producer::Camera *camera, HapticDevice *device, osg::Node *scene=0L) {
+  camera->addPreDrawCallback(new osgHaptics::HapticDevicePreRenderCallback(device));
+  camera->addPostDrawCallback(new osgHaptics::HapticDevicePostRenderCallback(device));
 
   // Get bounding box of the scene
 
@@ -87,11 +87,11 @@ void prepareHapticCamera(osgProducer::Viewer *viewer, HapticDevice *device, int 
     //std::cerr << "Radius: " << radius << std::endl;
 
     double left, right, bottom, top, nearclip, farclip;
-    viewer->getCamera(camera_no)->getLens()->getParams(left, right, bottom, top, nearclip, farclip);
+    camera->getLens()->getParams(left, right, bottom, top, nearclip, farclip);
     //std::cerr << "left: " << left << " right: " << right << " bottom: " << bottom << " top: " << top << " nearclip: " << nearclip << " farclip: " << farclip << std::endl;
-    viewer->getCamera(camera_no)->getLens()->setAutoAspect(false); 
-    viewer->getCamera(camera_no)->getLens()->setFrustum(left, right, bottom, top, nearclip, radius*1.3); 
-    viewer->getCamera(camera_no)->getLens()->getParams(left, right, bottom, top, nearclip, farclip);
+    camera->getLens()->setAutoAspect(false); 
+    camera->getLens()->setFrustum(left, right, bottom, top, nearclip, radius*1.3); 
+    camera->getLens()->getParams(left, right, bottom, top, nearclip, farclip);
     //std::cerr << "left: " << left << " right: " << right << " bottom: " << bottom << " top: " << top << " nearclip: " << nearclip << " farclip: " << farclip << std::endl;
   }
 }
