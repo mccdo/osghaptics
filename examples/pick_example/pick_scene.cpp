@@ -43,6 +43,24 @@ void ButtonEventHandler::push(osgHaptics::EventHandler::Button b)
     }
     osg::notify(osg::WARN) << "Moving shape/node: " << m_cb->getShape()->getName() << std::endl;
     
+    osg::Node *node = t->getChild(0);
+    osg::MatrixTransform *mt=0L;
+
+    if (node)
+      mt = dynamic_cast<osg::MatrixTransform *>(node);
+
+    if (mt) {
+      osg::Matrix mn = t->getMatrix();
+      osg::Matrix m1 = mt->getMatrix();
+      mn = m1 * mn;
+      osg::Matrix mp = m_transform_sensor->getTransform()->getMatrix();
+      
+      mp.invert(mp);
+      osg::Matrix md = mn*mp;
+
+      mt->setMatrix(md);
+    }
+    
     // Enable the sensor
     m_transform_sensor->setEnable(true);
 
@@ -195,12 +213,17 @@ PickScene::PickScene(osgHaptics::HapticDevice *device, osg::MatrixTransform *pro
   for(int r=0; r < n_rows; r++)
   {
     for (int c=0; c < n_cols; c++) {
-      osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform;
-      mt->setMatrix(osg::Matrix::translate(r*size*1.5,c*size*1.5,0));
+      osg::ref_ptr<osg::MatrixTransform> mt1 = new osg::MatrixTransform;
+      mt1->setName("mt1");
+      osg::ref_ptr<osg::MatrixTransform> mt2 = new osg::MatrixTransform;
+      mt2->addChild(mt1.get());
+      mt2->setName("mt2");
+
+      mt2->setMatrix(osg::Matrix::translate(r*size*1.5,c*size*1.5,0));
       osg::ref_ptr<osg::Geode> geode = new osg::Geode;
-      mt->addChild(geode.get());
+      mt1->addChild(geode.get());
       geode->addDrawable(new osg::ShapeDrawable(new osg::Box(osg::Vec3(0.0f,0.0f,0.0f),size),hints));
-      addNode(mt.get(), button_event_handler.get(), cb.get());
+      addNode(mt2.get(), button_event_handler.get(), cb.get());
     }
   }
 }

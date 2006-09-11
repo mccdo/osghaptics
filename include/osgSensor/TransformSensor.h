@@ -46,6 +46,12 @@ namespace osgSensor {
 
     virtual ~TransformSensor(){};
 
+    /// Return the transformationnode that are feeding transformation to this sensor
+    osg::MatrixTransform *getTransform() { return m_transform.get(); }
+
+    /// Return the transformationnode that are feeding transformation to this sensor
+    const osg::MatrixTransform *getTransform() const { return m_transform.get(); }
+
   protected:
 
   private:
