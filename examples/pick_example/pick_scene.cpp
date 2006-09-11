@@ -17,6 +17,7 @@ ButtonEventHandler::ButtonEventHandler(ContactCallback *cb, osg::MatrixTransform
   // Create a SensorCallback that will read data from a Sensor and update the matrix of a TransformationMatrix node
 
   m_sensor_callback = new osgSensor::OsgSensorCallback(m_transform_sensor.get());
+
 }
 
 // Called when a button is pushed
@@ -35,7 +36,7 @@ void ButtonEventHandler::push(osgHaptics::EventHandler::Button b)
       m_last_transform->setUpdateCallback(0L);
 
     // Get the Transformation node associated with the shape that has collided with the Proxy
-    osg::MatrixTransform *t = getTransform(m_cb->getShape());
+    osg::MatrixTransform *t = m_cb->getTransform(m_cb->getShape());
     if (!t) {
       osg::notify(osg::WARN) << "Invalid shape touched, not registrated for moving" << std::endl;
       return;
@@ -65,16 +66,39 @@ void ButtonEventHandler::release(osgHaptics::EventHandler::Button b)
 }
 
 
+ContactCallback::ContactCallback()
+{
+  m_default_material = new osg::Material;
+  m_highlight_material = new osg::Material;
+  m_highlight_material->setDiffuse(osg::Material::FRONT_AND_BACK, osg::Vec4(1,0.2,0.2,1.0));
+}
+
+
 void ContactCallback::contact(osgHaptics::ContactState& state)
 {
   // store a pointer to the shape that got in contact with the proxy
   m_contact_shape = state.getShape();
+
+  osg::MatrixTransform *mt = getTransform(m_contact_shape.get());
+  if (mt) {
+    osg::StateSet *ss = mt->getOrCreateStateSet();
+    ss->setAttributeAndModes(m_highlight_material.get());
+  }
 }
 
 void ContactCallback::separation(osgHaptics::ContactState& state)
 {
   
   // reset the contact_shape
+  if (!m_contact_shape.valid())
+    return;
+
+  osg::MatrixTransform *mt = getTransform(m_contact_shape.get());
+  if (mt) {
+    osg::StateSet *ss = mt->getOrCreateStateSet();
+    ss->setAttributeAndModes(m_default_material.get());
+  }
+
   m_contact_shape = 0L;
 }
 
@@ -91,7 +115,7 @@ void PickScene::addNode(osg::MatrixTransform *mt, ButtonEventHandler *button_eve
   osg::StateSet *ss = mt->getOrCreateStateSet();
   ss->setAttributeAndModes(shape.get());
 
-  button_event_handler->addPair(shape.get(), mt);
+  cb->addPair(shape.get(), mt);
   osgHaptics::ContactState::ContactEvent mask = osgHaptics::ContactState::ContactEvent(osgHaptics::ContactState::Separation|osgHaptics::ContactState::Contact);
 
   m_device->registerContactEventHandler(shape.get(), cb, mask);
@@ -179,5 +203,4 @@ PickScene::PickScene(osgHaptics::HapticDevice *device, osg::MatrixTransform *pro
       addNode(mt.get(), button_event_handler.get(), cb.get());
     }
   }
-
 }

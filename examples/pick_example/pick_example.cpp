@@ -128,7 +128,7 @@ osg::Node *createHud()
 
   text->setFont(timesFont);
   text->setPosition(position);
-  text->setText("F1 - Toggle spring, F2/Shift+F2 - Increase/decrease stiffness");
+  text->setText("Touch a box and pick it up with the button");
 
 
   osg::CameraNode* camera = new osg::CameraNode;

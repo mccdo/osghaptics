@@ -3,6 +3,7 @@
 
 
 #include <osg/Group>
+#include <osg/Material>
 #include <osgHaptics/HapticDevice.h>
 #include <osg/MatrixTransform>
 #include <osgHaptics/EventHandler.h>
@@ -23,6 +24,7 @@
 /// Class that will react to contact between a registrated shape and the proxy.
 class ContactCallback : public osgHaptics::ContactEventHandler {
 public:
+  ContactCallback();
 
   virtual void contact( osgHaptics::ContactState& state);
   virtual void separation( osgHaptics::ContactState& state);
@@ -30,10 +32,28 @@ public:
   /// Return the shape that was last in contact
   osgHaptics::Shape *getShape() { return m_contact_shape.get(); }
 
+  /// Associate a shape with a MatrixTransformation node.
+  void addPair(osgHaptics::Shape *shape, osg::MatrixTransform *node) { m_shape_map[shape] = node; }
+
+  /// Return a MatrixTransformation that earlier has been associated with a Shape
+  osg::MatrixTransform *getTransform(osgHaptics::Shape *shape) { 
+    ShapeMap::iterator it = m_shape_map.find(shape);
+    if (it != m_shape_map.end())
+      return it->second;
+
+    return 0L;
+  }
+
+
 protected:
 
-  ~ContactCallback() {}
+  typedef std::map<osgHaptics::Shape *, osg::MatrixTransform *> ShapeMap;
+  ShapeMap m_shape_map;
+
+  virtual ~ContactCallback() {}
   osg::ref_ptr<osgHaptics::Shape> m_contact_shape;
+  osg::ref_ptr<osg::Material> m_default_material, m_highlight_material;
+
 
 };
 
@@ -51,25 +71,13 @@ public:
   /// Virtual method that will be called upon a button release
   virtual void release(osgHaptics::EventHandler::Button b);
 
-  /// Associate a shape with a MatrixTransformation node.
-  void addPair(osgHaptics::Shape *shape, osg::MatrixTransform *node) { m_shape_map[shape] = node; }
 
-  /// Return a MatrixTransformation that earlier has been associated with a Shape
-  osg::MatrixTransform *getTransform(osgHaptics::Shape *shape) { 
-    ShapeMap::iterator it = m_shape_map.find(shape);
-    if (it != m_shape_map.end())
-      return it->second;
-
-    return 0L;
-  }
 
 protected:
   osg::ref_ptr<ContactCallback> m_cb;
   osg::ref_ptr<osgSensor::TransformSensor> m_transform_sensor;
   osg::ref_ptr<osgSensor::OsgSensorCallback> m_sensor_callback;
 
-  typedef std::map<osgHaptics::Shape *, osg::MatrixTransform *> ShapeMap;
-  ShapeMap m_shape_map;
   osg::ref_ptr<osgHaptics::Shape> m_picked_shape;
   osg::ref_ptr<osg::MatrixTransform> m_last_transform;
 
