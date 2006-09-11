@@ -28,6 +28,9 @@ TransformSensor::TransformSensor(osg::MatrixTransform *transform) : OsgSensor(),
 
 void TransformSensor::sample()
 {
+  if (!m_enabled)
+    return;
+
   osg::Matrix matrix = m_transform->getMatrix();
   osg::Vec3 p;
   osg::Quat quat;

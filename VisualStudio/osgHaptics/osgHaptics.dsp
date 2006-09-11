@@ -90,6 +90,10 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 # Begin Source File
 
+SOURCE=..\..\src\osgHaptics\BBoxVisitor.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\osgHaptics\ContactState.cpp
 # End Source File
 # Begin Source File
@@ -126,6 +130,10 @@ SOURCE=..\..\src\osgHaptics\HapticSpringNode.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\osgHaptics\HashedGridDrawable.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\osgHaptics\Material.cpp
 # End Source File
 # Begin Source File
@@ -147,6 +155,14 @@ SOURCE=..\..\src\osgHaptics\SpringForceOperator.cpp
 # Begin Source File
 
 SOURCE=..\..\src\osgHaptics\TouchModel.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\osgHaptics\TriangleExtractor.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\osgHaptics\Version.cpp
 # End Source File
 # Begin Source File
 
@@ -206,6 +222,14 @@ SOURCE=..\..\include\osgHaptics\HapticSpringNode.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\osgHaptics\HashedGrid.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\osgHaptics\HashedGridDrawable.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\osgHaptics\Material.h
 # End Source File
 # Begin Source File
@@ -238,11 +262,19 @@ SOURCE=..\..\include\osgHaptics\TouchModel.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\osgHaptics\TriangleExtractor.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\osgHaptics\types.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\include\osgHaptics\UpdateDeviceCallback.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\osgHaptics\Version.h
 # End Source File
 # Begin Source File
 

@@ -252,6 +252,9 @@ void quatToEuler(const osg::Quat&  quat, float&h, float &p, float&b )
 
 void OsgSensor::sample() {
 
+  if (!m_enabled)
+    return;
+
   Sensor *sensor = getDevice();
 
   if (!sensor) {

@@ -1,4 +1,4 @@
 NEWS
-* 
+* 060911: Added pick_example for demonstrating how to pick and manipulate objects in a scene.
 * 060515 New demos: material_demo, forceoperator_demo
 * 060509 Initial version, early stage.

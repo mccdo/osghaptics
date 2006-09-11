@@ -76,8 +76,8 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo 
 # ADD BSC32 /nologo 
 LINK32=link.exe
-# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib  osg.lib osgGA.lib openthreadswin32d.lib /nologo /dll /out:"..\..\bin\$(ProjectName).dll" /incremental:no /nodefaultlib:"LIBCD" /pdb:"$(ProjectName)_Release\$(ProjectName).pdb" /pdbtype:sept /subsystem:windows /implib:"../../lib/$(ProjectName).lib" /MACHINE:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib  osg.lib osgGA.lib openthreadswin32d.lib /nologo /dll /out:"..\..\bin\$(ProjectName).dll" /incremental:no /nodefaultlib:"LIBCD" /pdb:"$(ProjectName)_Release\$(ProjectName).pdb" /pdbtype:sept /subsystem:windows /implib:"../../lib/$(ProjectName).lib" /MACHINE:I386
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib  osg.lib osgGA.lib openthreadswin32.lib /nologo /dll /out:"..\..\bin\$(ProjectName).dll" /incremental:no /nodefaultlib:"LIBCD" /pdb:"$(ProjectName)_Release\$(ProjectName).pdb" /pdbtype:sept /subsystem:windows /implib:"../../lib/$(ProjectName).lib" /MACHINE:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib  osg.lib osgGA.lib openthreadswin32.lib /nologo /dll /out:"..\..\bin\$(ProjectName).dll" /incremental:no /nodefaultlib:"LIBCD" /pdb:"$(ProjectName)_Release\$(ProjectName).pdb" /pdbtype:sept /subsystem:windows /implib:"../../lib/$(ProjectName).lib" /MACHINE:I386
 
 !ENDIF
 

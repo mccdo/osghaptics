@@ -10,19 +10,17 @@
 */
 
 /*!
-  Author: Anders Backman, VRlab Umeå University 060509
+  Author: Anders Backman, VRlab, Umeå University 2006-09-11
 
-  This is a demo app that demonstrates how to draw objects both into the 
-  haptic rendering pipeline as well as the visual.
-
-  Dexterity is a classical test to measure precision and performance of movements
-  in 3D. Move the ring without touching the wire.
-
+  Example of how to pickup and move objects using the Phantom device.
 */
+
 
 #include <osgSensor/OsgSensorCallback.h>
 #include <osgSensor/SensorMgr.h>
 
+
+#include <osgText/Text>
 #include <osgHaptics/HapticDevice.h>
 #include <osgHaptics/osgHaptics.h>
 #include <osgHaptics/Shape.h>
@@ -34,7 +32,8 @@
 #include <osgHaptics/TouchModel.h>
 #include <osgHaptics/Shape.h>
 #include <osgHaptics/Material.h>
-
+#include <osgHaptics/HapticSpringNode.h>
+#include <osgSensor/Visitors.h>
 
 #include <osgProducer/OsgSceneHandler>
 #include <osgProducer/Viewer>
@@ -48,17 +47,108 @@
 #include <osg/ShapeDrawable>
 #include <osg/PolygonMode>
 #include <osg/MatrixTransform>
+#include <osgGA/GUIEventHandler>
+#include <osgGA/GUIEventAdapter>
 
 #include <osg/Notify>
-
-
-#include "dexterity.h"
+#include "pick_scene.h"
 
 using namespace sensors;
 
 
+class KeyboardEventHandler : public osgGA::GUIEventHandler
+{
+public:
+
+  KeyboardEventHandler(osgHaptics::HapticSpringNode *spring_node) : m_spring_node(spring_node) {}
+
+  virtual bool handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter&);
+    
+
+  virtual void accept(osgGA::GUIEventHandlerVisitor& v)
+  {
+    v.visit(*this);
+  }
+
+private:
+  osg::ref_ptr<osgHaptics::HapticSpringNode> m_spring_node;
+
+};
+
+bool KeyboardEventHandler::handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter&)
+{
+  switch(ea.getEventType())
+  {
+  case(osgGA::GUIEventAdapter::KEYDOWN):
+    {
+      if (ea.getKey() == osgGA::GUIEventAdapter::KEY_F1) {
+        m_spring_node->setEnable(!m_spring_node->getEnable());
+        std::string str = m_spring_node->getEnable() ? "Enabled" : "Disabled";
+        osg::notify(osg::WARN) << str << " rendering of spring" << std::endl;
+        return true;
+      }
+   
+      if (ea.getKey() == osgGA::GUIEventAdapter::KEY_F2) {
+        osgHaptics::SpringForceOperator *spring = m_spring_node->getForceOperator();
+        if (ea.getModKeyMask() & osgGA::GUIEventAdapter::MODKEY_SHIFT)
+          spring->setStiffness(spring->getStiffness()*0.9);
+        else
+          spring->setStiffness(spring->getStiffness()*1.1);
+
+        osg::notify(osg::WARN) << "Stiffness : " << spring->getStiffness() << std::endl;
+        return true;
+      }
+
+      return false;
+    }
+  default:
+    return false;
+  }
+  return false;
+}
 
 
+
+
+osg::Node *createHud() 
+{
+  osg::Geode *geode = new osg::Geode;
+
+  std::string timesFont("fonts/arial.ttf");
+
+  // turn lighting off for the text and disable depth test to ensure its always ontop.
+  osg::StateSet* stateset = geode->getOrCreateStateSet();
+  stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+
+  osg::Vec3 position(0.1, 0.05,0);
+
+  osgText::Text* text = new  osgText::Text;
+  text->setCharacterSize(0.03);
+  geode->addDrawable( text );
+
+  text->setFont(timesFont);
+  text->setPosition(position);
+  text->setText("F1 - Toggle spring, F2/Shift+F2 - Increase/decrease stiffness");
+
+
+  osg::CameraNode* camera = new osg::CameraNode;
+
+  // set the projection matrix
+  camera->setProjectionMatrix(osg::Matrix::ortho2D(0,1,0,1));
+
+  // set the view matrix    
+  camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+  camera->setViewMatrix(osg::Matrix::identity());
+
+  // only clear the depth buffer
+  camera->setClearMask(GL_DEPTH_BUFFER_BIT);
+
+  // draw subgraph after main camera view.
+  camera->setRenderOrder(osg::CameraNode::POST_RENDER);
+
+  camera->addChild(geode);
+  return camera;
+}
 
 int main( int argc, char **argv )
 {
@@ -72,11 +162,13 @@ int main( int argc, char **argv )
   arguments.getApplicationUsage()->setCommandLineUsage(arguments.getApplicationName()+" [options] filename ...");
   arguments.getApplicationUsage()->addCommandLineOption("--image <filename>","Load an image and render it on a quad");
   arguments.getApplicationUsage()->addCommandLineOption("--dem <filename>","Load an image/DEM and render it on a HeightField");
-  arguments.getApplicationUsage()->addCommandLineOption("-h or --help","Display command line paramters");
+  arguments.getApplicationUsage()->addCommandLineOption("-h or --help","Display command line parameters");
   arguments.getApplicationUsage()->addCommandLineOption("--help-env","Display environmental variables available");
   arguments.getApplicationUsage()->addCommandLineOption("--help-keys","Display keyboard & mouse bindings available");
   arguments.getApplicationUsage()->addCommandLineOption("--help-all","Display all command line, env vars and keyboard & mouse bindigs.");
-
+  arguments.getApplicationUsage()->addKeyboardMouseBinding("F1","Toggle haptic spring on off");
+  arguments.getApplicationUsage()->addKeyboardMouseBinding("F2","Increase spring stiffness");
+  arguments.getApplicationUsage()->addKeyboardMouseBinding("F2+Shift","Decrease spring stiffness");
 
   // construct the viewer.
   osgProducer::Viewer viewer(arguments);
@@ -105,15 +197,6 @@ int main( int argc, char **argv )
     return 1;
   }
 
-  // read the scene from the list of file specified commandline args.
-  osg::ref_ptr<osg::Node> loadedModel = osgDB::readNodeFiles(arguments);
-
-  // if no model has been successfully loaded report failure.
-  if (!loadedModel.valid()) 
-  {
-    std::cout << arguments.getApplicationName() <<": No data loaded" << std::endl;
-    return 1;
-  }
 
   // any option left unread are converted into errors to write out later.
   arguments.reportRemainingOptionsAsUnrecognized();
@@ -130,10 +213,10 @@ int main( int argc, char **argv )
 
   // Root of the visual scene
   osg::ref_ptr<osg::Group> visual_root = new osg::Group;
-  
+
   root->addChild(visual_root.get());
 
-
+  root->addChild(createHud());
   // pass the loaded scene graph to the viewer.
   viewer.setSceneData(root.get());
 
@@ -155,6 +238,12 @@ int main( int argc, char **argv )
     osg::ref_ptr<osgHaptics::HapticRootNode> haptic_root = new osgHaptics::HapticRootNode(sceneView);
     root->addChild(haptic_root.get());
 
+    // add it to the visual node to be rendered visually
+    //visual_root->addChild(loadedModel.get());
+
+    // Add it to the haptic root
+    //haptic_root->addChild(loadedModel.get());
+
 
     // Create a haptic material
     osg::ref_ptr<osgHaptics::Material> material = new osgHaptics::Material();
@@ -165,54 +254,35 @@ int main( int argc, char **argv )
     material->setStaticFriction(0.7);
     material->setDynamicFriction(0.3);
 
-    // Create a visitor that will prepare the Drawables in the subgraph so they can be rendered haptically
-    // It merely attaches a osgHaptics::Shape ontop of each Drawable.
-    // 
-    osgHaptics::HapticRenderPrepareVisitor vis(haptic_device.get());
-    loadedModel->accept(vis);
-
-    // Return the compound shape (can be used for contact tests, disabling haptic rendering for this subgraph etc.
-    osgHaptics::Shape *shape = vis.getShape();
-    osg::StateSet *ss = loadedModel->getOrCreateStateSet();
-
-    // Store the shape.
-    ss->setAttributeAndModes(shape);
-
-    osg::ref_ptr<osgHaptics::TouchModel> touch = new osgHaptics::TouchModel();
-    float snap_force_newtons = 10;
-    touch->setMode(osgHaptics::TouchModel::CONTACT);
-    touch->setSnapDistance(osgHaptics::TouchModel::calcForceToSnapDistance(snap_force_newtons));
-
-
+    osg::StateSet *ss = haptic_root->getOrCreateStateSet();
+    
     // specify a material attribute for this StateAttribute
     ss->setAttributeAndModes(material.get(), osg::StateAttribute::ON);
 
-    // specify a touch model for this StateAttribute
-    ss->setAttributeAndModes(touch.get(), osg::StateAttribute::ON);
-
-
-    // add it to the visual node to be rendered visually
-    visual_root->addChild(loadedModel.get());
-
-    // Add it to the haptic root
-    haptic_root->addChild(loadedModel.get());
-
-    // create dexteritySpline()
-    DexterityLineDrawable *line = createDexteritySpline(visual_root.get(), haptic_root.get(), haptic_device.get());
-
-    // Create a proxy node for rendering the deviceposition
-    osg::ref_ptr<osg::Node> proxy_sphere = osgDB::readNodeFile("dexterity_pin.ac"); // Load a pen geometry
+    // Create a proxy sphere for rendering
+    osg::ref_ptr<osg::Node> proxy_sphere = osgDB::readNodeFile("pen.ac"); // Load a pen geometry
     osg::ref_ptr<osg::MatrixTransform> proxy_transform = new osg::MatrixTransform;    
     proxy_transform->addChild(proxy_sphere.get());
 
     visual_root->addChild(proxy_transform.get());
 
-
-
-    osg::BoundingBox bbox=line->getBound();
+    /*
+    Get the bounding box of the loaded scene
+    */
+    osg::BoundingSphere bs = visual_root->getBound();
+    float radius = bs.radius();
 
     /*
-    Set the workspace of the Haptic working area to enclose the bounding box of the scene.
+      setWorkspaceMode(VIEW_MODE) will effectively use the viewfrustum as a haptic workspace.
+      This will also make the haptic device follow the camera
+    */
+    //haptic_device->setWorkspaceMode(osgHaptics::HapticDevice::VIEW_MODE);
+    osg::BoundingBox bbox;
+    bbox.expandBy(osg::Vec3(-2,-2,-2));
+    bbox.expandBy(osg::Vec3(2,2,2));
+
+    /*
+    Another way is to set the workspace of the Haptic working area to enclose the bounding box of the scene.
     Also, set the WorkSpace mode to use the Bounding box
     Notice that the haptic device will not follow the camera as it does by default. (VIEW_MODE)
     */
@@ -220,36 +290,22 @@ int main( int argc, char **argv )
     haptic_device->setWorkspaceMode(osgHaptics::HapticDevice::BBOX_MODE);
 
 
-    // Create an OsgSensor that will read transformations from the HapticDevice and feedback to
-    // a SensorCallback, that will update a certain node.
-    // So we have: device->osgSensor->SensorCallback->MatrixTransformation
-    //
+    // create sensors that connects the device to a transformation-node 
     osg::ref_ptr<osgSensor::OsgSensor> sensor = new osgSensor::OsgSensor(haptic_device.get());
     osg::ref_ptr<osgSensor::OsgSensorCallback> sensor_callback = new osgSensor::OsgSensorCallback(sensor.get());
 
     proxy_transform->setUpdateCallback(sensor_callback.get());
 
-    // Add a custom drawable that draws the rendered force of the device
-    osg::Geode *geode = new osg::Geode;
-    VectorDrawable *force_drawable = new VectorDrawable();
-    geode->addDrawable(force_drawable);
-    visual_root->addChild(geode);
 
-    // Add a custom drawable that will draw a line between the closest point on the wire and the proxy
-    VectorDrawable *vector = new VectorDrawable();
-    vector->setColor(0.2,0.7,0.7);
-    {
-      osg::Geode *geode = new osg::Geode;
-      geode->addDrawable(vector);
-      visual_root->addChild(geode);
-    }
-
+    // Create a class that will setup a scene with objects that can be "picked" with the proxy
+    osg::ref_ptr<PickScene> pick_scene = new PickScene(haptic_device.get(), proxy_transform.get(), visual_root.get(), haptic_root.get());
 
     /*
-    Add pre and post draw callbacks to the camera so that we start and stop a haptic frame
-    at a time when we have a valid OpenGL context.
+      Add pre and post draw callbacks to the camera so that we start and stop a haptic frame
+      at a time when we have a valid OpenGL context.
     */
     osgHaptics::prepareHapticCamera(viewer.getCamera(0), haptic_device.get(), root.get());
+
 
     while( !viewer.done() )
     {
@@ -257,35 +313,11 @@ int main( int argc, char **argv )
       viewer.sync();        
 
       // Update all registrated sensors (HapticDevice) is one.
-      // We could just call haptic_device->update() in a nodecallback somewhere if we want
-      // or attach a UpdateDeviceCallback to any node in the scenegraph...
-      // But be sure to update the device BEFORE its transformation is used.
-      // otherwise the transformation will lag one frame
-      //
       g_SensorMgr->update();
-      osg::Vec3 pos = haptic_device->getProxyPosition();
-      osg::Vec3 closest;
-      float distance = line->distance(pos, closest);
-      vector->set(pos, closest);
 
       // update the scene by traversing it with the the update visitor which will
       // call all node update callbacks and animations.
       viewer.update();
-
-      // Render the force vector
-      {
-        osg::Vec3 start, end;
-
-        start = haptic_device->getProxyPosition();
-        osg::Vec3 force = haptic_device->getForce();
-        float len = force.length();
-
-        force.normalize();
-        osg::Vec3 dir = force;
-
-        // Update the force drawable with the current force of the device
-        force_drawable->set(start, start+dir*len);
-      }
 
       // fire off the cull and draw traversals of the scene.
       viewer.frame();        
@@ -294,12 +326,13 @@ int main( int argc, char **argv )
     // wait for all cull and draw threads to complete before exit.
     viewer.sync();
 
-    // Shutdown all registrated sensors
-    osgSensor::SensorMgr::instance()->shutdown();
 
   } catch (std::exception& e) {
-    std::cerr << "Caught exception: " << e.what() << std::endl;
+    osg::notify(osg::FATAL) << "Caught exception: " << e.what() << std::endl;
   }
+
+  // Shutdown all registrated sensors
+  osgSensor::SensorMgr::instance()->shutdown();
 
   return 0;
 }

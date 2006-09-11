@@ -435,12 +435,6 @@ int main( int argc, char **argv )
     visual_root->addChild(proxy_transform.get());
 
     /*
-    Add pre and post draw callbacks to the camera so that we start and stop a haptic frame
-    at a time when we have a valid OpenGL context.
-    */
-    osgHaptics::prepareHapticCamera(viewer.getCamera(0), haptic_device.get(), root.get());
-
-    /*
     Get the bounding box of the loaded scene
     */
     osg::BoundingBox bbox;
@@ -504,6 +498,14 @@ int main( int argc, char **argv )
       geode->addDrawable(force_drawable);
       visual_root->addChild(geode);
     }
+
+
+    /*
+    Add pre and post draw callbacks to the camera so that we start and stop a haptic frame
+    at a time when we have a valid OpenGL context.
+    */
+    osgHaptics::prepareHapticCamera(viewer.getCamera(0), haptic_device.get(), root.get());
+
 
     while( !viewer.done() )
     {

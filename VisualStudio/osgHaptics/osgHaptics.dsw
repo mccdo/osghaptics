@@ -87,6 +87,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "pick_example_demo"=..\examples\pick_example\pick_example.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Global:
 
 Package=<5>
