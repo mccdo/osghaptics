@@ -312,6 +312,9 @@ int main( int argc, char **argv )
     // Create a visitor that will prepare the Drawables in the subgraph so they can be rendered haptically
     // It merely attaches a osgHaptics::Shape ontop of each Drawable.
     // 
+    // Prepare the node so that it can be rendered haptically
+    // If several nodes are to be prepared, make sure to call the HapticRenderPrepareVisitor::reset() method
+    // inbetween
     osgHaptics::HapticRenderPrepareVisitor vis(haptic_device.get());
     loadedModel->accept(vis);
 

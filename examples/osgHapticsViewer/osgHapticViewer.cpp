@@ -380,6 +380,9 @@ int main( int argc, char **argv )
       haptic_node = geode;
     }
 
+    // Prepare the node so that it can be rendered haptically
+    // If several nodes are to be prepared, make sure to call the HapticRenderPrepareVisitor::reset() method
+    // inbetween
     osgHaptics::HapticRenderPrepareVisitor vis(haptic_device.get());
     haptic_node->accept(vis);
     

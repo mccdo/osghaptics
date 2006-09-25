@@ -77,10 +77,14 @@
 
     /*!
       Return the ShapeComposite that holds all the Shapes generated.
-      IMPORTANT: For now, attach this to a ref_ptr somewhere, otherwise it will be dropped.
+      IMPORTANT: For now, attach this to a ref_ptr somewhere, otherwise it will be dropped
+      after a call to reset() or when this Visitor goes out of scope.
     */
     osgHaptics::Shape *getShape() { return m_shape.get(); }
 
+    /*!
+      Prepares this visitor to traverse yet another run.
+    */
     void reset() { m_shape = 0L; }
     
 
