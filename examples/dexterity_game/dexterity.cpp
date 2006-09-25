@@ -138,6 +138,9 @@ DexterityLineDrawable *createDexteritySpline(osg::Group *visual_root, osg::Group
   ss->setAttributeAndModes(touch.get(), osg::StateAttribute::ON);
   */
 
+  // Prepare the node so that it can be rendered haptically
+  // If several nodes are to be prepared, make sure to call the HapticRenderPrepareVisitor::reset() method
+  // inbetween
   osgHaptics::HapticRenderPrepareVisitor vis(device);
   geode->accept(vis);
 
