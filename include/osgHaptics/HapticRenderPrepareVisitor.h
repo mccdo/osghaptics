@@ -43,6 +43,26 @@
     If the subgraph contains instances, that is, a drawable occurs on several positions in the tree, then
     only the first occurence of that drawable will actually be drawn haptically.
     The ShapeComposte can be accessed throught the getShape() method.
+
+    This class should either be used only once, or by calling the method reset() inbetween.
+    The reason for this is that it creates a CompositeShape internally which should be used only 
+    for one traversal.
+
+    So either:
+
+      for() {
+        ref_ptr v = new HapticRenderPrepareVisitor()
+        node->accept(v)
+      }
+
+      or
+      ref_ptr v = new HapticRenderPrepareVisitor()
+      for() {
+        v->reset()
+        node->accept(v)
+      }
+      
+
   */
 
   class OSGHAPTICS_EXPORT HapticRenderPrepareVisitor : public osg::NodeVisitor
@@ -60,6 +80,8 @@
       IMPORTANT: For now, attach this to a ref_ptr somewhere, otherwise it will be dropped.
     */
     osgHaptics::Shape *getShape() { return m_shape.get(); }
+
+    void reset() { m_shape = 0L; }
     
 
   protected:
