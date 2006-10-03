@@ -1,3 +1,9 @@
+* 061001, Anders Backman:
+  Updated all rendering code to reflect changes in osg.
+
+* 060829, Anders Backman:
+  Changed constructor of HapticGroup to take a osgUtil::SceneView instead of a osgProducer::Viewer.
+
 * 060829, Anders Backman:
   Changed constructor of HapticGroup to take a osgUtil::SceneView instead of a osgProducer::Viewer.
   

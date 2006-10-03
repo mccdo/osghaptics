@@ -33,10 +33,10 @@ using namespace osgHaptics;
 
 
 
-void HapticRenderLeaf::render(osg::State& state,osgUtil::RenderLeaf* previous)
+void HapticRenderLeaf::render(osg::RenderInfo& renderInfo,osgUtil::RenderLeaf* previous)
 {
   // don't draw this leaf if the abort rendering flag has been set.
-  if (state.getAbortRendering())
+  if (renderInfo.getState()->getAbortRendering())
   {
     //cout << "early abort"<<endl;
     return;
@@ -46,8 +46,8 @@ void HapticRenderLeaf::render(osg::State& state,osgUtil::RenderLeaf* previous)
   {
 
     // apply matrices if required.
-    state.applyProjectionMatrix(_projection.get());
-    state.applyModelViewMatrix(_modelview.get());
+    renderInfo.getState()->applyProjectionMatrix(_projection.get());
+    renderInfo.getState()->applyModelViewMatrix(_modelview.get());
 
     // apply state if required.
     osgUtil::StateGraph* prev_rg = previous->_parent;
@@ -55,25 +55,25 @@ void HapticRenderLeaf::render(osg::State& state,osgUtil::RenderLeaf* previous)
     osgUtil::StateGraph* rg = _parent;
     if (prev_rg_parent!=rg->_parent)
     {
-      osgUtil::StateGraph::moveStateGraph(state,prev_rg_parent,rg->_parent);
+      osgUtil::StateGraph::moveStateGraph(*renderInfo.getState(),prev_rg_parent,rg->_parent);
 
       // send state changes and matrix changes to OpenGL.
-      state.apply(rg->_stateset);
+      renderInfo.getState()->apply(rg->_stateset);
 
     }
     else if (rg!=prev_rg)
     {
 
       // send state changes and matrix changes to OpenGL.
-      state.apply(rg->_stateset);
+      renderInfo.getState()->apply(rg->_stateset);
 
     }
 
     
-    const osgHaptics::Shape *shape = m_renderbin->getShape(state);      
+    const osgHaptics::Shape *shape = m_renderbin->getShape(*renderInfo.getState());      
     bool render_shape=false;
 
-    render_shape = !m_renderbin->hasBeenDrawn(state);
+    render_shape = !m_renderbin->hasBeenDrawn(*renderInfo.getState());
   
     // If we have a shape,
     // and the device is reporting, Dont render haptic shape,
@@ -93,7 +93,7 @@ void HapticRenderLeaf::render(osg::State& state,osgUtil::RenderLeaf* previous)
     }
     else
       // draw the drawable
-      _drawable->draw(state);
+      _drawable->draw(renderInfo); //state);
     
     if (shape && render_shape) 
       shape->postDraw();
@@ -102,15 +102,15 @@ void HapticRenderLeaf::render(osg::State& state,osgUtil::RenderLeaf* previous)
   {
     std::cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
     // apply matrices if required.
-    state.applyProjectionMatrix(_projection.get());
-    state.applyModelViewMatrix(_modelview.get());
+    renderInfo.getState()->applyProjectionMatrix(_projection.get());
+    renderInfo.getState()->applyModelViewMatrix(_modelview.get());
 
     // apply state if required.
-    osgUtil::StateGraph::moveStateGraph(state,NULL,_parent->_parent);
+    osgUtil::StateGraph::moveStateGraph(*renderInfo.getState(),NULL,_parent->_parent);
 
-    state.apply(_parent->_stateset);
+    renderInfo.getState()->apply(_parent->_stateset);
 
     // draw the drawable
-    _drawable->draw(state);
+    _drawable->draw(renderInfo); //state);
   }
 }

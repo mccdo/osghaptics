@@ -37,7 +37,8 @@ public:
 
   HapticRenderBin(SortMode mode);
 
-  virtual void drawImplementation(osg::State& state,osgUtil::RenderLeaf*& previous);
+
+  virtual void drawImplementation(osg::RenderInfo& renderInfo, osgUtil::RenderLeaf*& previous);
 
   /** Copy constructor using CopyOp to manage deep vs shallow copy.*/
   HapticRenderBin(const HapticRenderBin& rhs,const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY);
@@ -54,7 +55,7 @@ public:
 
 protected:
 
-  void renderHapticLeaf(osgUtil::RenderLeaf* original, osg::State& state, osgUtil::RenderLeaf *previous); 
+  void renderHapticLeaf(osgUtil::RenderLeaf* original, osg::RenderInfo& renderInfo, osgUtil::RenderLeaf *previous); 
 
 
 private:

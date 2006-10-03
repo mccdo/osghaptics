@@ -51,7 +51,7 @@
       _parent=leaf->_parent;
     }
 
-    virtual void render(osg::State& state,osgUtil::RenderLeaf* previous);
+    virtual void render(osg::RenderInfo& renderInfo, osgUtil::RenderLeaf* previous);
 
   protected:
 

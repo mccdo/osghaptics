@@ -74,14 +74,14 @@ bool HapticRenderBin::hasBeenDrawn(osg::State& state)
   return false; 
 }
 
-void HapticRenderBin::drawImplementation(osg::State& state,osgUtil::RenderLeaf*& previous)
+void HapticRenderBin::drawImplementation(osg::RenderInfo& renderInfo,osgUtil::RenderLeaf*& previous)
 {
 
   // Only render once per frame. Important to keep track of during stereo rendering
-  if (m_last_frame == state.getFrameStamp()->getFrameNumber())
+  if (m_last_frame == renderInfo.getState()->getFrameStamp()->getFrameNumber())
     return;
 
-  m_last_frame = state.getFrameStamp()->getFrameNumber();
+  m_last_frame = renderInfo.getState()->getFrameStamp()->getFrameNumber();
 
 
   // Clear the list of already drawn drawables 
@@ -96,7 +96,7 @@ void HapticRenderBin::drawImplementation(osg::State& state,osgUtil::RenderLeaf*&
     rbitr!=_bins.end() && rbitr->first<0;
     ++rbitr)
   {
-    rbitr->second->draw(state,previous);
+    rbitr->second->draw(renderInfo ,previous);
   }
 
 
@@ -106,7 +106,7 @@ void HapticRenderBin::drawImplementation(osg::State& state,osgUtil::RenderLeaf*&
     ++rlitr)
   {
     osgUtil::RenderLeaf* rl = *rlitr;
-    renderHapticLeaf(rl, state, previous);
+    renderHapticLeaf(rl, renderInfo, previous);
     //rl->render(state,previous);
     previous = rl;
   }
@@ -123,7 +123,7 @@ void HapticRenderBin::drawImplementation(osg::State& state,osgUtil::RenderLeaf*&
       ++dw_itr)
     {
       osgUtil::RenderLeaf* rl = dw_itr->get();
-      renderHapticLeaf(rl, state, previous);
+      renderHapticLeaf(rl,  renderInfo, previous);
 //      rl->render(state,previous);
       previous = rl;
 
@@ -136,7 +136,7 @@ void HapticRenderBin::drawImplementation(osg::State& state,osgUtil::RenderLeaf*&
     rbitr!=_bins.end();
     ++rbitr)
   {
-    rbitr->second->draw(state,previous);
+    rbitr->second->draw( renderInfo,previous);
   }
 }
 
@@ -145,11 +145,11 @@ HapticRenderBin::~HapticRenderBin()
 }
 
 
-void HapticRenderBin::renderHapticLeaf(osgUtil::RenderLeaf* original, osg::State& state, osgUtil::RenderLeaf *previous) 
+void HapticRenderBin::renderHapticLeaf(osgUtil::RenderLeaf* original, osg::RenderInfo& renderInfo, osgUtil::RenderLeaf *previous) 
 {
   if (!m_haptic_renderleaf.valid())
     m_haptic_renderleaf = new HapticRenderLeaf(original, this);
   else
     m_haptic_renderleaf->set(original);
-  m_haptic_renderleaf->render(state, previous);
+  m_haptic_renderleaf->render(renderInfo, previous);
 }
