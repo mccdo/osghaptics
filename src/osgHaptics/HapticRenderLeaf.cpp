@@ -70,10 +70,10 @@ void HapticRenderLeaf::render(osg::RenderInfo& renderInfo,osgUtil::RenderLeaf* p
     }
 
     
-    const osgHaptics::Shape *shape = m_renderbin->getShape(*renderInfo.getState());      
+    const osgHaptics::Shape *shape = m_renderbin->getShape(renderInfo);      
     bool render_shape=false;
 
-    render_shape = !m_renderbin->hasBeenDrawn(*renderInfo.getState());
+    render_shape = !m_renderbin->hasBeenDrawn(renderInfo);
   
     // If we have a shape,
     // and the device is reporting, Dont render haptic shape,
@@ -93,7 +93,7 @@ void HapticRenderLeaf::render(osg::RenderInfo& renderInfo,osgUtil::RenderLeaf* p
     }
     else
       // draw the drawable
-      _drawable->draw(renderInfo); //state);
+      _drawable->draw(renderInfo);
     
     if (shape && render_shape) 
       shape->postDraw();
@@ -111,6 +111,6 @@ void HapticRenderLeaf::render(osg::RenderInfo& renderInfo,osgUtil::RenderLeaf* p
     renderInfo.getState()->apply(_parent->_stateset);
 
     // draw the drawable
-    _drawable->draw(renderInfo); //state);
+    _drawable->draw(renderInfo);
   }
 }

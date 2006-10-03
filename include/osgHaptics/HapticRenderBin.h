@@ -37,8 +37,7 @@ public:
 
   HapticRenderBin(SortMode mode);
 
-
-  virtual void drawImplementation(osg::RenderInfo& renderInfo, osgUtil::RenderLeaf*& previous);
+  virtual void drawImplementation(osg::RenderInfo& renderInfo,osgUtil::RenderLeaf*& previous);
 
   /** Copy constructor using CopyOp to manage deep vs shallow copy.*/
   HapticRenderBin(const HapticRenderBin& rhs,const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY);
@@ -49,9 +48,9 @@ public:
   virtual const char* libraryName() const { return "osgHaptics"; }
   virtual const char* className() const { return "HapticRenderBin"; }
 
-  bool hasBeenDrawn(osg::State& state);
+  bool hasBeenDrawn(osg::RenderInfo& renderInfo);
   /// It the state has a shape attached, then return it
-  const osgHaptics::Shape *getShape(osg::State& state) const;
+  const osgHaptics::Shape *getShape(osg::RenderInfo& renderInfo) const;
 
 protected:
 

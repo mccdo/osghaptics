@@ -41,9 +41,9 @@ HapticRenderBin::HapticRenderBin() : RenderBin(), m_last_frame(-1)
 {
 }
 
-const osgHaptics::Shape *HapticRenderBin::getShape(osg::State& state) const
+const osgHaptics::Shape *HapticRenderBin::getShape(osg::RenderInfo& renderInfo) const
 {
-  const osg::StateAttribute *sa = state.getLastAppliedAttribute(osgHaptics::Shape::getSAType());
+  const osg::StateAttribute *sa = renderInfo.getState()->getLastAppliedAttribute(osgHaptics::Shape::getSAType());
 
   if (sa) {
     const osgHaptics::Shape *shape = static_cast<const osgHaptics::Shape*> (sa);
@@ -53,11 +53,11 @@ const osgHaptics::Shape *HapticRenderBin::getShape(osg::State& state) const
   return 0L;
 }
 
-bool HapticRenderBin::hasBeenDrawn(osg::State& state)
+bool HapticRenderBin::hasBeenDrawn(osg::RenderInfo& renderInfo)
 {
 
   // Is this a haptic drawable? That is, does it has a Shape attached as StateAttribute?
-  const osgHaptics::Shape *shape = getShape(state);
+  const osgHaptics::Shape *shape = getShape(renderInfo);
   if (shape) {
 
     // Its a haptic shape, lets see if it has been rendered before.
@@ -123,7 +123,7 @@ void HapticRenderBin::drawImplementation(osg::RenderInfo& renderInfo,osgUtil::Re
       ++dw_itr)
     {
       osgUtil::RenderLeaf* rl = dw_itr->get();
-      renderHapticLeaf(rl,  renderInfo, previous);
+      renderHapticLeaf(rl, renderInfo, previous);
 //      rl->render(state,previous);
       previous = rl;
 
@@ -136,7 +136,7 @@ void HapticRenderBin::drawImplementation(osg::RenderInfo& renderInfo,osgUtil::Re
     rbitr!=_bins.end();
     ++rbitr)
   {
-    rbitr->second->draw( renderInfo,previous);
+    rbitr->second->draw(renderInfo,previous);
   }
 }
 
