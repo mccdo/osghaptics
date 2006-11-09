@@ -20,10 +20,8 @@ ButtonEventHandler::ButtonEventHandler(ContactCallback *cb, osg::MatrixTransform
 
 }
 
-// Called when a button is pushed
-void ButtonEventHandler::push(osgHaptics::EventHandler::Button b)
+void ButtonEventHandler::buttonDown()
 {
-
   // Does the contacteventhandler has a Shape registrated?
   if (m_cb->getShape())
   {
@@ -42,7 +40,7 @@ void ButtonEventHandler::push(osgHaptics::EventHandler::Button b)
       return;
     }
     osg::notify(osg::WARN) << "Moving shape/node: " << m_cb->getShape()->getName() << std::endl;
-    
+
     osg::Node *node = t->getChild(0);
     osg::MatrixTransform *mt=0L;
 
@@ -54,13 +52,13 @@ void ButtonEventHandler::push(osgHaptics::EventHandler::Button b)
       osg::Matrix m1 = mt->getMatrix();
       mn = m1 * mn;
       osg::Matrix mp = m_transform_sensor->getTransform()->getMatrix();
-      
+
       mp.invert(mp);
       osg::Matrix md = mn*mp;
 
       mt->setMatrix(md);
     }
-    
+
     // Enable the sensor
     m_transform_sensor->setEnable(true);
 
@@ -68,19 +66,44 @@ void ButtonEventHandler::push(osgHaptics::EventHandler::Button b)
     t->setUpdateCallback(m_sensor_callback.get());
 
     m_last_transform = t;
-
   }
 }
 
-// Called when a button is released
-void ButtonEventHandler::release(osgHaptics::EventHandler::Button b)
+void ButtonEventHandler::buttonUp()
 {
-
   if (m_picked_shape.valid())
     m_picked_shape->setEnable(true);
 
   // Stop updating the Sensor, so that any node connected via a Updatecallback wont be moved anymore.
   m_transform_sensor->setEnable(false);
+}
+
+// Called when any event occurs (button, calibration, update, etc...)
+void ButtonEventHandler::operator()(SensorEventHandler::EventType eventType, float time)//push(osgHaptics::EventHandler::Button b)
+{
+  using namespace osgSensor;
+  SensorEventHandler::Button button = getButton();
+  SensorEventHandler::ButtonState state = getButtonState();
+
+
+  if (eventType == osgHaptics::HapticDevice::CALIBRATION_UPDATE_EVENT) {
+    std::cerr << "Calibration update" << std::endl;
+    return;
+  }
+  if (eventType == osgHaptics::HapticDevice::CALIBRATION_INPUT_EVENT) {
+    std::cerr << "Calibration input" << std::endl;
+    return;
+  }
+
+  // Break here if its not a button event
+  if (eventType != SensorEventHandler::BUTTON)
+    return;
+
+  // Is it a button down or up event?
+  if (state == SensorEventHandler::DOWN)
+    buttonDown();
+  else if (state == SensorEventHandler::UP)
+    buttonUp();
 }
 
 
@@ -166,7 +189,7 @@ PickScene::PickScene(osgHaptics::HapticDevice *device, osg::MatrixTransform *pro
   osg::StateSet *ss = visual_group->getOrCreateStateSet();
   ss->setAttributeAndModes(new osgHaptics::Shape(device), osg::StateAttribute::OFF|osg::StateAttribute::PROTECTED|osg::StateAttribute::OVERRIDE);
 
-  device->registerEventHandler(button_event_handler.get());
+  device->registerSensorEventHandler(button_event_handler.get());
 
 /*
   osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform;
@@ -227,3 +250,18 @@ PickScene::PickScene(osgHaptics::HapticDevice *device, osg::MatrixTransform *pro
     }
   }
 }
+
+#if 0
+
+// Called when a button is released
+void ButtonEventHandler::release(osgHaptics::EventHandler::Button b)
+{
+
+  if (m_picked_shape.valid())
+    m_picked_shape->setEnable(true);
+
+  // Stop updating the Sensor, so that any node connected via a Updatecallback wont be moved anymore.
+  m_transform_sensor->setEnable(false);
+}
+
+#endif

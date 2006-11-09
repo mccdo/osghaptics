@@ -174,6 +174,9 @@
 				RelativePath="..\..\src\osgSensor\Sensor.cpp">
 			</File>
 			<File
+				RelativePath="..\..\src\osgSensor\SensorEventHandler.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\osgSensor\SensorLink.cpp">
 			</File>
 			<File
@@ -199,6 +202,9 @@
 			Name="Header files"
 			Filter="">
 			<File
+				RelativePath="..\..\include\osgSensor\bitoperators.h">
+			</File>
+			<File
 				RelativePath="..\..\include\osgSensor\Event.h">
 			</File>
 			<File
@@ -215,6 +221,9 @@
 			</File>
 			<File
 				RelativePath="..\..\include\osgSensor\Sensor.h">
+			</File>
+			<File
+				RelativePath="..\..\include\osgSensor\SensorEventHandler.h">
 			</File>
 			<File
 				RelativePath="..\..\include\osgSensor\SensorLink.h">

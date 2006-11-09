@@ -52,7 +52,7 @@ bool HapticDevice::m_scheduler_started = false;
 
 
 HapticDevice::HapticDevice(HDstring pConfigName) : Sensor(), m_hHDHandle(HD_INVALID_HANDLE), m_hHLRContext(0), m_cursor_scale(10),
-m_initialized(false), m_width(0), m_height(0), m_proxy_damping(0), m_proxy_stiffness(0.3), m_shutting_down(false), 
+ m_width(0), m_height(0), m_proxy_damping(0), m_proxy_stiffness(0.3), m_shutting_down(false), 
 m_valid_world_to_workspace_matrix(false), m_enable_shape_render(true), m_max_force(0), m_device_model(NONE_DEVICE), m_workspace_model(VIEW_WORKSPACE),
 m_workspace_mode(VIEW_MODE)
 
@@ -206,8 +206,10 @@ void HapticDevice::updateWorkspace(unsigned int width, unsigned int height, bool
 *******************************************************************************/
 HapticDevice::~HapticDevice()
 {
-  shutdown();
+  shutdown(0.0f);
 }
+
+
 
 
 void HapticDevice::registerForceEffect(ForceEffect *fe)
@@ -510,24 +512,37 @@ void HLCALLBACK HapticDevice::calibrationCallback(HLenum event,
                                     HLcache *cache,
                                     void *userdata)
 {
+
+  using namespace osgSensor;
+
   HapticDevice *device = static_cast< HapticDevice * >( userdata );
-  EventHandlerMap::iterator it;
-  for(it = device->m_event_handlers.begin(); it != device->m_event_handlers.end(); it++) 
+
+  osgSensor::Sensor::EventHandlerMap event_handlers = device->getEventHandlers();
+  osgSensor::Sensor::EventHandlerMap::iterator it;
+
+  float time = device->getTime();
+  //  EventHandlerMap::iterator it;
+  for(it = event_handlers.begin(); it != event_handlers.end(); it++) 
+  {  
+    it->first->begin(device);
+    it->first->setNumberOfButtons(device->getNumberOfButtons());
+    it->first->setNumberOfValuators(device->getNumberOfValuators());
 
     if (event == HL_EVENT_CALIBRATION_UPDATE)
     {
-      it->first->setType(EventHandler::CALIBRATION);
-      it->first->calibrate(EventHandler::UPDATE);
+      it->first->pushEvent(time, HapticDevice::CALIBRATION_UPDATE_EVENT);
+      it->first->end();
 
       hlUpdateCalibration();
     }
     else if (event == HL_EVENT_CALIBRATION_INPUT)
     {
-      it->first->setType(EventHandler::CALIBRATION);
-      it->first->calibrate(EventHandler::INPUT);
-      //std::cout << "Device requires calibration input..." << std::endl;
+      it->first->pushEvent(time, HapticDevice::CALIBRATION_INPUT_EVENT);
+      it->first->end();
     }
+  } // for
 }
+
 
 
 void HLCALLBACK HapticDevice::buttonCallback( HLenum event,
@@ -536,34 +551,44 @@ void HLCALLBACK HapticDevice::buttonCallback( HLenum event,
                                         HLcache *cache,
                                         void *data ) 
 {
+  using namespace osgSensor;
+
   HapticDevice *device = static_cast< HapticDevice * >( data );
-  EventHandlerMap::iterator it;
-  for(it = device->m_event_handlers.begin(); it != device->m_event_handlers.end(); it++) 
+
+  osgSensor::Sensor::EventHandlerMap event_handlers = device->getEventHandlers();
+  osgSensor::Sensor::EventHandlerMap::iterator it;
+
+  float time = device->getTime();
+
+  //  EventHandlerMap::iterator it;
+  for(it = event_handlers.begin(); it != event_handlers.end(); it++) 
   {  
+    it->first->begin(device);
+    it->first->setNumberOfButtons(device->getNumberOfButtons());
+    it->first->setNumberOfValuators(device->getNumberOfValuators());
+
+
     if( event == HL_EVENT_1BUTTONDOWN ) {
       device->m_current_state.buttons[0] = true;
-      it->first->setType(EventHandler::BUTTON);
-      it->first->setState(EventHandler::BUTTON_1, EventHandler::DOWN);
-      it->first->push(EventHandler::BUTTON_1);
+      
+      it->first->pushEvent(time, SensorEventHandler::BUTTON, SensorEventHandler::BUTTON_1, SensorEventHandler::DOWN);
     }
     else if( event == HL_EVENT_1BUTTONUP ) {
       device->m_current_state.buttons[0] = false;
-      it->first->setType(EventHandler::BUTTON);
-      it->first->setState(EventHandler::BUTTON_1, EventHandler::UP);
-      it->first->release(EventHandler::BUTTON_1);
+
+      it->first->pushEvent(time, SensorEventHandler::BUTTON, SensorEventHandler::BUTTON_1, SensorEventHandler::UP);
     }
     else if( event ==  HL_EVENT_2BUTTONDOWN ) {
       device->m_current_state.buttons[1] = true;
-      it->first->setType(EventHandler::BUTTON);
-      it->first->setState(EventHandler::BUTTON_2, EventHandler::DOWN);
-      it->first->push(EventHandler::BUTTON_2);
+
+      it->first->pushEvent(time, SensorEventHandler::BUTTON, SensorEventHandler::BUTTON_2, SensorEventHandler::DOWN);
     }
     else if( event == HL_EVENT_2BUTTONUP ) {
       device->m_current_state.buttons[1] = false;
-      it->first->setType(EventHandler::BUTTON);
-      it->first->setState(EventHandler::BUTTON_2, EventHandler::UP);
-      it->first->release(EventHandler::BUTTON_2);
+
+      it->first->pushEvent(time, SensorEventHandler::BUTTON, SensorEventHandler::BUTTON_2, SensorEventHandler::UP);
     }
+    it->first->end();
   } // for
 }
 
@@ -582,8 +607,10 @@ HDCallbackCode HDCALLBACK HapticDevice::DeviceDataCB( void *data ) {
   return HD_CALLBACK_DONE;
 } 
 
-void HapticDevice::update()
+void HapticDevice::update(float time)
 {
+  setTime(time);
+
   if (!m_initialized)
     return;
 
@@ -610,7 +637,7 @@ void HapticDevice::update()
   m_current_state.transformation.setTrans(t);*/
 }
 
-void HapticDevice::shutdown()
+void HapticDevice::shutdown(float time)
 {  
 
   if (!m_initialized)
@@ -621,7 +648,7 @@ void HapticDevice::shutdown()
   m_scheduled_force_effect_callbacks.clear();
   m_contact_events.clear();
   m_hd_handles.clear();
-  m_event_handlers.clear();
+  //m_event_handlers.clear();
   m_force_effects.clear();
   m_force_operators.clear();
   
@@ -1254,7 +1281,7 @@ void HapticDevice::registerContactEventHandler(Shape *shape, ContactEventHandler
   }
 }
 
-void HapticDevice::registerEventHandler(EventHandler *bev)
+/*void HapticDevice::registerEventHandler(EventHandler *bev)
 {
   m_event_handlers[bev] = bev;
 }
@@ -1264,7 +1291,7 @@ void HapticDevice::unRegisterEventHandler(EventHandler *bev)
 {
   m_event_handlers[bev] = 0L;
 }
-
+*/
 
 #if 0
 bool HapticDevice::calculateBartlettHanningWindowCoefficients(unsigned n, std::vector<float>& coefficients)

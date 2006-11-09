@@ -110,6 +110,10 @@ SOURCE=..\..\src\osgSensor\Sensor.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\osgSensor\SensorEventHandler.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\osgSensor\SensorLink.cpp
 # End Source File
 # Begin Source File
@@ -142,6 +146,10 @@ SOURCE=..\..\src\osgSensor\Visitors.cpp
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\include\osgSensor\bitoperators.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\osgSensor\Event.h
 # End Source File
 # Begin Source File
@@ -163,6 +171,10 @@ SOURCE=..\..\include\osgSensor\OsgSensorCallback.h
 # Begin Source File
 
 SOURCE=..\..\include\osgSensor\Sensor.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\osgSensor\SensorEventHandler.h
 # End Source File
 # Begin Source File
 

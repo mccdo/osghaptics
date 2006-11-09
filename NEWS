@@ -1,4 +1,9 @@
 NEWS
+* 061106: Removed the EventHandler class and replaced with a more general SensorEventHandler
+  This will affect the code using the HapticDevice. Have a look into the pick_example_demo (pick_scene.cpp)
+  for an example of how to use the new SensorEventHandler.
+  
+* 061108: Added sensorEventHandler_demo to demonstrate the osgSensor::SensorEventHandler.
 * 060911: Added pick_example for demonstrating how to pick and manipulate objects in a scene.
 * 060515 New demos: material_demo, forceoperator_demo
 * 060509 Initial version, early stage.

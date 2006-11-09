@@ -99,6 +99,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "sensorEventHandler_demo"=..\examples\sensorEventHandler_demo\sensorEventHandler_demo.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Global:
 
 Package=<5>

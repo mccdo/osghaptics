@@ -6,7 +6,7 @@
 #include <osg/Material>
 #include <osgHaptics/HapticDevice.h>
 #include <osg/MatrixTransform>
-#include <osgHaptics/EventHandler.h>
+//#include <osgHaptics/EventHandler.h>
 #include <osgHaptics/Shape.h>
 #include <osg/Geode>
 #include <osg/MatrixTransform>
@@ -58,22 +58,28 @@ protected:
 };
 
 /// Class that will react to button press/release
-class ButtonEventHandler : public osgHaptics::EventHandler
+class ButtonEventHandler : public osgSensor::SensorEventHandler
 {
 public:
 
   ButtonEventHandler(ContactCallback *cb, osg::MatrixTransform *proxy_node);
 
 
-  /// Virtual method that will be called upon a button press
-  virtual void push(osgHaptics::EventHandler::Button b);
+  /// Virtual method that will be called upon a button press/release
+  virtual void operator()(EventType eventType, float time);
+
+//  virtual void push(osgHaptics::EventHandler::Button b);
 
   /// Virtual method that will be called upon a button release
-  virtual void release(osgHaptics::EventHandler::Button b);
+  //virtual void release(osgHaptics::EventHandler::Button b);
 
 
 
 protected:
+
+  void buttonDown();
+  void buttonUp();
+
   osg::ref_ptr<ContactCallback> m_cb;
   osg::ref_ptr<osgSensor::TransformSensor> m_transform_sensor;
   osg::ref_ptr<osgSensor::OsgSensorCallback> m_sensor_callback;

@@ -40,7 +40,7 @@ namespace osgSensor {
     All classes inherited from the Sensor class will automatically be registrated to this
     manager.
 
-    When SensorMgr::update() is called, all registrated Sensors update method will be called.
+    When SensorMgr::update() is called, all registrated Sensors execUpdate method will be called.
 
     Same goes for SensorMgr::shutdown()
 
@@ -56,15 +56,15 @@ namespace osgSensor {
     /*!
       Shutdown all registrated sensors
     */
-    void shutdown();
+    void shutdown(float time=0.0f);
 
     /*!
     Initializes the SensorManager.
     */
-    bool init();
+    bool init(float time=0.0f);
 
     /// Call update on all registrated sensors
-    void update();
+    void update(float time=0.0f);
 
     /// Registrate a sensor
     void registerSensor(osgSensor::Sensor *sensor);

@@ -44,7 +44,7 @@
 #include <osgHaptics/ForceEffect.h>
 #include <osgHaptics/ContactEventHandler.h>
 #include <osgHaptics/ForceOperator.h>
-#include <osgHaptics/EventHandler.h>
+//#include <osgHaptics/EventHandler.h>
 
 
 
@@ -53,10 +53,11 @@
   namespace osgHaptics {
 
 
-/// Implements a Sensor that reads data from a haptic device using OpenHaptics API 
 
 /*!
 */
+
+/// Implements a Sensor that reads data from a haptic device using OpenHaptics API 
 class  OSGHAPTICS_EXPORT HapticDevice : public osgSensor::Sensor
 {
 public:
@@ -81,6 +82,11 @@ public:
     ABSOLUTE_WORKSPACE            /// Use an absolute coordinate system, independent of OpenGL view
   };
 
+  enum HapticEvents {
+    CALIBRATION_UPDATE_EVENT = osgSensor::SensorEventHandler::LAST_EVENT_TYPE*2,
+    CALIBRATION_INPUT_EVENT = CALIBRATION_UPDATE_EVENT*2
+  };
+
   /*!
     Return the current workspace model of the device.
     By using it in ABSOLUTE mode, all forces are transformed into absolute world space, using the
@@ -99,16 +105,22 @@ public:
   /// Virtual methods inherited from Sensor class
   
   /// Read data from the device, update internal state
-  virtual void update();
+  virtual void update(float time);
   
   /// Return the number of sensors available
   virtual unsigned int getNumberOfSensors() { return 1; }
 
   /// Shutdown the device
-  virtual void shutdown();
+  virtual void shutdown(float time);
 
   /// Returns the current sensor position and orientation
   virtual int read(osg::Vec3& p, osg::Quat& q);
+
+  /// Return the number of buttons that this Sensor has
+  virtual unsigned int getNumberOfButtons() { return 2; }
+
+  /// Return the number of Valuators that this Sensor has
+  virtual unsigned int getNumberOfValuators() { return 0; }
 
 
   void setInterpolationMode(InterpolationMode mode);
@@ -125,7 +137,7 @@ public:
     osg::Vec3d velocity;
     osg::Vec3d angular_velocity;
     osg::Matrix transformation;
-    bool buttons[EventHandler::NUM_BUTTONS];
+    bool buttons[2];
   };
 
 
@@ -217,13 +229,13 @@ public:
     \param b - Specifices which button we are interested in.
     \return true when button is down.
   */
-  bool getButtonState(EventHandler::Button b) const { return m_current_state.buttons[b]; }
+  bool getButtonState(osgSensor::SensorEventHandler::Button b) const { return m_current_state.buttons[b-1]; }
 
   /// Add a callback object to the list of registrated event handlers
-  void registerEventHandler(EventHandler *bev);
+  //void registerEventHandler(EventHandler *bev);
 
   /// Remove a callback object from the list of registrated event handlers
-  void unRegisterEventHandler(EventHandler *bev);
+  //void unRegisterEventHandler(EventHandler *bev);
 
   /// Store a force effect so its not automatically deallocated
   void registerForceEffect(ForceEffect *fe); 
@@ -394,6 +406,9 @@ protected:
   void setCutoff(double c, bool recalc=false) { m_cutoff = c; if (recalc) recalculateFilter(); }
   void setFilterWindowSize(unsigned int size, bool recalc=false) { m_filter_window_size = size; if (recalc)  recalculateFilter(); }
 
+  void setTime(float time) { m_time = time; }
+  float getTime() const { return m_time;} 
+
 private:
   /// Each shape with a registrated callback is stored in a table. Translate from shape_id to pointer to Shape, 
   Shape *findShapeID(HLuint shape_id);
@@ -442,8 +457,6 @@ private:
   HHD m_hHDHandle; // Handle
   HHLRC m_hHLRContext; // Context
   
-  bool m_initialized;
-
   unsigned int m_width, m_height;
 
   static bool m_scheduler_started;
@@ -460,8 +473,8 @@ private:
   osg::Vec3 m_position_scale;
   osg::Vec3 m_position_offset;
   
-  typedef std::map<EventHandler *, osg::ref_ptr<EventHandler> > EventHandlerMap;
-  EventHandlerMap m_event_handlers;
+//  typedef std::map<EventHandler *, osg::ref_ptr<EventHandler> > EventHandlerMap;
+ // EventHandlerMap m_event_handlers;
 
   std::ofstream m_log_stream;
   InterpolationMode m_interpolation_mode;
@@ -515,6 +528,8 @@ private:
   double m_max_force;
   DeviceModel m_device_model;
   WorkspaceModel m_workspace_model;
+
+  float m_time;
 };
 
 

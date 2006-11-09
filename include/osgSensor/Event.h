@@ -26,7 +26,12 @@
 #include <OpenThreads/Condition>
 
 
-
+/// Class that implements event notification. One or more threads can signal a waiting event.
+/*!
+  This class implements a feature available in Win32API. EventNotification.
+  It can hold one thread waiting for a resource, one or more other threads can signal and release this event.
+  A timeout can specify the amount of time that a thread should wait for this event to be signalled.
+*/
 namespace osgSensor {
 
 class OSGSENSOR_EXPORT Event
@@ -49,15 +54,16 @@ private:
   int m_count;
 
 public:
-	Event();
+	
+  /// Default constructor
+  Event();
 
+  /// Destructor 
 	virtual ~Event();
 
 	/**
-	 * Once signaled, the Event class must be "reset" before responding
-	 * to a new signal.
+	 * When an Event has been signaled, it has to be reset before it can respond to a new signal.
 	 * 
-	 * @see #signal
 	 */
 	void reset(void);
 
@@ -70,12 +76,10 @@ public:
 	 * Wait either for the event to be signaled by another thread or
 	 * for the specified timeout duration.
 	 * 
-	 * @see #signal
-	 * @return true if signaled, false if timed out.
+	 * @return true if it has been signaled, fase if it didnt get a signal before timeout.
 	 * @param timer timeout in milliseconds to wait for a signal.
 	 */
-	bool wait(unsigned long timeout);
-	bool wait(void);
+	bool wait(unsigned long timeout=INFINITE);
 
 private:
 

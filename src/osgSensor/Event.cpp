@@ -46,11 +46,6 @@ void Event::reset(void)
   m_signaled = false;  
 }
 
-bool Event::wait(void)
-{
-  return wait(TIMEOUT_INFINITE);
-}
-
 bool Event::wait(unsigned long timeout)
 {
   OpenThreads::ScopedLock<OpenThreads::Mutex> lock(m_mutex);

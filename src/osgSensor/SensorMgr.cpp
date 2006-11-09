@@ -29,7 +29,7 @@ SensorMgr::SensorMgr() : m_shutdown(false)
   init();
 }
 
-bool SensorMgr::init()
+bool SensorMgr::init(float time)
 {
   return true;
 }
@@ -42,24 +42,23 @@ SensorMgr * SensorMgr::instance()
 }
 
 // iterate over all sensors and call update on them
-void SensorMgr::update()
+void SensorMgr::update(float time)
 {
   SensorMap::iterator it = m_sensors.begin();
   for(;it != m_sensors.end(); it++) {
-    it->second->update();
+    it->second->execUpdate(time);
   }
 }
 
 // shutdown all registrated sensors
-void SensorMgr::shutdown()
+void SensorMgr::shutdown(float time)
 {
   m_shutdown = true;
 
   SensorMap::iterator it = m_sensors.begin();
   for(;it != m_sensors.end(); it++) {
     Sensor *sensor =  it->second.get(); 
-    sensor->getNumberOfSensors();
-    sensor->shutdown();
+    sensor->execShutdown(time);
   }
 
   m_sensors.clear();

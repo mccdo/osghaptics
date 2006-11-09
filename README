@@ -84,6 +84,12 @@ Shift+F2 - Decrease spring stiffness
 
 Usage: forceoperator_demo forceoperator_scene.osg
 
+sensorEventHandler_demo
+-----------------------
+Description: Demonstrates the osgSensor::SensorEventHandler that is used to handle
+events from the Sensor devices, i.e. BUTTON events and UPDATE.
+
+Usage: sensorEventHandler_demo <osg-filename>
 
 Contact:
 Anders Backman, VRlab, andersb@cs.umu.se
