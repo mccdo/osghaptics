@@ -1,0 +1,99 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "osgHaptics", "osgHaptics-vc7.vcproj", "{47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D8A4CF11-F8F4-4138-8E00-000000000000} = {D8A4CF11-F8F4-4138-8E00-000000000000}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "osgSensor", "..\osgSensor\osgSensor-vc7.vcproj", "{D8A4CF11-F8F4-4138-8E00-000000000000}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "osgHapticViewer", "..\examples\osgHapticViewer\osgHapticViewer-vc7.vcproj", "{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D8A4CF11-F8F4-4138-8E00-000000000000} = {D8A4CF11-F8F4-4138-8E00-000000000000}
+		{47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5} = {47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "event_test", "..\event_test\event_test-vc7.vcproj", "{6CF085D4-650F-4D03-B5CF-7A82F5A7AB5F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D8A4CF11-F8F4-4138-8E00-000000000000} = {D8A4CF11-F8F4-4138-8E00-000000000000}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dexterity_game", "..\examples\dexterity_game\dexterity_game-vc7.vcproj", "{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D8A4CF11-F8F4-4138-8E00-000000000000} = {D8A4CF11-F8F4-4138-8E00-000000000000}
+		{47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5} = {47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "material_demo", "..\examples\material_demo\material_demo-vc7.vcproj", "{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D8A4CF11-F8F4-4138-8E00-000000000000} = {D8A4CF11-F8F4-4138-8E00-000000000000}
+		{47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5} = {47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "forceoperator_demo", "..\examples\forceoperator_demo\forceoperator_demo-vc7.vcproj", "{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D8A4CF11-F8F4-4138-8E00-000000000000} = {D8A4CF11-F8F4-4138-8E00-000000000000}
+		{47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5} = {47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pick_example_demo", "..\examples\pick_example\pick_example-vc7.vcproj", "{A65D4C9A-D4EE-4BE9-A856-78A6BA0C5600}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D8A4CF11-F8F4-4138-8E00-000000000000} = {D8A4CF11-F8F4-4138-8E00-000000000000}
+		{47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5} = {47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sensorEventHandler_demo", "..\examples\sensorEventHandler_demo\sensorEventHandler_demo-vc7.vcproj", "{F67ABC1C-D1EF-4AE9-A856-78A6B66F0567}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D8A4CF11-F8F4-4138-8E00-000000000000} = {D8A4CF11-F8F4-4138-8E00-000000000000}
+		{47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5} = {47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5}.Debug.ActiveCfg = Debug|Win32
+		{47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5}.Debug.Build.0 = Debug|Win32
+		{47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5}.Release.ActiveCfg = Release|Win32
+		{47ABE315-2B7E-4138-9E90-AAEDEDFD7AD5}.Release.Build.0 = Release|Win32
+		{D8A4CF11-F8F4-4138-8E00-000000000000}.Debug.ActiveCfg = Debug|Win32
+		{D8A4CF11-F8F4-4138-8E00-000000000000}.Debug.Build.0 = Debug|Win32
+		{D8A4CF11-F8F4-4138-8E00-000000000000}.Release.ActiveCfg = Release|Win32
+		{D8A4CF11-F8F4-4138-8E00-000000000000}.Release.Build.0 = Release|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Debug.ActiveCfg = Debug|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Debug.Build.0 = Debug|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Release.ActiveCfg = Release|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Release.Build.0 = Release|Win32
+		{6CF085D4-650F-4D03-B5CF-7A82F5A7AB5F}.Debug.ActiveCfg = Debug|Win32
+		{6CF085D4-650F-4D03-B5CF-7A82F5A7AB5F}.Debug.Build.0 = Debug|Win32
+		{6CF085D4-650F-4D03-B5CF-7A82F5A7AB5F}.Release.ActiveCfg = Release|Win32
+		{6CF085D4-650F-4D03-B5CF-7A82F5A7AB5F}.Release.Build.0 = Release|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Debug.ActiveCfg = Debug|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Debug.Build.0 = Debug|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Release.ActiveCfg = Release|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Release.Build.0 = Release|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Debug.ActiveCfg = Debug|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Debug.Build.0 = Debug|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Release.ActiveCfg = Release|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Release.Build.0 = Release|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Debug.ActiveCfg = Debug|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Debug.Build.0 = Debug|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Release.ActiveCfg = Release|Win32
+		{F65D4C9A-DAEE-4AE9-A856-78A6B66F0567}.Release.Build.0 = Release|Win32
+		{A65D4C9A-D4EE-4BE9-A856-78A6BA0C5600}.Debug.ActiveCfg = Debug|Win32
+		{A65D4C9A-D4EE-4BE9-A856-78A6BA0C5600}.Debug.Build.0 = Debug|Win32
+		{A65D4C9A-D4EE-4BE9-A856-78A6BA0C5600}.Release.ActiveCfg = Release|Win32
+		{A65D4C9A-D4EE-4BE9-A856-78A6BA0C5600}.Release.Build.0 = Release|Win32
+		{F67ABC1C-D1EF-4AE9-A856-78A6B66F0567}.Debug.ActiveCfg = Debug|Win32
+		{F67ABC1C-D1EF-4AE9-A856-78A6B66F0567}.Debug.Build.0 = Debug|Win32
+		{F67ABC1C-D1EF-4AE9-A856-78A6B66F0567}.Release.ActiveCfg = Release|Win32
+		{F67ABC1C-D1EF-4AE9-A856-78A6B66F0567}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

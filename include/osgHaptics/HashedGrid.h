@@ -201,7 +201,7 @@ class HashedGrid : public osg::Referenced
       const  int & y, 
       const  int & z) const
     {
-      const l= m_hash_size*m_hash_size*m_hash_size;
+      const unsigned int l= m_hash_size*m_hash_size*m_hash_size;
       const unsigned long  h1 = 0x8dba6b343; //Large primes
       const unsigned long h2 = 0xd8163841;
       const unsigned long h3 = 0xcb1ab31f;

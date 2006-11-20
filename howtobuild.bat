@@ -4,6 +4,13 @@
 :: This BAT-file is an example of that
 ::
 ::
+:: Currently there are project files for VC6 (.dsw/.dsp), Visual Studio .NET2003 (VC7) (*-vc7.vcproj/*-vc7.sln)
+:: and finally for VisualStudio 2005 (VC8).
+:: The latter is what is going to be supported in the future. We are dropping the older versions
+:: one by one. So some things might not go into the older project files.
+::
+::
+
 
 :: call the vcvars32.bat that comes with VisualStudio
 call "c:\program files\Microsoft Visual Studio .NET 2003\Vc7\bin\vcvars32.bat"

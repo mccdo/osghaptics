@@ -1,4 +1,7 @@
 NEWS
+* 061119: VisualStudio 8 is now default for the project files.
+  Older versions is available but will not be updated from now on.
+
 * 061106: Removed the EventHandler class and replaced with a more general SensorEventHandler
   This will affect the code using the HapticDevice. Have a look into the pick_example_demo (pick_scene.cpp)
   for an example of how to use the new SensorEventHandler.

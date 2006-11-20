@@ -1,3 +1,5 @@
+..\bin\osghapticviewer --stiffness 1.0 --static-friction 0.7 --dynamic-friction 0.3 cow.osg
+
 ..\bin\dexterity_game room.ac
 
 pause
