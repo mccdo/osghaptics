@@ -276,7 +276,7 @@ namespace osgSensor {
     ValuatorVector m_valuatorValues;
 
     // store the activationmask as bits, make sure there are plenty of room
-    std::bitset<LAST_EVENT_TYPE*3> m_activationMask;
+    std::bitset<LAST_EVENT_TYPE*10> m_activationMask;
 
     Sensor *m_sensor;
   };
