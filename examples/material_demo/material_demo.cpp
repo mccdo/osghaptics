@@ -161,9 +161,11 @@ int main( int argc, char **argv )
   }
 
   // optimize the scene graph, remove redundant nodes and state etc.
-  osgUtil::Optimizer optimizer;
-  optimizer.optimize(loadedModel.get());
-
+	// Lets not run the optimizer right now because due to a bug it
+	// removes the static nodes even if they contain a description attached to it.
+	// We need those to get the haptic material data.
+  //osgUtil::Optimizer optimizer;
+  //optimizer.optimize(loadedModel.get());
 
   // any option left unread are converted into errors to write out later.
   arguments.reportRemainingOptionsAsUnrecognized();
