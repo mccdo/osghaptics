@@ -28,56 +28,55 @@
 
 
 
-  namespace osgHaptics {
+namespace osgHaptics {
   
 
-/// Class to render a geometry as pure opengl triangles or count number of triangles
-class RenderTriangleOperatorBase
-{
+	/// Class to render a geometry as pure opengl triangles or count number of triangles
+	class RenderTriangleOperatorBase {
 
-public:
+		public:
 
-  /// Constructor
-  RenderTriangleOperatorBase(bool do_render=true) : m_num_vertices(0), m_do_render(do_render) { }
-  void setEnableRender(bool flag) { m_do_render = flag; }
-  bool getEnableRender() const { return m_do_render; }
+			/// Constructor
+			RenderTriangleOperatorBase(bool do_render=true) : m_num_vertices(0), m_do_render(do_render) { }
+			void setEnableRender(bool flag) { m_do_render = flag; }
+			bool getEnableRender() const { return m_do_render; }
 
-  void operator () (const osg::Vec3& v1,const osg::Vec3& v2,const osg::Vec3& v3, bool);
+			void operator () (const osg::Vec3& v1,const osg::Vec3& v2,const osg::Vec3& v3, bool);
 
-protected:
+		protected:
 
-  /// Returns the number of triangles processed
-  unsigned int getNumberOfVertices() { return m_num_vertices; }
+			/// Returns the number of triangles processed
+			unsigned int getNumberOfVertices() { return m_num_vertices; }
 
-  /// Resets the number of triangles back to zero
-  void reset() { m_num_vertices = 0; }
+			/// Resets the number of triangles back to zero
+			void reset() { m_num_vertices = 0; }
 
-private:
-  unsigned int m_num_vertices;
-  bool m_do_render;
-};
+		private:
+			unsigned int m_num_vertices;
+			bool m_do_render;
+	};
 
-//
-inline void RenderTriangleOperatorBase::operator () (const osg::Vec3& v1, 
-                                                     const osg::Vec3& v2,
-                                                     const osg::Vec3& v3, bool)
-{
-  if (!m_do_render)
-    return;
+	//
+	inline void RenderTriangleOperatorBase::operator () (const osg::Vec3& v1, 
+																											 const osg::Vec3& v2,
+																											 const osg::Vec3& v3, bool)
+	{
+		if (!m_do_render)
+			return;
 
-  if (v1==v2 || v2==v3 || v1==v3) return;
+		if (v1==v2 || v2==v3 || v1==v3) return;
 
-  glBegin(GL_TRIANGLES);
-  glVertex3fv(v1.ptr());
-  glVertex3fv(v2.ptr());
-  glVertex3fv(v3.ptr());
-  glEnd();
-  m_num_vertices +=3;
-}
+		glBegin(GL_TRIANGLES);
+		glVertex3fv(v1.ptr());
+		glVertex3fv(v2.ptr());
+		glVertex3fv(v3.ptr());
+		glEnd();
+		m_num_vertices +=3;
+	}
 
 
-/// TriangleExtractOperator is the method inherit to create a operator that will be executed per triangle.
-typedef osg::TriangleFunctor<RenderTriangleOperatorBase> RenderTriangleOperator;
+	/// TriangleExtractOperator is the method inherit to create a operator that will be executed per triangle.
+	typedef osg::TriangleFunctor<RenderTriangleOperatorBase> RenderTriangleOperator;
 
 } // namespace osgHaptics
 

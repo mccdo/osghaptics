@@ -32,10 +32,13 @@ HapticRenderPrepareVisitor::HapticRenderPrepareVisitor(HapticDevice *device, Tra
     throw std::runtime_error("HapticRenderPrepareVisitor::HapticRenderPrepareVisitor(): Device pointer is NULL!");
 }
 
+//--by SophiaSoo/CUHK: for two arms, NEW FUNCTION
 void HapticRenderPrepareVisitor::apply(osg::Geode& node)
 {
-  // iterate over all drawables.
+  //--by SophiaSoo/CUHK: for two arms
+  hdMakeCurrentDevice(m_device->getHandle());
 
+  // iterate over all drawables.
   for (unsigned int i=0; i < node.getNumDrawables(); i++)
   {
     osg::Drawable *drawable = node.getDrawable(i);
@@ -50,19 +53,34 @@ void HapticRenderPrepareVisitor::apply(osg::Geode& node)
       ss->setAttributeAndModes(shape, osg::StateAttribute::ON);
       if (!m_shape.valid())
       {
-        m_shape = new ShapeComposite(m_device.get());
+         //--by SophiaSoo/CUHK: for two arms
+         //m_shape = new ShapeComposite(m_device.get());
+
+         //--by SophiaSoo/CUHK: for two arms
+         m_shape = new ShapeComposite();
       }
       m_shape->addChild(shape);
     }
     else {
 
+      //--by SophiaSoo/CUHK: for two arms, add child to shape
+			osgHaptics::Shape *shape = static_cast<osgHaptics::Shape*> (sa);
+			shape->addDevice(m_device.get());
+      if (!m_shape.valid())
+         m_shape = new ShapeComposite();
+
+			m_shape->addChild(shape);
+
+	  /*--by SophiaSoo/CUHK: for two arms	
       osg::notify(osg::WARN) << std::endl << "Drawables are instanced, which means that problem will occur" << std::endl;
       osg::notify(osg::WARN) << "Each Drawable can have only one haptic Shape attached to it." << std::endl;
       osg::notify(osg::WARN) << "and we cant draw to the same haptic shape multiple times. This means that only " << std::endl;
       osg::notify(osg::WARN) << "the first occurence of the drawable will been drawn haptically. " << std::endl;
       osg::notify(osg::WARN) << "Consider regenerating the scene and remove instanced drawables making each one unique." << std::endl << std::endl;
+	  */
     }
 
     // collect all the shapes into a ShapeComposite
   }
 }
+

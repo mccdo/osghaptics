@@ -144,7 +144,11 @@ public:
   void beginFrame();
   void endFrame();
 
-  void makeCurrent();
+	/// Make this HighLevel context current (so that any hl* call refers to this device context)
+	void makeCurrent();
+
+	/// Make this device hardware current (So any call to hd* refers to this device)
+	void makeCurrentDevice();
 
   void setProxyDamping(double damping) { m_proxy_damping = damping; }
   void setProxyStiffness(double stiffness) { m_proxy_stiffness = stiffness; }
@@ -213,7 +217,11 @@ public:
     Should be done as the first thing after the constructor to make sure we have
     a valid haptic context.
   */
-  void init(HDstring pConfigName=HD_DEFAULT_DEVICE);
+  //void init(HDstring pConfigName=HD_DEFAULT_DEVICE);
+
+  //--by SophiaSoo/CUHK: for two arms
+  void initDevice(HDstring pConfigName=HD_DEFAULT_DEVICE);
+  void createContext();
 
   void setRenderForce(const osg::Vec3& force);
   void getRenderForce(RenderForce &rforce ) const;
@@ -337,6 +345,9 @@ public:
   void setTouchWorkspaceMatrix(const osg::Matrixd& m) { m_touch_workspace_matrix = m; m_touch_workspace_matrix_inverse = m.inverse(m); }
   const osg::Matrixd& getTouchWorkspaceMatrix() const { return m_touch_workspace_matrix; }
 
+  //--by SophiaSoo/CUHK: for two arms
+  HHD getHandle() const { return m_hHDHandle; }
+
 protected:
 
   WorkspaceMode m_workspace_mode;
@@ -360,7 +371,8 @@ protected:
   static void startScheduler();
   static bool isSchedulerStarted() { return m_scheduler_started; }
 
-  HHD getHandle() const { return m_hHDHandle; }
+  //--by SophiaSoo/CUHK: for two arms, change to Public section
+  //HHD getHandle() const { return m_hHDHandle; }
   HHLRC getContext() const { return m_hHLRContext; }
 
 
@@ -369,8 +381,8 @@ protected:
 
   ~HapticDevice();
 
-  ///
-  void setSchedulerStatus(bool running);
+  /// Removed, it starts automatically when a context is created
+  //void setSchedulerStatus(bool running);
 
   ///
   void initCallbacks();
@@ -530,6 +542,10 @@ private:
   WorkspaceModel m_workspace_model;
 
   float m_time;
+
+  //--by SophiaSoo/CUHK: for two arms
+  bool m_initDevice;
+
 };
 
 

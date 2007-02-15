@@ -67,7 +67,8 @@ void HapticRootNode::traverse(osg::NodeVisitor &nv)
   const osg::FrameStamp *fs = nv.getFrameStamp();
   int frame=0;
   if (nv.getVisitorType() == osg::NodeVisitor::CULL_VISITOR && fs && (frame = nv.getFrameStamp()->getFrameNumber()) == m_last_frame) {
-    return;
+    //--by SophiaSoo/CUHK: for two arms
+    //return;
   }
 
   m_last_frame = frame;

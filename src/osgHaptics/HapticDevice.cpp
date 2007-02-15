@@ -54,18 +54,16 @@ bool HapticDevice::m_scheduler_started = false;
 HapticDevice::HapticDevice(HDstring pConfigName) : Sensor(), m_hHDHandle(HD_INVALID_HANDLE), m_hHLRContext(0), m_cursor_scale(10),
  m_width(0), m_height(0), m_proxy_damping(0), m_proxy_stiffness(0.3), m_shutting_down(false), 
 m_valid_world_to_workspace_matrix(false), m_enable_shape_render(true), m_max_force(0), m_device_model(NONE_DEVICE), m_workspace_model(VIEW_WORKSPACE),
-m_workspace_mode(VIEW_MODE)
+m_workspace_mode(VIEW_MODE), m_initDevice(false)
 
 
 {
   m_start_tick = osg::Timer::instance()->tick();
-  // Default EventHandler
-  //registerEventHandler(new EventHandler);
 
+ 
   //m_log_stream.open("haptics.log", std::ios_base::trunc);
 
-  //init(pConfigName);
-
+  initDevice(pConfigName);
 }
 
 
@@ -144,7 +142,9 @@ void HapticDevice::updateWorkspace(unsigned int width, unsigned int height, bool
   m_width = width;
   m_height = height;
 
-//  makeCurrent();
+
+  //--by SophiaSoo/CUHK: for two arms
+  makeCurrent();
 
   GLdouble modelview[16];
   GLdouble projection[16];
@@ -188,8 +188,7 @@ void HapticDevice::updateWorkspace(unsigned int width, unsigned int height, bool
     setWorldToWorkSpaceMatrix(m_modelview_matrix*vt*tw);
   }
 
-  //std::cerr << "VT: " << vt << std::endl;
-  //std::cerr << "WT: " << tw << std::endl;
+
 
 
   // Compute cursor scale.
@@ -208,8 +207,6 @@ HapticDevice::~HapticDevice()
 {
   shutdown(0.0f);
 }
-
-
 
 
 void HapticDevice::registerForceEffect(ForceEffect *fe)
@@ -234,6 +231,9 @@ bool HapticDevice::unRegisterForceEffect(ForceEffect *fe)
 
 void HapticDevice::updateForceEffects()
 {
+    //--by SophiaSoo/CUHK: for two arms
+	makeCurrent();
+
 	ForceEffectMap::iterator it = m_force_effects.begin();
 	for (;it != m_force_effects.end(); it++) {
 	  if (it->second->getStarted())
@@ -241,12 +241,12 @@ void HapticDevice::updateForceEffects()
 	}
 }
 
-
+/* Anders Backman 070215: Not used anymore, Use initDevice()
 /*******************************************************************************
  Initialize the HDAPI. This involves initing a device configuration, enabling
  forces, and scheduling a haptic thread callback for servicing the device.
 *******************************************************************************/
-void HapticDevice::init(HDstring pConfigName)
+/*void HapticDevice::init(HDstring pConfigName)
 {
   if (m_initialized) {
     osg::notify(osg::WARN) << "HapticDevice::init(): Device already initialized "<< std::endl;
@@ -300,7 +300,89 @@ void HapticDevice::init(HDstring pConfigName)
   setEnableForceOutput(true);
   setEnableForceClamping(true);
 
-  setSchedulerStatus(true);
+  //--disabled by SophiaSoo/CUHK: for two arms
+  //setSchedulerStatus(true);
+
+  initCallbacks();
+
+  // Check what the max force is
+  hdGetDoublev(HD_NOMINAL_MAX_FORCE, &m_max_force);
+
+  m_initialized = true;
+}
+*/
+
+//--by SophiaSoo/CUHK: for two arms, NEW FUNCTION
+void HapticDevice::initDevice(HDstring pConfigName)
+{
+	if (m_initDevice) {
+		osg::notify(osg::WARN) << "HapticDevice::initDevice(): initDevice already called."<< std::endl;
+		return;
+	}
+
+	HDErrorInfo error;
+
+  m_hHDHandle = hdInitDevice(pConfigName);
+  if (HD_DEVICE_ERROR(error = hdGetError()))
+  {
+    std::ostrstream str;
+    str << "HapticDevice::initDevice(\"" << pConfigName << "\") (" << error.errorCode << "): " << getHDErrorCodeString(error.errorCode) << std::ends;
+    osg::notify(osg::WARN) << str.str() << std::endl;
+    throw std::runtime_error(str.str());
+  }
+
+  m_initDevice = true;
+
+}
+
+//--by SophiaSoo/CUHK: for two arms, NEW FUNCTION
+void HapticDevice::createContext()
+{
+  if (!m_initDevice) {
+    osg::notify(osg::WARN) << "HapticDevice::createContext(): call initDevice prior to createContext()"<< std::endl;
+    return;
+  }
+
+  if (m_initialized) {
+    osg::notify(osg::WARN) << "HapticDevice::createContext(): Device already initialized "<< std::endl;
+    return;
+  }
+
+  setInterpolationMode(LINEAR_INTERPOLATION);
+
+  setFilterType(HAMMING, false);
+  setCutoff(0.3, false);
+  setFilterWindowSize(10, false);
+  recalculateFilter();
+
+  m_position_scale.set(1,1,1);
+
+  m_hHLRContext = hlCreateContext(m_hHDHandle);
+  makeCurrent();
+
+  std::string model = hdGetString(HD_DEVICE_MODEL_TYPE);
+  std::string serial = hdGetString(HD_DEVICE_SERIAL_NUMBER);
+
+  osg::notify(osg::INFO) << "Found device model: " << model << "/ serial number: " << serial
+     << ".\n\n" << std::endl;    
+
+  if (model == "PHANTOM Omni") 
+    m_device_model = OMNI_DEVICE;
+
+  // Enable optimization of the viewing parameters when rendering
+  // geometry for OpenHaptics
+  hlEnable(HL_HAPTIC_CAMERA_VIEW);
+
+  // generate id's for the three shapes
+  //sphereShapeId = hlGenShapes(1);
+
+  hlTouchableFace(HL_FRONT);
+
+  setEnableForceOutput(true);
+  setEnableForceClamping(true);
+
+  //--disabled by SophiaSoo/CUHK: for two arms
+  //setSchedulerStatus(true);
 
   initCallbacks();
 
@@ -310,11 +392,13 @@ void HapticDevice::init(HDstring pConfigName)
   m_initialized = true;
 }
 
-
 HDCallbackCode HDCALLBACK HapticDevice::forceEffectCB( void *data ) {
   HapticDevice *device = static_cast< HapticDevice * >( data );
     
-    // get current values from HD API 
+  //--by SophiaSoo/CUHK: for two arms
+  hdMakeCurrentDevice(device->getHandle());
+
+  // get current values from HD API 
   HLdouble m[16];
   hdGetDoublev( HD_CURRENT_TRANSFORM, m );
   osg::Matrix matrix(
@@ -392,6 +476,9 @@ void HapticDevice::setInterpolationMode(InterpolationMode mode)
 }
 
 
+
+
+
 osg::Vec3 HapticDevice::RenderForce::evaluate(const RenderForce &previous_force, const double& time, bool smooth) const
 {
   osg::Vec3 interpolated_force;
@@ -449,6 +536,9 @@ void HapticDevice::getRenderForce(RenderForce& rforce) const
 
 void HapticDevice::initCallbacks()
 {
+  //--by SophiaSoo/CUHK: for two arms
+  makeCurrent();
+
   HDCallbackCode handle =
     hdScheduleAsynchronous( HapticDevice::forceEffectCB,
                             this,
@@ -517,6 +607,9 @@ void HLCALLBACK HapticDevice::calibrationCallback(HLenum event,
 
   HapticDevice *device = static_cast< HapticDevice * >( userdata );
 
+  //--by SophiaSoo/CUHK: for two arms
+  device->makeCurrent();
+
   osgSensor::Sensor::EventHandlerMap event_handlers = device->getEventHandlers();
   osgSensor::Sensor::EventHandlerMap::iterator it;
 
@@ -554,6 +647,9 @@ void HLCALLBACK HapticDevice::buttonCallback( HLenum event,
   using namespace osgSensor;
 
   HapticDevice *device = static_cast< HapticDevice * >( data );
+
+  //--by SophiaSoo/CUHK: for two arms
+  device->makeCurrent();
 
   osgSensor::Sensor::EventHandlerMap event_handlers = device->getEventHandlers();
   osgSensor::Sensor::EventHandlerMap::iterator it;
@@ -614,6 +710,9 @@ void HapticDevice::update(float time)
   if (!m_initialized)
     return;
 
+  //--by SophiaSoo/CUHK: for two arms
+  hdMakeCurrentDevice(getHandle());      
+
   hdScheduleSynchronous( HapticDevice::DeviceDataCB,
                          &m_current_state,
                          HD_DEFAULT_SCHEDULER_PRIORITY ); 
@@ -624,6 +723,9 @@ void HapticDevice::update(float time)
     osg::notify(osg::WARN) << getHLErrorString( error )
       << std::endl;
   }
+
+  //--by SophiaSoo/CUHK: for two arms
+  makeCurrent();
 
   osg::Matrix m;
   hlGetDoublev(HL_PROXY_TRANSFORM, m_current_state.transformation.ptr());
@@ -643,6 +745,11 @@ void HapticDevice::shutdown(float time)
   if (!m_initialized)
     return;
 
+  //--by SophiaSoo/CUHK: for two arms, unschedule process should do before m_hd_handles.clear 
+  for( HDHandlerVector::iterator it = m_hd_handles.begin(); it != m_hd_handles.end();  it++ ) {
+    hdUnschedule(*it);
+  }
+
   m_shutting_down = true;
   
   m_scheduled_force_effect_callbacks.clear();
@@ -660,9 +767,10 @@ void HapticDevice::shutdown(float time)
     hlDeleteContext(m_hHLRContext);
   }
 
-  for( HDHandlerVector::iterator it = m_hd_handles.begin(); it != m_hd_handles.end();  it++ ) {
-    hdUnschedule(*it);
-  }
+  //--comment out by SophiaSoo/CUHK: for two arms, unschedule process should do before m_hd_handles.clear 
+  //for( HDHandlerVector::iterator it = m_hd_handles.begin(); it != m_hd_handles.end();  it++ ) {
+  //   hdUnschedule(*it);
+  //}
 
   // free up the haptic device
   if (m_hHDHandle != HD_INVALID_HANDLE)
@@ -676,6 +784,7 @@ void HapticDevice::shutdown(float time)
   return;
 
 }
+
 
 void HapticDevice::fitWorkspace(const osg::Vec3& min, const osg::Vec3& max)
 {
@@ -758,6 +867,12 @@ HDCallbackCode HDCALLBACK  HapticDevice::endFrameCB( void *data)
 void HapticDevice::makeCurrent()
 {
   hlMakeCurrent(m_hHLRContext);
+}
+
+
+void HapticDevice::makeCurrentDevice()
+{
+	hdMakeCurrentDevice(getHandle());
 }
 
 void HapticDevice::beginFrame()
@@ -909,7 +1024,7 @@ void HapticDevice::getMaxWorkspace(osg::Vec3& min, osg::Vec3& max)
 
 }
 
-void HapticDevice::setSchedulerStatus(bool running)
+/*void HapticDevice::setSchedulerStatus(bool running)
 {
   if (running && !m_scheduler_started ) {
     hdStartScheduler();
@@ -919,9 +1034,12 @@ void HapticDevice::setSchedulerStatus(bool running)
   
   m_scheduler_started = running;
 }
-
+*/
 void HapticDevice::scheduleForceEffectCallback(ForceEffect *fe)
 {
+  //--by SophiaSoo/CUHK: for two arms
+  makeCurrent();
+
   hlBeginFrame();
   hlCallback(HL_EFFECT_COMPUTE_FORCE, (HLcallbackProc)HapticDevice::computeForceCB, (void *)fe);
   hlCallback(HL_EFFECT_START,(HLcallbackProc) HapticDevice::startEffectCB,(void*)fe);
@@ -994,6 +1112,9 @@ void HapticDevice::contactCallback( HLenum event,
   assert(data);
 
   HapticDevice *device = static_cast<HapticDevice *>(data);
+
+  //--by SophiaSoo/CUHK: for two arms
+  device->makeCurrent();
   
   Shape *shape = device->findShapeID(object);
 
@@ -1039,6 +1160,9 @@ void HapticDevice::separationCallback( HLenum event,
 
   HapticDevice *device = static_cast<HapticDevice *>(data);
 
+  //--by SophiaSoo/CUHK: for two arms
+  device->makeCurrent();
+
   Shape *shape = device->findShapeID(object);
 
   if (!shape) {
@@ -1072,6 +1196,9 @@ void HapticDevice::motionCallback( HLenum event,
   assert(data);
 
   HapticDevice *device = static_cast<HapticDevice *>(data);
+
+  //--by SophiaSoo/CUHK: for two arms
+  device->makeCurrent();
 
   Shape *shape = device->findShapeID(object);
 
@@ -1112,7 +1239,8 @@ void HapticDevice::unRegisterContactEventHandler(ContactEventHandler *cb)
   if (m_shutting_down)
     return;
 
-
+  //--by SophiaSoo/CUHK: for two arms
+  makeCurrent();
 
   // remove from callback map AND shape_id_map
   ContactEventHandlerMap::iterator it = m_contact_events.begin();
@@ -1147,6 +1275,9 @@ bool HapticDevice::unRegisterContactEventHandler(Shape *shape)
   // mess up the iterators for the map holding the contact handlers
   if (m_shutting_down)
     return true;
+
+  //--by SophiaSoo/CUHK: for two arms
+  makeCurrent();
 
   ShapeComposite *sc = dynamic_cast<ShapeComposite *> (shape);
   if (sc) {
@@ -1204,6 +1335,9 @@ Shape *HapticDevice::findShapeID(HLuint shape_id)
 
 void HapticDevice::registerContactEventHandler(Shape *shape, ContactEventHandler *cb, ContactState::ContactEvent event_type)
 {
+  //--by SophiaSoo/CUHK: for two arms
+  makeCurrent();
+
   assert(cb);
   assert(shape);
 
@@ -1281,17 +1415,8 @@ void HapticDevice::registerContactEventHandler(Shape *shape, ContactEventHandler
   }
 }
 
-/*void HapticDevice::registerEventHandler(EventHandler *bev)
-{
-  m_event_handlers[bev] = bev;
-}
 
-/// Remove a callback object from the list of registrated button handlers
-void HapticDevice::unRegisterEventHandler(EventHandler *bev)
-{
-  m_event_handlers[bev] = 0L;
-}
-*/
+
 
 #if 0
 bool HapticDevice::calculateBartlettHanningWindowCoefficients(unsigned n, std::vector<float>& coefficients)
@@ -1468,7 +1593,10 @@ T HapticDevice::filter( std::vector<T>& in_data,
 
 void HapticDevice::setProxyPosition(const osg::Vec3d& pos)
 {
-	osg::Matrix m;
+  //--by SophiaSoo/CUHK: for two arms
+  makeCurrent();
+
+  osg::Matrix m;
   getWorldToWorkSpaceMatrix(m);
   //m.invert(m);
   osg::Vec3d ws_pos = m.preMult(pos);

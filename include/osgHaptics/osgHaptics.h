@@ -44,6 +44,9 @@ public:
         const Producer::RenderSurface *rs = camera.getRenderSurface();
         m_device->updateWorkspace(rs->getWindowWidth(), rs->getWindowHeight());
 
+	    //--by SophiaSoo/CUHK: for two arms
+        m_device->makeCurrentDevice();
+
         m_device->beginFrame();
       }
 

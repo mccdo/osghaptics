@@ -69,11 +69,20 @@ void HapticRenderLeaf::render(osg::RenderInfo& renderInfo,osgUtil::RenderLeaf* p
 
     }
 
-    
+   
     const osgHaptics::Shape *shape = m_renderbin->getShape(renderInfo);      
+
+		//--by SophiaSoo/CUHK: for two arms
+		// Does this shape contain the device currently rendered?
+		if (!shape || !shape->containCurrentDevice()) {
+			return;
+		}
+
+
     bool render_shape=false;
 
     render_shape = !m_renderbin->hasBeenDrawn(renderInfo);
+
   
     // If we have a shape,
     // and the device is reporting, Dont render haptic shape,

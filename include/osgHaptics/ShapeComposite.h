@@ -49,7 +49,7 @@
       ShapeIDMap::iterator begin() { return m_children_id.begin(); }
 
       /// Default constructor
-      ShapeComposite(HapticDevice *device, int enabled=1) : Shape(device) 
+    /*  ShapeComposite(HapticDevice *device, int enabled=1) : Shape(device) 
       { 
         setEnable(enabled ? true : false); 
       }
@@ -58,6 +58,9 @@
       {
         setEnable(false);
       }
+*/
+	  //--by SophiaSoo/CUHK: for two arms, NEW CONSTRUCTOR
+      ShapeComposite(int enabled=1);
 
       bool operator ==(const Shape& shape) const {
         return contains(&shape);
@@ -71,8 +74,6 @@
         return contains(shape_id);
       }
 
-
-
       /// Enable the haptic rendering of this shape
       virtual void setEnable(bool flag);
 
@@ -81,7 +82,7 @@
       Shape(trans,copyop)
       {}
 
-        virtual osg::Object* cloneType() const { return new ShapeComposite(m_device.get(), 0); } 
+			virtual osg::Object* cloneType() const { return new ShapeComposite(0); }//m_device.get(), 0); } 
         virtual osg::Object* clone(const osg::CopyOp& copyop) const { return new ShapeComposite (*this,copyop); } 
         virtual bool isSameKindAs(const osg::Object* obj) const { return dynamic_cast<const ShapeComposite *>(obj)!=NULL; } 
         virtual const char* libraryName() const { return "osgHaptics"; } 
@@ -123,20 +124,7 @@
           m_children_id[shape->getShapeID()] = shape; 
         }
 
-        bool removeChild(Shape *shape) { 
-          ShapeMap::iterator it=m_children.find(shape);
-          if (it != m_children.end()) {
-            m_children.erase(it);
-        
-            ShapeIDMap::iterator idIt = m_children_id.find(shape->getShapeID());
-            if (idIt != m_children_id.end()) {
-              m_children_id.erase(idIt);
-              return true;
-            }
-            return false;
-          }
-          return false;
-        }
+        bool removeChild(Shape *shape);
 
         unsigned int getNumChildren() const { return m_children.size(); }
 

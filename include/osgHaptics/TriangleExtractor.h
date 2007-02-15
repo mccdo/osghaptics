@@ -116,7 +116,7 @@ namespace osgHaptics {
     /*! Begins the triangle extraction on the subgraph node.
     \param node - The subgraph from which the triangles will be extracted.
     */
-    void extract(osg::MatrixTransform& node) { apply(node); }
+    void extract(osg::Transform& node) { apply(node); }
   protected:
 
     virtual void apply(osg::Node&);
@@ -124,7 +124,7 @@ namespace osgHaptics {
     virtual void apply(osg::Billboard& node);
 
     virtual void apply(osg::Group& node);
-    virtual void apply(osg::MatrixTransform& node);
+    virtual void apply(osg::Transform& node);
     virtual void apply(osg::Switch& node);
     virtual void apply(osg::LOD& node);
 

@@ -55,18 +55,43 @@
 
       explicit Shape(HapticDevice *device, const std::string& name);
 
+      //--by SophiaSoo/CUHK: for two arms, New constructor
+      explicit Shape();
+
       /// Enable the haptic rendering of this shape
       virtual void setEnable(bool flag) { m_enabled = flag; }
 
       /// Return if this shape is enabled for haptic rendering
       bool getEnable() const { return m_enabled ? true : false; }
 
-      virtual bool operator ==(HLuint shape_id)  {
-        return shape_id == m_shape_id;
-      }
 
-      HapticDevice *getHapticDevice() { return m_device.get(); }
-      const HapticDevice *getHapticDevice() const { return m_device.get(); }
+	  /// Equality operator
+    virtual bool operator ==(HLuint shape_id)  {
+			int idx = getCurrentDeviceIndex();
+			if (isValidIndex(idx)) {
+				return shape_id == m_shape_ids[idx];	
+			}
+			return false;
+    }
+
+	  /// Return a pointer to the current haptic device
+    HapticDevice *getHapticDevice() {
+			int idx = getCurrentDeviceIndex();
+			if (isValidIndex(idx)) {
+				return m_devices[idx].get();	
+			}
+			return NULL;
+	  }
+
+	  /// Return a pointer to the current haptic device
+    const HapticDevice *getHapticDevice() const { 
+			int idx = getCurrentDeviceIndex();
+			if (isValidIndex(idx)) {
+				return m_devices[idx].get();	
+			}
+			return NULL;
+	  }
+
 
       /// Set the name of the shape
       void setName(const std::string& name) { m_name = name; }
@@ -83,22 +108,31 @@
           m_device(trans.m_device)
           {}
 
-      /// Return the HL shape id of this Shape
-      HLint getShapeID() const { return m_shape_id; }
+
+		/// Return the HL shape id of this Shape
+    HLint getShapeID() const { 
+			int idx = getCurrentDeviceIndex();
+			if (isValidIndex(idx)) {
+				return m_shape_ids[idx];	
+			}
+			return 0;
+	  }
 
       //#define META_StateAttribute(library,name,type) \
 
-        virtual osg::Object* cloneType() const { return new Shape(m_device.get(),0); } 
-        virtual osg::Object* clone(const osg::CopyOp& copyop) const { return new Shape (*this,copyop); } 
-        virtual bool isSameKindAs(const osg::Object* obj) const { return dynamic_cast<const Shape *>(obj)!=NULL; } 
-        virtual const char* libraryName() const { return "osgHaptics"; } 
-        virtual const char* className() const { return "Shape"; } 
-        virtual Type getType() const { return osg::StateAttribute::Type(OSGHAPTICS_SHAPE); }
+      virtual osg::Object* cloneType() const { return new Shape(m_device.get(),0); } 
+      virtual osg::Object* clone(const osg::CopyOp& copyop) const { return new Shape (*this,copyop); } 
+      virtual bool isSameKindAs(const osg::Object* obj) const { return dynamic_cast<const Shape *>(obj)!=NULL; } 
+      virtual const char* libraryName() const { return "osgHaptics"; } 
+      virtual const char* className() const { return "Shape"; } 
+      virtual Type getType() const { return osg::StateAttribute::Type(OSGHAPTICS_SHAPE); }
 
       //META_StateAttribute(osg, Shape,osg::StateAttribute::Type(OSGHAPTICS_SHAPE));
 
       /// Get the StateAttribute type of this Shape
       static osg::StateAttribute::Type getSAType()  { return osg::StateAttribute::Type(OSGHAPTICS_SHAPE); }
+
+//--by SophiaSoo/CUHK: for two arms, need change ?????????
 
       /** Return -1 if *this < *rhs, 0 if *this==*rhs, 1 if *this>*rhs. */
       virtual int compare(const osg::StateAttribute& sa) const
@@ -150,8 +184,24 @@
       */
       osg::Node *getNode() { return m_node.get(); }
 
+	  /// Add a device to the list of devices for this shape
+	  void addDevice(HapticDevice *device);
+
+		/// Return true if the current device is set
+		bool containCurrentDevice() const { return isValidIndex(getCurrentDeviceIndex());	}
+
     protected :
-      virtual ~Shape();
+
+			
+			/// Destructor
+			virtual ~Shape();
+
+
+			/// Return the index for the current device (current in terms of hdGetCurrentDevice)
+			int getCurrentDeviceIndex() const;
+
+			/// Return true if the specified index is a valid one
+			bool isValidIndex(int index) const { 	bool b = (index<0) ? false : true; return b; }
 
       std::string m_name;
       HLuint m_shape_id;
@@ -159,6 +209,16 @@
       mutable osg::observer_ptr<HapticDevice> m_device;
       //osg::observe_ptr<osg::Node> m_node;
       osg::observer_ptr<osg::Node> m_node;
+
+	  ///--by SophiaSoo/CUHK: for two arms
+	  typedef osg::observer_ptr<HapticDevice> Type_ObserverPtr_device;
+
+	  ///--by SophiaSoo/CUHK: for two arms
+	  std::vector<Type_ObserverPtr_device> m_devices;
+
+	  ///--by SophiaSoo/CUHK: for two arms
+	  std::vector<HLuint> m_shape_ids;
+
     };
 
   } // osgHaptics

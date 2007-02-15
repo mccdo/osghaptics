@@ -106,6 +106,9 @@ namespace osgSensor {
 
   EventHandlerMap &getEventHandlers() { return m_eventHandlers; }
 
+	/// Is the device ready to go?
+	bool isInitialized() const { return m_initialized; }
+
   protected:
 
     /// Implement this method so that all event handlers are updated

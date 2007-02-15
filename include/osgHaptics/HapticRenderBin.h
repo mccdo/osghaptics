@@ -28,45 +28,49 @@
 
 
 
-  namespace osgHaptics {
+ namespace osgHaptics {
   
-class OSGHAPTICS_EXPORT HapticRenderBin : public osgUtil::RenderBin {
-public:
+	class OSGHAPTICS_EXPORT HapticRenderBin : public osgUtil::RenderBin {
+	public:
 
-  HapticRenderBin();
+		HapticRenderBin();
 
-  HapticRenderBin(SortMode mode);
+		HapticRenderBin(SortMode mode);
 
-  virtual void drawImplementation(osg::RenderInfo& renderInfo,osgUtil::RenderLeaf*& previous);
+		virtual void drawImplementation(osg::RenderInfo& renderInfo,osgUtil::RenderLeaf*& previous);
 
-  /** Copy constructor using CopyOp to manage deep vs shallow copy.*/
-  HapticRenderBin(const HapticRenderBin& rhs,const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY);
+		/** Copy constructor using CopyOp to manage deep vs shallow copy.*/
+		HapticRenderBin(const HapticRenderBin& rhs,const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY);
 
-  virtual osg::Object* cloneType() const { return new HapticRenderBin(); }
-  virtual osg::Object* clone(const osg::CopyOp& copyop) const { return new HapticRenderBin(*this,copyop); } // note only implements a clone of type.
-  virtual bool isSameKindAs(const osg::Object* obj) const { return dynamic_cast<const HapticRenderBin*>(obj)!=0L; }
-  virtual const char* libraryName() const { return "osgHaptics"; }
-  virtual const char* className() const { return "HapticRenderBin"; }
+		virtual osg::Object* cloneType() const { return new HapticRenderBin(); }
+		virtual osg::Object* clone(const osg::CopyOp& copyop) const { return new HapticRenderBin(*this,copyop); } // note only implements a clone of type.
+		virtual bool isSameKindAs(const osg::Object* obj) const { return dynamic_cast<const HapticRenderBin*>(obj)!=0L; }
+		virtual const char* libraryName() const { return "osgHaptics"; }
+		virtual const char* className() const { return "HapticRenderBin"; }
 
-  bool hasBeenDrawn(osg::RenderInfo& renderInfo);
-  /// It the state has a shape attached, then return it
-  const osgHaptics::Shape *getShape(osg::RenderInfo& renderInfo) const;
+		bool hasBeenDrawn(osg::RenderInfo& renderInfo);
+		/// It the state has a shape attached, then return it
+		const osgHaptics::Shape *getShape(osg::RenderInfo& renderInfo) const;
 
-protected:
+	protected:
 
-  void renderHapticLeaf(osgUtil::RenderLeaf* original, osg::RenderInfo& renderInfo, osgUtil::RenderLeaf *previous); 
+		void renderHapticLeaf(osgUtil::RenderLeaf* original, osg::RenderInfo& renderInfo, osgUtil::RenderLeaf *previous); 
 
 
-private:
-  osg::ref_ptr<HapticRenderLeaf> m_haptic_renderleaf;
-  virtual ~HapticRenderBin();
+	private:
+		osg::ref_ptr<HapticRenderLeaf> m_haptic_renderleaf;
+		virtual ~HapticRenderBin();
 
-  typedef std::map<const osgHaptics::Shape *, const osgHaptics::Shape *> ShapeMap;
-  ShapeMap m_rendered_shapes;
+		typedef std::map<const osgHaptics::Shape *, const osgHaptics::Shape *> ShapeMap;
+		
+		typedef std::map<const osgHaptics::HapticDevice *, ShapeMap *> ShapeDeviceMap;
+		
+		ShapeDeviceMap m_rendered_shapes;
 
-  int m_last_frame;
-};
 
-  } // namespace osgHaptics
+		int m_last_frame;
+	};
+
+ } // namespace osgHaptics
 
 #endif

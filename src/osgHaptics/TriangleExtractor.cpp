@@ -68,7 +68,7 @@ void TriangleExtractor::apply(osg::Group& node)
 }
 
 
-void TriangleExtractor::apply(osg::MatrixTransform& node)
+void TriangleExtractor::apply(osg::Transform& node)
 {
   osg::ref_ptr<osg::RefMatrix> matrix = new osg::RefMatrix;
   node.computeLocalToWorldMatrix(*matrix,this);

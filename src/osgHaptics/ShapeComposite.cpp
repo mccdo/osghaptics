@@ -22,9 +22,33 @@
 
 using namespace osgHaptics;
 
+
+ShapeComposite::ShapeComposite(int enabled) : Shape() 
+{
+	setEnable(enabled ? true : false); 
+}
+
+
 ShapeComposite::~ShapeComposite()
 {
 }
+
+bool ShapeComposite::removeChild(Shape *shape) 
+{ 
+	ShapeMap::iterator it=m_children.find(shape);
+	if (it != m_children.end()) {
+		m_children.erase(it);
+
+		ShapeIDMap::iterator idIt = m_children_id.find(shape->getShapeID());
+		if (idIt != m_children_id.end()) {
+			m_children_id.erase(idIt);
+			return true;
+		}
+		return false;
+	}
+	return false;
+}
+
 
 
 void ShapeComposite::setEnable(bool flag) 

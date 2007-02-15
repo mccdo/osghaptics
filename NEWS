@@ -1,4 +1,25 @@
 NEWS
+
+* Support for two (or more) Phantoms
+  Thanks to the people at R&D Lab of the CUHK Jockey Club Minimally Invasive Surgical Skills Centre, Hong-Kong
+  This required some changes both here and there.
+  For example the HapticDevice::init() method is gone and is replaced by a setup scheme such as:
+  
+  Create new device
+  call initDevice() <--- New method
+  call createContext() <--- New method
+  
+  For dual devices the process is (has to be)
+  
+  Create device1
+  Create device2
+  
+  call initDevice() for device1
+  call createContext() for device1
+  
+  call initDevice() for device2
+  call createContext() for device2
+  
 * 061119: VisualStudio 8 is now default for the project files.
   Older versions is available but will not be updated from now on.
 

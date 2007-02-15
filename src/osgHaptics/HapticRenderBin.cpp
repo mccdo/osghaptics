@@ -61,11 +61,27 @@ bool HapticRenderBin::hasBeenDrawn(osg::RenderInfo& renderInfo)
   if (shape) {
 
     // Its a haptic shape, lets see if it has been rendered before.
-    if (m_rendered_shapes.find(shape) != m_rendered_shapes.end()) {
+		// First get the device this shape is rendered for:
+		const HapticDevice *device = shape->getHapticDevice();
+		if (!device)
+			return false;
+
+		ShapeDeviceMap::iterator sdmit = m_rendered_shapes.find(device);
+		
+		ShapeMap *shape_map = 0L;
+		if (sdmit == m_rendered_shapes.end()) { // Device not found, create a new shape map and add that
+			shape_map = new ShapeMap;
+			m_rendered_shapes[device] = shape_map;
+		}
+		else {
+			shape_map = sdmit->second;
+		}
+
+    if (shape_map->find(shape) != shape_map->end()) {
       return true; // It has been rendered before, dont do it again.
     }
     else {
-      m_rendered_shapes[shape] = shape; // NOw it has been rendered, so add it.
+      (*shape_map)[shape] = shape; // NOw it has been rendered, so add it.
       return false;
     }      
   } 
@@ -142,6 +158,12 @@ void HapticRenderBin::drawImplementation(osg::RenderInfo& renderInfo,osgUtil::Re
 
 HapticRenderBin::~HapticRenderBin()
 {
+	// Remove the allocated ShapeMaps
+	ShapeDeviceMap::iterator it = m_rendered_shapes.begin();
+	for(;it != m_rendered_shapes.end(); it++) {
+		delete it->second;
+	}
+	m_rendered_shapes.clear();
 }
 
 

@@ -23,8 +23,11 @@ void HapticMaterialVisitor::apply(osg::Node& node)
   osg::ref_ptr<osgHaptics::Material> material;
   osg::ref_ptr<osgHaptics::TouchModel> touch;
 
+	unsigned int n = node.getNumDescriptions();
+	osg::notify(osg::WARN) << node.getName() << ": " << n<< std::endl;
+
   // Is there any descriptions attached to this node?
-  unsigned int n = node.getNumDescriptions();
+
   if (!n) {
     traverse(node);
     return;

@@ -193,9 +193,8 @@ int main( int argc, char **argv )
   try {
     // Create a haptic device
     osg::ref_ptr<osgHaptics::HapticDevice> haptic_device = new osgHaptics::HapticDevice();
-    haptic_device->init(); // Initialize it
-    haptic_device->makeCurrent(); // Make this device the current one
-    haptic_device->setEnableForceOutput(true); // Render output forces
+		haptic_device->createContext();			
+		haptic_device->makeCurrent(); // Make this device the current one
 
 
     // Root of the haptic scene
