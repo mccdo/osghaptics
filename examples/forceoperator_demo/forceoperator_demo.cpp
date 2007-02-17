@@ -177,7 +177,7 @@ osg::Node *createHud()
   text->setText("F1 - Toggle spring, F2/Shift+F2 - Increase/decrease stiffness");
 
 
-  osg::CameraNode* camera = new osg::CameraNode;
+  osg::Camera* camera = new osg::Camera;
 
   // set the projection matrix
   camera->setProjectionMatrix(osg::Matrix::ortho2D(0,1,0,1));
@@ -190,7 +190,7 @@ osg::Node *createHud()
   camera->setClearMask(GL_DEPTH_BUFFER_BIT);
 
   // draw subgraph after main camera view.
-  camera->setRenderOrder(osg::CameraNode::POST_RENDER);
+  camera->setRenderOrder(osg::Camera::POST_RENDER);
 
   camera->addChild(geode);
   return camera;

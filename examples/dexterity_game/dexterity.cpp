@@ -23,7 +23,7 @@
 #include <osgHaptics/HapticRenderPrepareVisitor.h>
 #include <osgText/Text>
 #include <sstream>
-#include <osg/CameraNode>
+#include <osg/Camera>
 #include <osgHaptics/VibrationForceOperator.h>
 
 double randInterval(double low, double high)
@@ -192,7 +192,7 @@ DexterityLineDrawable *createDexteritySpline(osg::Group *visual_root, osg::Group
 
     
     // create the hud.
-    osg::CameraNode* camera = new osg::CameraNode;
+    osg::Camera* camera = new osg::Camera;
     camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
     camera->setProjectionMatrixAsOrtho2D(0,win_w,0,win_h);
     camera->setViewMatrix(osg::Matrix::identity());
