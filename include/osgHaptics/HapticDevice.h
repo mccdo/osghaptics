@@ -219,8 +219,6 @@ public:
   */
   //void init(HDstring pConfigName=HD_DEFAULT_DEVICE);
 
-  //--by SophiaSoo/CUHK: for two arms
-  void initDevice(HDstring pConfigName=HD_DEFAULT_DEVICE);
   void createContext();
 
   void setRenderForce(const osg::Vec3& force);
@@ -350,7 +348,10 @@ public:
 
 protected:
 
-  WorkspaceMode m_workspace_mode;
+	/// Initialize the device and create a hardware context
+	void initDevice(HDstring pConfigName=HD_DEFAULT_DEVICE);
+
+	WorkspaceMode m_workspace_mode;
   osg::Matrixd m_touch_workspace_matrix, m_touch_workspace_matrix_inverse;
 
   class WorkspaceStruct{
