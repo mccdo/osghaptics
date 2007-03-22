@@ -6,6 +6,7 @@
 
 
 #include <OpenThreads/Thread>
+#include <osgDB/ReentrantMutex>
 #include <iostream>
 #include <osgSensor/Event.h>
 
@@ -22,31 +23,27 @@ class StopThread : public OpenThreads::Thread {
 private:
   
   bool m_stop;
-  OpenThreads::Mutex m_lock;
+  osgDB::ReentrantMutex m_lock;
 
   osgSensor::Event m_killed;
 
+	osgDB::ReentrantMutex& getLock() { return m_lock; }
 protected:
   bool m_isRunning;
 
-  /// Used for locking the thread from mutual code execution.
-  inline void lock( void ) { m_lock.lock(); };
-  
-  /// Used for unlocking the thread from mutual code execution.
-  inline void unlock( void ) { m_lock.unlock(); };
 
   /*! Called from the Run method to inquiry if anyone has called the Stop method
       returns true when someone has called Stop.
   */
-  bool shouldStop(void) { bool b; lock(); b = m_stop; unlock(); return b; };
+	bool shouldStop(void) { bool b; OpenThreads::ScopedLock<OpenThreads::Mutex> lock(getLock()); b = m_stop; return b; };
   
-  /*! Virtual method that must be inhertited. This is the main function that
+  /*! Virtual method that must be inherited. This is the main function that
   will be executed in a new thread.
   */
   virtual void run(void) = 0;
 
   /// Sets the isRunning flag to false. This will cause the isRunning method to return false.
-  void exit( void ) { lock(); m_isRunning = false; unlock(); m_killed.signal(); cancel();  };
+  void exit( void ) { OpenThreads::ScopedLock<OpenThreads::Mutex> lock(getLock()); m_isRunning = false; m_killed.signal();  };
 
 public:
 
@@ -63,10 +60,10 @@ public:
   bool wait(unsigned long t) { return m_killed.wait(t); };
 
   /// Returns true if the thread is still running
-  bool isRunning( void ) { bool b; lock(); b = m_isRunning; unlock(); return b; };
+  bool isRunning( void ) { bool b; OpenThreads::ScopedLock<OpenThreads::Mutex> lock(getLock()); b = m_isRunning; return b; };
 
   /// Stops the thread in a nice way.
-  void stop(void) { lock(); m_stop=true; unlock(); };
+  void stop(void) { OpenThreads::ScopedLock<OpenThreads::Mutex> lock(getLock()); m_stop=true;  };
 
   /*! Checks if the Stop method has been called, if so Exit() method is called and the 
   thread dies in a nice manner

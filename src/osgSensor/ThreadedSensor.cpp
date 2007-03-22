@@ -25,30 +25,24 @@
 
 using namespace osgSensor;
 
-ThreadedSensor::ThreadedSensor(Sensor *sensor) : m_sensor(sensor), m_shutting_down(false)
+ThreadedSensor::ThreadedSensor(Sensor *sensor, const std::string& name ) : Sensor(name), m_sensor(sensor)
 {
-  m_ready_event.reset();
+  m_ready_read_event.reset();
 
   setStatus(1); // Ok
-  start();
   m_shared_data.resize(m_sensor->getNumberOfSensors());
+  start();
 }
 
-bool ThreadedSensor::init( unsigned int num_sensors )
-{
-  if (num_sensors != m_sensor->getNumberOfSensors()) {
-    throw std::runtime_error("ThreadSensor::init Number of sensors specified does not match the used number of sensors available");
-  }
-  return true;
-}
-   
+  
    
 int ThreadedSensor::read( std::ostream& ostr, unsigned long timeout )
 {
-  if (!getStatus())
+
+	if (!getStatus())
     return 0;
 
-  if (!m_ready_event.wait(timeout)) {
+  if (!m_ready_read_event.wait(timeout)) {
     osg::notify(osg::WARN) <<  "Timeout waiting for sensor data" << std::endl;
     return 0;
   }
@@ -58,10 +52,12 @@ int ThreadedSensor::read( std::ostream& ostr, unsigned long timeout )
 
 int ThreadedSensor::read(unsigned int sensor_no, osg::Vec3& p, osg::Quat& q, unsigned long timeout )
 {
+
   if (!getStatus())
     return 0;
 
-  if (!m_ready_event.wait(timeout)) {
+
+  if (!m_ready_read_event.wait(timeout)) {
     osg::notify(osg::WARN) << "Timeout waiting for sensor data" << std::endl;
     return 0;
   }
@@ -79,22 +75,53 @@ int ThreadedSensor::read(unsigned int sensor_no, osg::Vec3& p, osg::Quat& q, uns
 }
 
 
-void ThreadedSensor::shutdown( void )
+void ThreadedSensor::shutdown( float t )
 {
-  m_shutting_down = true;
-	m_ready_event.signal();
+
+  m_ready_read_event.signal();
   stop();
 
-
-  if (!wait(500)) {
-    osg::notify(osg::WARN) << "ThreadedSensor::~ThreadedSensor: Unable to kill the running thread" << std::endl;
-    terminate();
+  if (isRunning() && !wait(2000)) {
+    //osg::notify(osg::WARN) << "ThreadedSensor::shutdown: Unable to kill the running thread" << std::endl;
+		cancel();
+		//    terminate();
   }
-  
+
+  if (m_sensor.valid())
+	  m_sensor->shutdown(t);
+
 }
+
+
+unsigned int 
+ThreadedSensor::getNumberOfButtons()
+{
+	if (m_sensor.valid())
+		return m_sensor->getNumberOfButtons();
+	else
+		return 0;
+}
+
+
+unsigned int 
+ThreadedSensor::getNumberOfValuators()
+{
+	if (m_sensor.valid())
+		return m_sensor->getNumberOfValuators();
+	else
+		return 0;
+}
+
 ThreadedSensor::~ThreadedSensor()
 {
-  shutdown();
+  //shutdown(0.0f);
+}
+
+
+void ThreadedSensor::cancelCleanup()
+{
+
+
 }
 
 void ThreadedSensor::run()
@@ -103,32 +130,58 @@ void ThreadedSensor::run()
   data.resize(m_sensor->getNumberOfSensors());
   int n=0;
   osg::Timer_t begin = osg::Timer::instance()->tick();
-
+	double t = 0.0;
+	osg::Timer_t start, stop=osg::Timer::instance()->tick();
   while(1) {
+		start = osg::Timer::instance()->tick();
     n++;
-    for(unsigned int i=0; i < m_sensor->getNumberOfSensors(); i++) {
-      if (m_shutting_down)
-				return;
+
+		if (shouldStop()) {
+			exit();
+		}
+
+
+		m_sensor->update(0.0f);
+
+		for(unsigned int i=0; i < m_sensor->getNumberOfSensors(); i++) {
+
+			if (shouldStop()) {
+				exit();
+			}
 
 			if (!m_sensor->read(i+1, data[i].position, data[i].orientation))
-      {
-        osg::notify(osg::WARN)<< "ThreadedSensor::run(): Error reading from sensor" << std::endl;
-        setStatus(0);
-      }
-      else 
-        setStatus(1);
-    }
+			{
+				osg::notify(osg::WARN)<< "ThreadedSensor::run(): Error reading from sensor" << std::endl;
+				setStatus(0);
+			}
+			else 
+				setStatus(1);
+		}
 
-    updateSharedData(data);
+		updateSharedData(data);
 
-    // Should we continue?
-    Continue();
-    osg::Timer_t start = osg::Timer::instance()->tick();
-    OpenThreads::Thread::microSleep(1*1000);
-    osg::Timer_t s = osg::Timer::instance()->tick();
-    double t = osg::Timer::instance()->delta_m(start,s);
-    double d = osg::Timer::instance()->delta_s(begin, s);
-  }
+		if (shouldStop()) {
+			std::cerr  << __FILE__ <<  " We should stop " << __LINE__ << std::endl;
+			exit();
+		}
+
+
+		//osg::Timer_t start = osg::Timer::instance()->tick();
+		OpenThreads::Thread::microSleep(1*1000);
+		/*osg::Timer_t s = osg::Timer::instance()->tick();
+		double t = osg::Timer::instance()->delta_m(start,s);
+		double d = osg::Timer::instance()->delta_s(begin, s);
+		*/
+		n++;
+	}
+}
+
+void ThreadedSensor::update(float t)
+{
+/*	if (m_sensor.valid())
+		m_sensor->update(t);
+		*/
+
 }
 
 void ThreadedSensor::updateSharedData(const SensorData& data)
@@ -140,5 +193,5 @@ void ThreadedSensor::updateSharedData(const SensorData& data)
   }
   
   //  We now have data available
-  m_ready_event.signal();  
+  m_ready_read_event.signal();  
 }

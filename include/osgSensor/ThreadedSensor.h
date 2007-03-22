@@ -26,7 +26,7 @@
 #include <map>
 #include <vector>
 #include <osg/io_utils>
-
+#include <osgDB/ReentrantMutex>
 
 
 namespace osgSensor {
@@ -35,12 +35,9 @@ class  OSGSENSOR_EXPORT ThreadedSensor : public vrutils::StopThread, public Sens
 public:  
 
   /// Constructor  
-  ThreadedSensor( Sensor *sensor );
+	ThreadedSensor(Sensor *sensor, const std::string& name= "ThreadedSensor" );
 
-
-   /// Initialises the connection to the server
-  bool init( unsigned int num_sensors );
-    
+  /// Return the number of sensors
   unsigned int getNumberOfSensors() { unsigned int i; OpenThreads::ScopedLock<OpenThreads::Mutex> ml(m_io_mutex); i = m_sensor->getNumberOfSensors();  return i; }
    
    /*! 
@@ -63,15 +60,23 @@ public:
    /*! Shuts down the connection to the server. After this no other calls should be made
     to this api except the destructor
    */
-   virtual void shutdown( void );
+   virtual void shutdown( float t );
 
    /// Read data from the device and update the internal state
-   virtual void update() {}
+   virtual void update(float t);
 
    virtual void run();
 
+   virtual void cancelCleanup();
+
    int getStatus() { OpenThreads::ScopedLock<OpenThreads::Mutex> ml(m_status_mutex); int i = m_status; return i; }
 
+
+   /// Return the number of buttons that this Sensor has
+   virtual unsigned int getNumberOfButtons();
+
+   /// Return the number of Valuators that this Sensor has
+   virtual unsigned int getNumberOfValuators();
 
 protected:
 
@@ -87,8 +92,14 @@ private:
   
   const char *className() { return "ThreadedSensor"; }
 
-  OpenThreads::Mutex m_io_mutex;
-  osgSensor::Event m_ready_event;
+  osgDB::ReentrantMutex m_io_mutex;
+
+  // Ready to read data
+  osgSensor::Event m_ready_read_event;
+
+  // Ok to query device
+  osgSensor::Event m_query_device_event;
+
 
   osg::ref_ptr<Sensor> m_sensor;
 
@@ -105,10 +116,8 @@ private:
   void updateSharedData( const SensorData& data );
 
   int m_current_frame;
-  mutable OpenThreads::Mutex m_status_mutex;
+  mutable osgDB::ReentrantMutex m_status_mutex;
   int m_status;
-	bool m_shutting_down;
-
 };
 
 } // Namespace sensors

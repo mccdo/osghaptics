@@ -18,7 +18,7 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 */
 
-
+#include <iostream>
 #include <osgSensor/SensorMgr.h>
 #include <osg/ref_ptr>
 
@@ -44,10 +44,12 @@ SensorMgr * SensorMgr::instance()
 // iterate over all sensors and call update on them
 void SensorMgr::update(float time)
 {
-  SensorMap::iterator it = m_sensors.begin();
-  for(;it != m_sensors.end(); it++) {
+  SensorMap::iterator it;
+
+  for(it = m_sensors.begin();it != m_sensors.end();it++) {
     it->second->execUpdate(time);
   }
+
 }
 
 // shutdown all registrated sensors
@@ -82,8 +84,11 @@ SensorMgr::~SensorMgr()
 
 void SensorMgr::registerSensor(osgSensor::Sensor *sensor)
 {
+
   assert(sensor);
   m_sensors.insert(std::make_pair(sensor->getName(), sensor));
+
+
 }
 
 bool SensorMgr::unRegisterSensor(osgSensor::Sensor *sensor)

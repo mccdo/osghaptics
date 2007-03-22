@@ -77,7 +77,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgGAd.lib openthreadswin32d.lib"
+				AdditionalDependencies="osgdbd.lib osgd.lib osgGAd.lib openthreadswin32d.lib"
 				OutputFile="$(OutDir)/$(ProjectName)d.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -176,7 +176,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgGA.lib openthreadswin32.lib"
+				AdditionalDependencies="osgdb.lib osg.lib osgGA.lib openthreadswin32.lib"
 				OutputFile="$(OutDir)/$(ProjectName).dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

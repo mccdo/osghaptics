@@ -22,7 +22,7 @@
 #define _osgsensor_EVENT_
 
 #include <OsgSensor/export.h>
-#include <OpenThreads/Mutex>
+#include <osgDB/ReentrantMutex>
 #include <OpenThreads/Condition>
 
 
@@ -47,7 +47,7 @@ class OSGSENSOR_EXPORT Event
   };
 private:
 
-  OpenThreads::Mutex m_mutex;
+	osgDB::ReentrantMutex m_mutex;
   OpenThreads::Condition m_condition;
 
   bool m_signaled;

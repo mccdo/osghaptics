@@ -21,7 +21,7 @@
 #include <osgSensor/OsgSensor.h>
 #include <osg/MatrixTransform>
 #include <osg/Notify>
-
+#include <iostream>
 #include <osg/Vec4>
 #include <osg/io_utils>
 
@@ -271,7 +271,8 @@ void OsgSensor::sample() {
     status = sensor->read(p, q);
   else
     status = sensor->read(m_sensor_id, p,q);
-    
+
+
   if (!status) {
     std::runtime_error("OsgSensor::sample(): Error reading from sensordevice");
   }
