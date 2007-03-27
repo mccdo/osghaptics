@@ -6,7 +6,7 @@
 
 
 #include <OpenThreads/Thread>
-#include <osgDB/ReentrantMutex>
+#include <OpenThreads/ReentrantMutex>
 #include <iostream>
 #include <osgSensor/Event.h>
 
@@ -23,11 +23,11 @@ class StopThread : public OpenThreads::Thread {
 private:
   
   bool m_stop;
-  osgDB::ReentrantMutex m_lock;
+  OpenThreads::ReentrantMutex m_lock;
 
   osgSensor::Event m_killed;
 
-	osgDB::ReentrantMutex& getLock() { return m_lock; }
+	OpenThreads::ReentrantMutex& getLock() { return m_lock; }
 protected:
   bool m_isRunning;
 

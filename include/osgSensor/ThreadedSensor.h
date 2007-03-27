@@ -26,7 +26,7 @@
 #include <map>
 #include <vector>
 #include <osg/io_utils>
-#include <osgDB/ReentrantMutex>
+#include <OpenThreads/ReentrantMutex>
 
 
 namespace osgSensor {
@@ -92,7 +92,7 @@ private:
   
   const char *className() { return "ThreadedSensor"; }
 
-  osgDB::ReentrantMutex m_io_mutex;
+  OpenThreads::ReentrantMutex m_io_mutex;
 
   // Ready to read data
   osgSensor::Event m_ready_read_event;
@@ -116,7 +116,7 @@ private:
   void updateSharedData( const SensorData& data );
 
   int m_current_frame;
-  mutable osgDB::ReentrantMutex m_status_mutex;
+  mutable OpenThreads::ReentrantMutex m_status_mutex;
   int m_status;
 };
 
