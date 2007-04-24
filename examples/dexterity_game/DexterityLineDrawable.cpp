@@ -85,7 +85,7 @@ void DexterityLineDrawable::rebuild()
   std::sort(m_sorted_in_z.begin(), m_sorted_in_z.end(), sort_z);
 }
 
-void DexterityLineDrawable::drawImplementation(osg::State& state) const
+void DexterityLineDrawable::drawImplementation(osg::RenderInfo& state) const
 { 
 
   if (!m_path.valid())

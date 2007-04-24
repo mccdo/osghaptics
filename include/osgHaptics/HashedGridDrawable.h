@@ -44,7 +44,7 @@ public:
   /// Set the HashGrid ot triangles that will be used for intersection test and rendering
   void setHashGrid(TriangleHashGrid *grid) { m_hashed_grid = grid; dirtyBound(); }
     
-  void drawImplementation(osg::State& state) const;
+  void drawImplementation(osg::RenderInfo& state) const;
 
   osg::BoundingBox computeBound() const;
 

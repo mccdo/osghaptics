@@ -15,7 +15,7 @@ HashedGridDrawable::~HashedGridDrawable()
 }
 
 
-void HashedGridDrawable::drawImplementation(osg::State& state) const
+void HashedGridDrawable::drawImplementation(osg::RenderInfo& state) const
 {
   if (!m_haptic_device.valid() || !m_hashed_grid.valid())
     return;

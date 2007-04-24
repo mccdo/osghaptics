@@ -34,7 +34,7 @@ public:
   float distance(const osg::Vec3& pos, osg::Vec3& closest_point);
 
   /// Render the line
-  void drawImplementation(osg::State& state) const;
+  void drawImplementation(osg::RenderInfo& state) const;
 
   osg::BoundingBox computeBound() const;
 
@@ -82,7 +82,7 @@ public:
 
     void setColor(float r, float g, float b ) { m_color.set(r,g,b); }
 
-    void drawImplementation(osg::State& state) const
+    void drawImplementation(osg::RenderInfo& state) const
     {
       glPushAttrib(GL_ALL_ATTRIB_BITS);
       glDisable(GL_LIGHTING);
