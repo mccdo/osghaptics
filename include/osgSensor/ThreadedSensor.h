@@ -95,10 +95,10 @@ private:
   OpenThreads::ReentrantMutex m_io_mutex;
 
   // Ready to read data
-  osgSensor::Event m_ready_read_event;
+	OpenThreads::Block m_ready_read_event;
 
   // Ok to query device
-  osgSensor::Event m_query_device_event;
+  OpenThreads::Block m_query_device_event;
 
 
   osg::ref_ptr<Sensor> m_sensor;

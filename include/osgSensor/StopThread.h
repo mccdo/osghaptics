@@ -8,7 +8,7 @@
 #include <OpenThreads/Thread>
 #include <OpenThreads/ReentrantMutex>
 #include <iostream>
-#include <osgSensor/Event.h>
+#include <OpenThreads/Block>
 
 
 
@@ -25,7 +25,7 @@ private:
   bool m_stop;
   OpenThreads::ReentrantMutex m_lock;
 
-  osgSensor::Event m_killed;
+	OpenThreads::Block m_killed;
 
 	OpenThreads::ReentrantMutex& getLock() { return m_lock; }
 protected:
@@ -43,7 +43,7 @@ protected:
   virtual void run(void) = 0;
 
   /// Sets the isRunning flag to false. This will cause the isRunning method to return false.
-  void exit( void ) { OpenThreads::ScopedLock<OpenThreads::Mutex> lock(getLock()); m_isRunning = false; m_killed.signal();  };
+  void exit( void ) { OpenThreads::ScopedLock<OpenThreads::Mutex> lock(getLock()); m_isRunning = false; m_killed.release();  };
 
 public:
 
@@ -57,7 +57,7 @@ public:
   virtual ~StopThread( void ) { stop(); if (!wait(5)) { cancel(); } };
   
   /// Waits for the thread to die
-  bool wait(unsigned long t) { return m_killed.wait(t); };
+  bool wait(unsigned long t) { return m_killed.block(t); };
 
   /// Returns true if the thread is still running
   bool isRunning( void ) { bool b; OpenThreads::ScopedLock<OpenThreads::Mutex> lock(getLock()); b = m_isRunning; return b; };

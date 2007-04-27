@@ -42,7 +42,7 @@ int ThreadedSensor::read( std::ostream& ostr, unsigned long timeout )
 	if (!getStatus())
     return 0;
 
-  if (!m_ready_read_event.wait(timeout)) {
+  if (!m_ready_read_event.block(timeout)) {
     osg::notify(osg::WARN) <<  "Timeout waiting for sensor data" << std::endl;
     return 0;
   }
@@ -57,7 +57,7 @@ int ThreadedSensor::read(unsigned int sensor_no, osg::Vec3& p, osg::Quat& q, uns
     return 0;
 
 
-  if (!m_ready_read_event.wait(timeout)) {
+  if (!m_ready_read_event.block(timeout)) {
     osg::notify(osg::WARN) << "Timeout waiting for sensor data" << std::endl;
     return 0;
   }
@@ -78,7 +78,7 @@ int ThreadedSensor::read(unsigned int sensor_no, osg::Vec3& p, osg::Quat& q, uns
 void ThreadedSensor::shutdown( float t )
 {
 
-  m_ready_read_event.signal();
+  m_ready_read_event.release();
   stop();
 
   if (isRunning() && !wait(2000)) {
@@ -193,5 +193,5 @@ void ThreadedSensor::updateSharedData(const SensorData& data)
   }
   
   //  We now have data available
-  m_ready_read_event.signal();  
+  m_ready_read_event.release();  
 }

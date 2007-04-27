@@ -1,4 +1,6 @@
 NEWS
+* 070425: Removed osgSensor::Event in favour for the new OpenThreads::Block class that does the same thing. Update to reflect svn version of OpenSceneGraph.
+  Naming of OpenThreadWin32.lib -> OpenThreads.lib
 
 * Support for two (or more) Phantoms
   Thanks to the people at R&D Lab of the CUHK Jockey Club Minimally Invasive Surgical Skills Centre, Hong-Kong

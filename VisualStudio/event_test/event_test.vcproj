@@ -60,8 +60,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="openthreadswin32d.lib"
-				OutputFile="$(OutDir)/event_test.exe"
+				AdditionalDependencies="openthreadsd.lib"
+				OutputFile="$(OutDir)/event_testd.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/event_test.pdb"
@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="openthreadswin32.lib"
+				AdditionalDependencies="openthreads.lib"
 				OutputFile="$(OutDir)/event_test.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"

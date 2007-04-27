@@ -1,4 +1,7 @@
-*070214 (Happy Valentine!), Anders Backman, Sophia Soo, Jerome Schmid, Johannes Philippi
+* 070425: Removed osgSensor::Event in favour for the new OpenThreads::Block class that does the same thing. Update to reflect svn version of OpenSceneGraph.
+  Naming of OpenThreadWin32.lib -> OpenThreads.lib
+
+ *070214 (Happy Valentine!), Anders Backman, Sophia Soo, Jerome Schmid, Johannes Philippi
   Added support for two devices. 
 
 * 061001, Anders Backman:
