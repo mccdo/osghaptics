@@ -2,7 +2,7 @@
 
 const char* osgHapticsGetVersion()
 {
-  return "0.3";
+  return "0.4";
 }
 
 
