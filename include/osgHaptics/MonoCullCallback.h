@@ -40,15 +40,15 @@
 
 class MonoCullCallback : public osg::NodeCallback {
 public:
-  MonoCullCallback(osgUtil::SceneView *sv) : m_sceneview(sv) {}
+  MonoCullCallback(osg::Camera *sv) : m_camera(sv) {}
   virtual void operator()(osg::Node *node, osg::NodeVisitor* nv){
     bool pushed = false;
     osgUtil::CullVisitor *cv=0L;
     if (nv->getVisitorType() == osg::NodeVisitor::CULL_VISITOR) {
       cv = dynamic_cast<osgUtil::CullVisitor *>(nv);
       if (cv) {
-        osg::Matrix pm = m_sceneview->getProjectionMatrix();
-        osg::Matrix mv = m_sceneview->getViewMatrix();
+        osg::Matrix pm = m_camera->getProjectionMatrix();
+        osg::Matrix mv = m_camera->getViewMatrix();
         cv->pushProjectionMatrix(new osg::RefMatrix(pm));
 		cv->pushModelViewMatrix(new osg::RefMatrix(mv),osg::Transform::ABSOLUTE_RF);
         pushed = true;
@@ -64,7 +64,7 @@ public:
     }
   }
 protected:
-  osg::ref_ptr<osgUtil::SceneView> m_sceneview;
+  osg::ref_ptr<osg::Camera> m_camera;
 };
 } // namespace osghaptics
 

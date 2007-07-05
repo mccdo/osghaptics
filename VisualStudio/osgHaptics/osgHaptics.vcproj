@@ -66,7 +66,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgproducerd.lib osgUtild.lib openthreadsd.lib hlud.lib hdud.lib hd.lib hl.lib osgd.lib opengl32.lib"
+				AdditionalDependencies="osgviewerd.lib osgUtild.lib openthreadsd.lib hlud.lib hdud.lib hd.lib hl.lib osgd.lib opengl32.lib"
 				OutputFile="$(OutDir)/$(ProjectName)d.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
@@ -148,7 +148,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgproducer.lib osgUtil.lib openthreads.lib hlu.lib hdu.lib hd.lib hl.lib osg.lib opengl32.lib"
+				AdditionalDependencies="osgviewer.lib osgUtil.lib openthreads.lib hlu.lib hdu.lib hd.lib hl.lib osg.lib opengl32.lib"
 				OutputFile="$(OutDir)/$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(3DTOUCH_BASE)\lib;$(3DTOUCH_BASE)\utilities\lib"

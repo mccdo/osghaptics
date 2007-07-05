@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgtextd.lib producerd.lib opengl32.lib osgd.lib osggad.lib osgproducerd.lib osgdbd.lib osgUtild.lib openthreadsd.lib hlud.lib hdud.lib hd.lib hl.lib"
+				AdditionalDependencies="osgtextd.lib opengl32.lib osgd.lib osggad.lib osgviewerd.lib osgdbd.lib osgUtild.lib openthreadsd.lib hlud.lib hdud.lib hd.lib hl.lib"
 				OutputFile="$(OutDir)/$(ProjectName)d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../../lib;$(3DTOUCH_BASE)\lib;$(3DTOUCH_BASE)\utilities\lib"
@@ -141,7 +141,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgtext.lib producer.lib osg.lib osgga.lib opengl32.lib osgproducer.lib osgdb.lib osgUtil.lib hd.lib openthreads.lib"
+				AdditionalDependencies="osgtext.lib osg.lib osgga.lib opengl32.lib osgviewer.lib osgdb.lib osgUtil.lib hd.lib openthreads.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../../lib"

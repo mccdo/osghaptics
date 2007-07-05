@@ -37,8 +37,7 @@
 #include <osgHaptics/BBoxVisitor.h>
 
 
-#include <osgProducer/OsgSceneHandler>
-#include <osgProducer/Viewer>
+#include <osgViewer/Viewer>
 
 #include <osgDB/ReadFile>
 #include <osgUtil/Optimizer>
@@ -124,10 +123,10 @@ int main( int argc, char **argv )
 
 
   // construct the viewer.
-  osgProducer::Viewer viewer(arguments);
-  viewer.getCullSettings();
+  osgViewer::Viewer viewer(arguments);
+  //viewer.getCullSettings();
   // set up the value with sensible default event handlers.
-  viewer.setUpViewer(osgProducer::Viewer::STANDARD_SETTINGS);
+  //viewer.setUpViewer(osgViewer::Viewer::STANDARD_SETTINGS);
 
   // get details on keyboard and mouse bindings used by the viewer.
   viewer.getUsage(*arguments.getApplicationUsage());
@@ -200,10 +199,9 @@ int main( int argc, char **argv )
 
 
     // Root of the haptic scene
-    osgProducer::OsgSceneHandler* sceneHandler = viewer.getSceneHandlerList().front().get();
-    osgUtil::SceneView *sceneView = sceneHandler->getSceneView();
+    osg::Camera *camera = viewer.getCamera();
 
-    osg::ref_ptr<osgHaptics::HapticRootNode> haptic_root = new osgHaptics::HapticRootNode(sceneView);
+    osg::ref_ptr<osgHaptics::HapticRootNode> haptic_root = new osgHaptics::HapticRootNode(camera);
     root->addChild(haptic_root.get());
 
     HapticMaterialVisitor vis(haptic_device.get());
@@ -243,8 +241,8 @@ int main( int argc, char **argv )
     */
     //haptic_device->setWorkspaceMode(osgHaptics::HapticDevice::VIEW_MODE);
 
-    double hfov = viewer.getCamera(0)->getLens()->getHorizontalFov();
-    double vfov = viewer.getCamera(0)->getLens()->getVerticalFov();
+    //double hfov = viewer.getCamera()->getHorizontalFov();
+    //double vfov = viewer.getCamera()->getVerticalFov();
     //viewer.getCamera(0)->getLens()->setPerspective( hfov, vfov, 1, 10 );
 
     int camera_no = 0;
@@ -255,7 +253,8 @@ int main( int argc, char **argv )
     */
     //viewer.getCamera(0)->getLens()->setPerspective( hfov, vfov, 1, bs.radius()*3 );
 
-    viewer.getCamera(camera_no)->getLens()->getParams(left, right, bottom, top, nearclip, farclip);
+	bool is_frustum = viewer.getCamera()->getProjectionMatrixAsFrustum(left, right, bottom, top, nearclip, farclip);
+	assert( is_frustum );
 
     osg::BoundingBox bbox;
     osgHaptics::BBoxVisitor bvis;
@@ -310,21 +309,21 @@ int main( int argc, char **argv )
     Add pre and post draw callbacks to the camera so that we start and stop a haptic frame
     at a time when we have a valid OpenGL context.
     */
-    osgHaptics::prepareHapticCamera(viewer.getCamera(0), haptic_device.get(), root.get());
+    osgHaptics::prepareHapticCamera(viewer.getCamera(), haptic_device.get(), root.get());
 
 
 
     while( !viewer.done() )
     {
       // wait for all cull and draw threads to complete.
-      viewer.sync();        
+      //viewer.sync();        
 
       // Update all registrated sensors (HapticDevice) is one.
       g_SensorMgr->update();
 
       // update the scene by traversing it with the the update visitor which will
       // call all node update callbacks and animations.
-      viewer.update();
+      //viewer.update();
 
       osg::Vec3 start, end;
 
@@ -343,7 +342,7 @@ int main( int argc, char **argv )
     }
 
     // wait for all cull and draw threads to complete before exit.
-    viewer.sync();
+    //viewer.sync();
 
     // Shutdown all registrated sensors
     osgSensor::SensorMgr::instance()->shutdown();

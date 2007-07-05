@@ -32,8 +32,7 @@
 #include <osgHaptics/Material.h>
 #include <osgHaptics/BBoxVisitor.h>
 
-#include <osgProducer/OsgSceneHandler>
-#include <osgProducer/Viewer>
+#include <osgViewer/Viewer>
 
 #include <osgDB/ReadFile>
 #include <osgUtil/Optimizer>
@@ -64,8 +63,13 @@ using namespace sensors;
 
 
 // Create two cameras, one for each haptic context
-Producer::CameraConfig* setupCameras()
+void setupCameras( osgViewer::Viewer& viewer )
 {
+	osg::Camera* cam1 = viewer.getCamera();
+	osg::Camera* cam2 = new osg::Camera( *cam1 );
+	viewer.addSlave(cam2);
+
+   /*
    Producer::CameraConfig* myCameraConfig = new Producer::CameraConfig();
    Producer::Camera* camera1 = new Producer::Camera();
    Producer::Camera* camera2 = new Producer::Camera();
@@ -82,6 +86,7 @@ Producer::CameraConfig* setupCameras()
    Producer::RenderSurface* rsOne = camera1->getRenderSurface();
    camera2->setRenderSurface( rsOne );
    return myCameraConfig;
+   */
 }
 
 osg::MatrixTransform* createSphereX(float radius, osg::Vec4 color) {
@@ -120,18 +125,15 @@ int main( int argc, char **argv )
 	// set up viewer
 	//-----------------------------------------------------------------------------------------
 
+	osgViewer::Viewer viewer;
 #ifdef ARMSTWOTEST
     //-- create 2 cameras for the viewer
-	Producer::CameraConfig* cameras = setupCameras();
-	//-- construct the viewer.
-	osgProducer::Viewer viewer(cameras);
-#else
-    osgProducer::Viewer viewer;
+	setupCameras( viewer );
 #endif
 
-    viewer.getCullSettings();
+    //viewer.getCullSettings();
 	// value with sensible default event handlers
-    viewer.setUpViewer(osgProducer::Viewer::STANDARD_SETTINGS); 
+    //viewer.setUpViewer(osgViewer::Viewer::STANDARD_SETTINGS); 
 
 	//-----------------------------------------------------------------------------------------
 	// create model
@@ -204,9 +206,8 @@ int main( int argc, char **argv )
  		//-----------------------------------------------------------------------------------------
 		// Create Root of the haptic scene
 		//-----------------------------------------------------------------------------------------
-		osgProducer::OsgSceneHandler* sceneHandler = viewer.getSceneHandlerList().front().get();
-		osgUtil::SceneView *sceneView = sceneHandler->getSceneView();
-		osg::ref_ptr<osgHaptics::HapticRootNode> haptic_root = new osgHaptics::HapticRootNode(sceneView);
+		osg::Camera *camera = viewer.getCamera();
+		osg::ref_ptr<osgHaptics::HapticRootNode> haptic_root = new osgHaptics::HapticRootNode(camera);
 		//osg::ref_ptr<osgHaptics::HapticRootNode> haptic_root = new osgHaptics::HapticRootNode(&viewer);
 		root->addChild(haptic_root.get());
 
@@ -242,11 +243,13 @@ int main( int argc, char **argv )
 		// at a time when we have a valid OpenGL context.
 		//---------------------------------------------------------------------------------
 	    //osgHaptics::prepareHapticCamera(&viewer, haptic_device.get(), 0, root.get());
-		osgHaptics::prepareHapticCamera(viewer.getCamera(0), haptic_device.get(), root.get());
+		osgViewer::Viewer::Cameras cameras;
+		viewer.getCameras( cameras );
+		osgHaptics::prepareHapticCamera(cameras[0], haptic_device.get(), root.get());
 
 #ifdef ARMSTWOTEST
 		//osgHaptics::prepareHapticCamera(&viewer, haptic_device2.get(), 1, root.get());
-		osgHaptics::prepareHapticCamera(viewer.getCamera(1), haptic_device2.get(), root.get());
+		osgHaptics::prepareHapticCamera(cameras[1], haptic_device2.get(), root.get());
 #endif
 
 		//---------------------------------------------------------------------------------
@@ -328,14 +331,14 @@ int main( int argc, char **argv )
 		while( !viewer.done() )
 		{
 			// wait for all cull and draw threads to complete.
-			viewer.sync();        
+//			viewer.sync();        
 
 			// Update all registrated sensors (HapticDevice) is one.
 			g_SensorMgr->update();
 
 			// update the scene by traversing it with the the update visitor which will
 			// call all node update callbacks and animations.
-			viewer.update();
+//			viewer.update();
 
 			// fire off the cull and draw traversals of the scene.
 			viewer.frame();
@@ -343,7 +346,7 @@ int main( int argc, char **argv )
 		}//while (!viewer.done())
 	  
 		// wait for all cull and draw threads to complete before exit.
-		viewer.sync();
+//		viewer.sync();
 
 		// Shutdown all registrated sensors
 		osgSensor::SensorMgr::instance()->shutdown();

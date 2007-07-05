@@ -60,7 +60,7 @@
 
     \param viewer - If set, the subgraph will only be rendered in mono using a cullcallback
     */
-    HapticRootNode( osgUtil::SceneView *sceneView=0L );
+    HapticRootNode( osg::Camera *camera=0L );
 
     META_Node(osg ,Group);
 

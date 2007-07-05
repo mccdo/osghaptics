@@ -35,8 +35,7 @@
 #include <osgHaptics/HapticSpringNode.h>
 #include <osgSensor/Visitors.h>
 
-#include <osgProducer/OsgSceneHandler>
-#include <osgProducer/Viewer>
+#include <osgViewer/Viewer>
 
 #include <osgDB/ReadFile>
 #include <osgUtil/Optimizer>
@@ -171,10 +170,10 @@ int main( int argc, char **argv )
   arguments.getApplicationUsage()->addKeyboardMouseBinding("F2+Shift","Decrease spring stiffness");
 
   // construct the viewer.
-  osgProducer::Viewer viewer(arguments);
-  viewer.getCullSettings();
+  osgViewer::Viewer viewer(arguments);
+//  viewer.getCullSettings();
   // set up the value with sensible default event handlers.
-  viewer.setUpViewer(osgProducer::Viewer::STANDARD_SETTINGS);
+  //viewer.setUpViewer(osgViewer::Viewer::STANDARD_SETTINGS);
 
   // get details on keyboard and mouse bindings used by the viewer.
   viewer.getUsage(*arguments.getApplicationUsage());
@@ -232,10 +231,10 @@ int main( int argc, char **argv )
 
 
     // Root of the haptic scene
-    osgProducer::OsgSceneHandler* sceneHandler = viewer.getSceneHandlerList().front().get();
-    osgUtil::SceneView *sceneView = sceneHandler->getSceneView();
+    //osgProducer::OsgSceneHandler* sceneHandler = viewer.getSceneHandlerList().front().get();
+    osg::Camera *camera = viewer.getCamera();//sceneHandler->getSceneView();
 
-    osg::ref_ptr<osgHaptics::HapticRootNode> haptic_root = new osgHaptics::HapticRootNode(sceneView);
+    osg::ref_ptr<osgHaptics::HapticRootNode> haptic_root = new osgHaptics::HapticRootNode(camera);
     root->addChild(haptic_root.get());
 
     // add it to the visual node to be rendered visually
@@ -304,27 +303,27 @@ int main( int argc, char **argv )
       Add pre and post draw callbacks to the camera so that we start and stop a haptic frame
       at a time when we have a valid OpenGL context.
     */
-    osgHaptics::prepareHapticCamera(viewer.getCamera(0), haptic_device.get(), root.get());
+    osgHaptics::prepareHapticCamera(viewer.getCamera(), haptic_device.get(), root.get());
 
 
     while( !viewer.done() )
     {
       // wait for all cull and draw threads to complete.
-      viewer.sync();        
+      //viewer.sync();        
 
       // Update all registrated sensors (HapticDevice) is one.
       g_SensorMgr->update();
 
       // update the scene by traversing it with the the update visitor which will
       // call all node update callbacks and animations.
-      viewer.update();
+//      viewer.update();
 
       // fire off the cull and draw traversals of the scene.
       viewer.frame();        
     }
 
     // wait for all cull and draw threads to complete before exit.
-    viewer.sync();
+//    viewer.sync();
 
 
   } catch (std::exception& e) {

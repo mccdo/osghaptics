@@ -23,7 +23,7 @@
 
 using namespace osgHaptics;
 
-HapticRootNode::HapticRootNode(osgUtil::SceneView *sceneView) : Group(), m_last_frame(-1)
+HapticRootNode::HapticRootNode(osg::Camera *camera) : Group(), m_last_frame(-1)
 
 {
 
@@ -36,11 +36,11 @@ HapticRootNode::HapticRootNode(osgUtil::SceneView *sceneView) : Group(), m_last_
   setCullingActive(false);
   setDataVariance(osg::Object::DYNAMIC);
 
-  if (sceneView) {
-    setCullCallback(new MonoCullCallback(sceneView));
+  if (camera) {
+    setCullCallback(new MonoCullCallback(camera));
 
 //    osgProducer::OsgSceneHandler* sceneHandler = viewer->getSceneHandlerList().front().get();
-//    osgUtil::SceneView *sceneView = sceneHandler->getSceneView();
+//    osg::Camera *camera = sceneHandler->getSceneView();
 
   }
 
