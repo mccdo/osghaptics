@@ -1,4 +1,13 @@
 NEWS
+
+* 070814: 
+
+  - Updated to match osg2.0. Handling of near/far clip plane is still not clear. If --bbox-volume is used it works.
+    If not, the position of the proxy depends on the bounding volume of the scene. If that volume changes due to the proxy, well, then we
+    have a loop. So thats something that has be looked at.
+  - --SingleThreaded has to be specified, otherwise the rendering hangs the whole application.
+
+
 * 070425: Removed osgSensor::Event in favour for the new OpenThreads::Block class that does the same thing. Update to reflect svn version of OpenSceneGraph.
   Naming of OpenThreadWin32.lib -> OpenThreads.lib
 

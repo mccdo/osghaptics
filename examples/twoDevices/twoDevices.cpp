@@ -34,6 +34,13 @@
 
 #include <osgViewer/Viewer>
 
+#include <osgGA/TrackballManipulator>
+#include <osgGA/FlightManipulator>
+#include <osgGA/DriveManipulator>
+#include <osgViewer/ViewerEventHandlers>
+#include <osgGA/KeySwitchMatrixManipulator>
+
+
 #include <osgDB/ReadFile>
 #include <osgUtil/Optimizer>
 
@@ -126,6 +133,21 @@ int main( int argc, char **argv )
 	//-----------------------------------------------------------------------------------------
 
 	osgViewer::Viewer viewer;
+
+	osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator = new osgGA::KeySwitchMatrixManipulator;
+	keyswitchManipulator->addMatrixManipulator( '1', "Trackball", new osgGA::TrackballManipulator() );
+	viewer.setCameraManipulator( keyswitchManipulator.get() );
+
+
+	// add the window size toggle handler
+	viewer.addEventHandler(new osgViewer::WindowSizeHandler);
+
+	// add the stats handler
+	viewer.addEventHandler(new osgViewer::StatsHandler);
+
+
+
+
 #ifdef ARMSTWOTEST
     //-- create 2 cameras for the viewer
 	setupCameras( viewer );

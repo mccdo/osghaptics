@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <osgHaptics/HapticRenderBin.h>
+#include <osgUtil/StateGraph>
 
 using namespace osgHaptics;
 
@@ -93,11 +94,25 @@ bool HapticRenderBin::hasBeenDrawn(osg::RenderInfo& renderInfo)
 void HapticRenderBin::drawImplementation(osg::RenderInfo& renderInfo,osgUtil::RenderLeaf*& previous)
 {
 
+	osg::State& state = *renderInfo.getState();
+
+
   // Only render once per frame. Important to keep track of during stereo rendering
-  if (m_last_frame == renderInfo.getState()->getFrameStamp()->getFrameNumber())
+  if (m_last_frame == state.getFrameStamp()->getFrameNumber())
     return;
 
-  m_last_frame = renderInfo.getState()->getFrameStamp()->getFrameNumber();
+  m_last_frame = state.getFrameStamp()->getFrameNumber();
+
+
+	unsigned int numToPop = (previous ? osgUtil::StateGraph::numToPop(previous->_parent) : 0);
+	if (numToPop>1) --numToPop;
+	unsigned int insertStateSetPosition = state.getStateSetStackSize() - numToPop;
+
+	if (_stateset.valid())
+	{
+		state.insertStateSet(insertStateSetPosition, _stateset.get());
+	}
+
 
 
   // Clear the list of already drawn drawables 
@@ -128,32 +143,61 @@ void HapticRenderBin::drawImplementation(osg::RenderInfo& renderInfo,osgUtil::Re
   }
 
 
-  // draw coarse grained ordering.
-  for(osgUtil::RenderBin::StateGraphList::iterator oitr=_stateGraphList.begin();
-    oitr!=_stateGraphList.end();
-    ++oitr)
-  {
+	bool draw_forward = true; //(_sortMode!=SORT_BY_STATE) || (state.getFrameStamp()->getFrameNumber() % 2)==0;
 
-    for(osgUtil::StateGraph::LeafList::iterator dw_itr = (*oitr)->_leaves.begin();
-      dw_itr != (*oitr)->_leaves.end();
-      ++dw_itr)
-    {
-      osgUtil::RenderLeaf* rl = dw_itr->get();
-      renderHapticLeaf(rl, renderInfo, previous);
-//      rl->render(state,previous);
-      previous = rl;
+	// draw coarse grained ordering.
+	if (draw_forward)
+	{
+		for(StateGraphList::iterator oitr=_stateGraphList.begin();
+			oitr!=_stateGraphList.end();
+			++oitr)
+		{
 
-    }
-  }
+			for(osgUtil::StateGraph::LeafList::iterator dw_itr = (*oitr)->_leaves.begin();
+				dw_itr != (*oitr)->_leaves.end();
+				++dw_itr)
+			{
+				osgUtil::RenderLeaf* rl = dw_itr->get();
+				renderHapticLeaf(rl, renderInfo, previous);
+//				rl->render(renderInfo,previous);
+				previous = rl;
 
+			}
+		}
+	}
+	else
+	{
+		for(StateGraphList::reverse_iterator oitr=_stateGraphList.rbegin();
+			oitr!=_stateGraphList.rend();
+			++oitr)
+		{
 
-  // draw post bins.
-  for(;
-    rbitr!=_bins.end();
-    ++rbitr)
-  {
-    rbitr->second->draw(renderInfo,previous);
-  }
+			for(osgUtil::StateGraph::LeafList::iterator dw_itr = (*oitr)->_leaves.begin();
+				dw_itr != (*oitr)->_leaves.end();
+				++dw_itr)
+			{
+				osgUtil::RenderLeaf* rl = dw_itr->get();
+				rl->render(renderInfo,previous);
+				previous = rl;
+
+			}
+		}
+	}
+
+	// draw post bins.
+	for(;
+		rbitr!=_bins.end();
+		++rbitr)
+	{
+		rbitr->second->draw(renderInfo,previous);
+	}
+
+	if (_stateset.valid())
+	{
+		state.removeStateSet(insertStateSetPosition);
+		// state.apply();
+	}
+
 }
 
 HapticRenderBin::~HapticRenderBin()

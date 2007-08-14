@@ -92,7 +92,7 @@ void HapticRenderLeaf::render(osg::RenderInfo& renderInfo,osgUtil::RenderLeaf* p
 
     if (shape && render_shape) {
       //shape = static_cast<const osgHaptics::Shape*> (sa);
-      shape->preDraw();      
+			shape->preDraw();      
     }
 
     osg::Geometry* geom = dynamic_cast<osg::Geometry *>(_drawable);
@@ -102,10 +102,13 @@ void HapticRenderLeaf::render(osg::RenderInfo& renderInfo,osgUtil::RenderLeaf* p
     }
     else
       // draw the drawable
-      _drawable->draw(renderInfo);
+		{
+			_drawable->draw(renderInfo);
+		}
     
-    if (shape && render_shape) 
-      shape->postDraw();
+		if (shape && render_shape) {
+			shape->postDraw();
+		}
   }
   else
   {

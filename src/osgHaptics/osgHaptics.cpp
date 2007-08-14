@@ -22,15 +22,18 @@
 // osgHaptics.cpp : Defines the entry point for the DLL application.
 //
 
+#include <osgHaptics/osgHaptics.h>
+
+
 #ifdef _WIN32
 
 #include <osgHaptics/export.h>
 #include <windows.h>
 
 BOOL APIENTRY DllMain( HANDLE hModule, 
-                       DWORD  ul_reason_for_call, 
-                       LPVOID lpReserved
-					 )
+											DWORD  ul_reason_for_call, 
+											LPVOID lpReserved
+											)
 {
 	switch (ul_reason_for_call)
 	{
@@ -40,7 +43,84 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 	case DLL_PROCESS_DETACH:
 		break;
 	}
-    return TRUE;
+	return TRUE;
 }
 
 #endif
+
+using namespace osgHaptics;
+
+void osgHaptics::prepareHapticCamera(osg::Camera *camera, HapticDevice *device, osg::Node *scene) 
+{
+
+	camera->setPreDrawCallback(new HapticDevicePreRenderCallback(device));
+	camera->setPostDrawCallback(new HapticDevicePostRenderCallback(device));
+
+	if (0 && scene) {
+		osg::BoundingSphere bs = scene->getBound();
+		osg::Vec3 position = bs._center+osg::Vec3( 0.0,-3.5f * bs._radius,0.0f);
+		
+		osg::Vec3 up = osg::Vec3(0.0f,0.0f,1.0f);
+
+		float centerDistance = (position-bs.center()).length();
+
+		float znear = centerDistance-bs.radius();
+		float zfar  = centerDistance+bs.radius();
+		float zNearRatio = 0.001f;
+		if (znear<zfar*zNearRatio) znear = zfar*zNearRatio;
+
+#if 0
+		// hack to illustrate the precision problems of excessive gap between near far range.
+		znear = 0.00001*zfar;
+#endif
+		float top   = (bs.radius()/centerDistance)*znear;
+		float right = top;
+
+		//viewer.getCamera()->setReferenceFrame(osg::Camera::ABSOLUTE_RF);
+		camera->setProjectionMatrixAsFrustum(-right,right,-top,top,znear,zfar);
+		camera->setViewMatrixAsLookAt(position,bs.center(),up);
+
+		//camera->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
+	}
+}
+
+// Callback to be attached to camera rendering haptics view. Will start haptic rendering frame
+
+void HapticDevicePreRenderCallback::operator()( const osg::Camera & camera) const
+{
+	const osg::GraphicsContext::Traits* traits = camera.getGraphicsContext()->getTraits();
+
+	osg::Matrixd modelView, view, projection;
+	const osg::Viewport *viewp = camera.getViewport();
+	GLint viewport[4] = { viewp->x(), viewp->y(), viewp->width(), viewp->height() };
+
+	view = camera.getViewMatrix();
+	projection = camera.getProjectionMatrix();
+	osg::MatrixList& matrixList = camera.getWorldMatrices();
+
+	osg::MatrixList::iterator it = matrixList.begin();
+
+	for(; it != matrixList.end(); it++)
+	{
+		modelView.postMult(*it);
+	}
+
+	modelView = modelView*view;
+
+
+	//--by SophiaSoo/CUHK: for two arms
+	m_device->makeCurrentDevice();
+
+	GLint mode;
+	glGetIntegerv(GL_MATRIX_MODE, &mode);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadMatrixd(modelView.ptr());
+	m_device->beginFrame();
+
+	m_device->updateWorkspace( traits->width, traits->height,
+		modelView, view, projection, viewport);
+	glPopMatrix();
+	glMatrixMode(mode);
+
+}

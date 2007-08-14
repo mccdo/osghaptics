@@ -36,6 +36,12 @@
 #include <osgHaptics/Material.h>
 #include <osgHaptics/BBoxVisitor.h>
 
+#include <osgGA/TrackballManipulator>
+#include <osgGA/FlightManipulator>
+#include <osgGA/DriveManipulator>
+#include <osgViewer/ViewerEventHandlers>
+#include <osgGA/KeySwitchMatrixManipulator>
+
 
 #include <osgViewer/Viewer>
 
@@ -124,9 +130,21 @@ int main( int argc, char **argv )
 
   // construct the viewer.
   osgViewer::Viewer viewer(arguments);
-  //viewer.getCullSettings();
-  // set up the value with sensible default event handlers.
-  //viewer.setUpViewer(osgViewer::Viewer::STANDARD_SETTINGS);
+
+	osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator = new osgGA::KeySwitchMatrixManipulator;
+	keyswitchManipulator->addMatrixManipulator( '1', "Trackball", new osgGA::TrackballManipulator() );
+	viewer.setCameraManipulator( keyswitchManipulator.get() );
+
+
+	// add the window size toggle handler
+	viewer.addEventHandler(new osgViewer::WindowSizeHandler);
+
+	// add the stats handler
+	viewer.addEventHandler(new osgViewer::StatsHandler);
+
+	// add the help handler
+	viewer.addEventHandler(new osgViewer::HelpHandler(arguments.getApplicationUsage()));
+
 
   // get details on keyboard and mouse bindings used by the viewer.
   viewer.getUsage(*arguments.getApplicationUsage());
@@ -300,10 +318,13 @@ int main( int argc, char **argv )
 
 
     // Add a custom drawable that draws the rendered force of the device
-    osg::Geode *geode = new osg::Geode;
-    VectorDrawable *force_drawable = new VectorDrawable();
-    geode->addDrawable(force_drawable);
-    visual_root->addChild(geode);
+		VectorDrawable *force_drawable = 0L;
+		if (0) {
+			osg::Geode *geode = new osg::Geode;
+			force_drawable = new VectorDrawable();
+			geode->addDrawable(force_drawable);
+			visual_root->addChild(geode);
+		}
 
     /*
     Add pre and post draw callbacks to the camera so that we start and stop a haptic frame
@@ -325,17 +346,19 @@ int main( int argc, char **argv )
       // call all node update callbacks and animations.
       //viewer.update();
 
-      osg::Vec3 start, end;
+			if (force_drawable) {
+				osg::Vec3 start, end;
 
-      start = haptic_device->getProxyPosition();
-      osg::Vec3 force = haptic_device->getForce();
-      float len = force.length();
+				start = haptic_device->getProxyPosition();
+				osg::Vec3 force = haptic_device->getForce();
+				float len = force.length();
 
-      force.normalize();
-      osg::Vec3 dir = force;
+				force.normalize();
+				osg::Vec3 dir = force;
 
-      // Update the force drawable with the current force of the device
-      force_drawable->set(start, start+dir*len);
+				// Update the force drawable with the current force of the device
+				force_drawable->set(start, start+dir*len);
+			}
 
       // fire off the cull and draw traversals of the scene.
       viewer.frame();        

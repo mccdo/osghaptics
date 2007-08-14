@@ -136,7 +136,8 @@ public:
     int update_rate;
     osg::Vec3d velocity;
     osg::Vec3d angular_velocity;
-    osg::Matrix transformation;
+    osg::Matrix transformation; // Current hw/raw position of proxy
+		osg::Matrix proxy_transformation; // Current position of PROXY including transformations
     bool buttons[2];
   };
 
@@ -187,8 +188,16 @@ public:
 
   osg::Matrix getProxyTransform() const;
 
-  void updateWorkspace(unsigned int width, unsigned int height, bool forced=false);
-  float getCursorScale() const { return m_cursor_scale; }
+  //void updateWorkspace(unsigned int width, unsigned int height, bool forced=false);
+
+	void updateWorkspace(unsigned int width, unsigned int height,
+		const osg::Matrix& modelView, 
+		const osg::Matrix& view, 
+		const osg::Matrix& projection,
+		int *viewport);
+	
+	
+	float getCursorScale() const { return m_cursor_scale; }
 
   void setEnableForceOutput(bool enabled);
   bool getEnableForceOutput() const { return m_force_output_enabled; }

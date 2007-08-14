@@ -23,82 +23,50 @@
 
 #include <osgHaptics/HapticDevice.h>
 #include <osgViewer/Viewer>
+#include <osgHaptics/export.h>
 
 
 
-  namespace osgHaptics {
+namespace osgHaptics {
 
 
-/// Callback to be attached to camera rendering haptics view. Will start haptic rendering frame
-class HapticDevicePreRenderCallback: public osg::Camera::DrawCallback
-{
-public:
+	/// Callback to be attached to camera rendering haptics view. Will start haptic rendering frame
+	class OSGHAPTICS_EXPORT HapticDevicePreRenderCallback: public osg::Camera::DrawCallback
+	{
+	public:
 
-  HapticDevicePreRenderCallback(osgHaptics::HapticDevice *device): 
-      m_device(device) {}
+		HapticDevicePreRenderCallback(osgHaptics::HapticDevice *device): 
+				m_device(device) {}
 
-      virtual void operator()( const osg::Camera & camera)
-      {
-		  const osg::GraphicsContext::Traits* traits = camera.getGraphicsContext()->getTraits();
-		  m_device->updateWorkspace( traits->width, traits->height );
+				virtual void operator()( const osg::Camera & camera) const;
 
-	    //--by SophiaSoo/CUHK: for two arms
-        m_device->makeCurrentDevice();
+	protected:
 
-        m_device->beginFrame();
-      }
-
-protected:
-
-  osg::ref_ptr<osgHaptics::HapticDevice> m_device;    
-};
+		osg::ref_ptr<osgHaptics::HapticDevice> m_device;    
+	};
 
 
-/// Callback to be attached to camera rendering haptics view. Will stop haptic rendering frame.
-class HapticDevicePostRenderCallback: public osg::Camera::DrawCallback
-{
-public:
+	/// Callback to be attached to camera rendering haptics view. Will stop haptic rendering frame.
+	class HapticDevicePostRenderCallback: public osg::Camera::DrawCallback
+	{
+	public:
 
-  HapticDevicePostRenderCallback(osgHaptics::HapticDevice *device): 
-      m_device(device) {}
+		HapticDevicePostRenderCallback(osgHaptics::HapticDevice *device): 
+				m_device(device) {}
 
-      virtual void operator()( const osg::Camera & camera)
-      {
-        m_device->endFrame();
-      }
+				virtual void operator()( const osg::Camera & camera) const
+				{
+					m_device->endFrame();
+				}
 
-protected:
+	protected:
 
-  osg::ref_ptr<osgHaptics::HapticDevice> m_device;
+		osg::ref_ptr<osgHaptics::HapticDevice> m_device;
 
-};
+	};
 
-/// Utility function to attach pre and post draw operations o the default camera
-void prepareHapticCamera(osg::Camera *camera, HapticDevice *device, osg::Node *scene=0L) {
-  camera->setPreDrawCallback(new osgHaptics::HapticDevicePreRenderCallback(device));
-  camera->setPostDrawCallback(new osgHaptics::HapticDevicePostRenderCallback(device));
-
-  // Get bounding box of the scene
-
-  if (scene) {
-
-    osg::BoundingSphere bs = scene->getBound();
-
-    float radius = bs.radius();
-    //std::cerr << "Radius: " << radius << std::endl;
-
-    double left, right, bottom, top, nearclip, farclip;
-    bool is_frustum = camera->getProjectionMatrixAsFrustum(left, right, bottom, top, nearclip, farclip);
-	assert( is_frustum );
-    //std::cerr << "left: " << left << " right: " << right << " bottom: " << bottom << " top: " << top << " nearclip: " << nearclip << " farclip: " << farclip << std::endl;
-    //camera->getLens()->setAutoAspect(false); 
-    camera->setProjectionMatrixAsFrustum(left, right, bottom, top, nearclip, radius*1.3); 
-	is_frustum = camera->getProjectionMatrixAsFrustum(left, right, bottom, top, nearclip, farclip);
-	assert( is_frustum );
-    //std::cerr << "left: " << left << " right: " << right << " bottom: " << bottom << " top: " << top << " nearclip: " << nearclip << " farclip: " << farclip << std::endl;
-  }
-}
-
-} // namespace osgSensors
+	/// Utility function to attach pre and post draw operations o the default camera
+	void OSGHAPTICS_EXPORT prepareHapticCamera(osg::Camera *camera, HapticDevice *device, osg::Node *scene=0L);
+} // namespace osgHaptics
 
 #endif

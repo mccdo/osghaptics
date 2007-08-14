@@ -50,7 +50,7 @@ public:
         osg::Matrix pm = m_camera->getProjectionMatrix();
         osg::Matrix mv = m_camera->getViewMatrix();
         cv->pushProjectionMatrix(new osg::RefMatrix(pm));
-		cv->pushModelViewMatrix(new osg::RefMatrix(mv),osg::Transform::ABSOLUTE_RF);
+				cv->pushModelViewMatrix(new osg::RefMatrix(mv),osg::Transform::ABSOLUTE_RF);
         pushed = true;
       }
     }

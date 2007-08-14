@@ -129,39 +129,51 @@ void HapticDevice::setWorkspace(const osg::Vec3& min, osg::Vec3& max)
 }
 
 
+void printMatrix(const osg::Matrixd& m)
+{
+	for(int i=0; i < 16; i++) {
+		if (!(i % 4))
+			std::cerr << std::endl;
+			std::cerr << m.ptr()[i] << " ";
+	}
+}
+
 /*******************************************************************************
  Use the current OpenGL viewing transforms to initialize a transform for the
  haptic device workspace so that it's properly mapped to world coordinates.
 *******************************************************************************/
-void HapticDevice::updateWorkspace(unsigned int width, unsigned int height, bool forced)
+void HapticDevice::updateWorkspace(unsigned int width, unsigned int height,
+																	 const osg::Matrix& modelView, 
+																	 const osg::Matrix& view, 
+																	 const osg::Matrix& projection,
+																	 int *viewport)
 {
 
-  //if (width == m_width && height == m_height && !forced)
-  //  return;
+	m_modelview_matrix = modelView;
 
-  m_width = width;
-  m_height = height;
 
 
   //--by SophiaSoo/CUHK: for two arms
   makeCurrent();
 
-  GLdouble modelview[16];
-  GLdouble projection[16];
-  GLint viewport[4];
-
   hlMatrixMode(HL_TOUCHWORKSPACE);
   hlLoadIdentity();
 
-  glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
-  glGetDoublev(GL_PROJECTION_MATRIX, projection);
-  glGetIntegerv(GL_VIEWPORT, viewport);
+	//osg::Matrix m;
+	//glGetDoublev(GL_MODELVIEW_MATRIX, m.ptr());
+	//std::cerr << "Modelview: " << m << std::endl;
+
+  //glGetDoublev(GL_PROJECTION_MATRIX, m.ptr());
+	//std::cerr << "Projection: " << projection << std::endl;
+  //glGetIntegerv(GL_VIEWPORT, viewport);
 
   // Use the specified touchworkspace matrix
   if (getWorkspaceModel() == VIEW_WORKSPACE) 
     hlMultMatrixd(m_touch_workspace_matrix_inverse.ptr());
   else
     hlMultMatrixd(m_touch_workspace_matrix.ptr());
+
+	
 
   if (getWorkspaceModel() == VIEW_WORKSPACE) {
 
@@ -171,28 +183,42 @@ void HapticDevice::updateWorkspace(unsigned int width, unsigned int height, bool
         osg::notify(osg::WARN) << "HapticDevice::updateWorkspace(): Current WorkspaceMode is BBOX_MODE, but the extents of the workspace is not defined" << std::endl;
         return;
       }
-      hluFitWorkspaceBox(modelview, m_workspace_limits.getMin().ptr(), m_workspace_limits.getMax().ptr());
+      hluFitWorkspaceBox(modelView.ptr(), m_workspace_limits.getMin().ptr(), m_workspace_limits.getMax().ptr());
     }
 
     // Or should we fit haptic workspace to the whole view volume.
     else {
-      hluFitWorkspace(projection);
+      hluFitWorkspace(projection.ptr());
     }
+
     osg::Matrix vt, tw;
     hlGetDoublev(HL_VIEWTOUCH_MATRIX, vt.ptr());
     hlGetDoublev(HL_TOUCHWORKSPACE_MATRIX, tw.ptr());
 
-    //p*mv*tw
+		hlGetDoublev(HL_PROXY_TRANSFORM, m_current_state.proxy_transformation.ptr());
+		//std::cerr << "Proxy: " << m_current_state.proxy_transformation.getTrans() << std::endl;
 
+		HLerror error;
+		while ( HL_ERROR(error = hlGetError()) ) {
+			osg::notify(osg::WARN) << getHLErrorString( error )
+				<< std::endl;
+		}
+		
+		
+		
+		//p*mv*tw
+		//std::cerr << "Projection " << projection << std::endl;
     // Matrix to move from world to haptic Workspace
     setWorldToWorkSpaceMatrix(m_modelview_matrix*vt*tw);
   }
 
 
+	//getWorldToWorkSpaceMatrix(m);
+	//std::cerr << "getWorldToWorkSpaceMatrix: " << m << std::endl;
 
 
   // Compute cursor scale.
-  m_cursor_scale = hluScreenToModelScale(modelview, projection, viewport);
+	m_cursor_scale = hluScreenToModelScale(modelView.ptr(), projection.ptr(), viewport);
 #define CURSOR_SIZE_PIXELS 20
   m_cursor_scale *= CURSOR_SIZE_PIXELS;
 }
@@ -718,25 +744,27 @@ void HapticDevice::update(float time)
                          HD_DEFAULT_SCHEDULER_PRIORITY ); 
 
   hlCheckEvents();
-  HLerror error;
-  while ( HL_ERROR(error = hlGetError()) ) {
-    osg::notify(osg::WARN) << getHLErrorString( error )
-      << std::endl;
-  }
-
-  //--by SophiaSoo/CUHK: for two arms
-  makeCurrent();
-
-  osg::Matrix m;
-  hlGetDoublev(HL_PROXY_TRANSFORM, m_current_state.transformation.ptr());
-
+//  HLerror error;
+//  while ( HL_ERROR(error = hlGetError()) ) {
+//    osg::notify(osg::WARN) << getHLErrorString( error )
+//      << std::endl;
+//  }
+//  //--by SophiaSoo/CUHK: for two arms
+//  makeCurrent();
+//  osg::Matrix m;
+//  hlGetDoublev(HL_PROXY_TRANSFORM, m_current_state.proxy_transformation.ptr());
+//	std::cerr << "Proxy: " << m_current_state.proxy_transformation.getTrans() << std::endl;
+//	osg::Matrix vt, tw;
+//	hlGetDoublev(HL_VIEWTOUCH_MATRIX, vt.ptr());
+//	hlGetDoublev(HL_TOUCHWORKSPACE_MATRIX, tw.ptr());
+//	tw = tw;
 
   // Convert the transformationmatrix according the touch_to_world matrix
-  /*m_current_state.transformation.postMult(m_world_to_workspace_matrix);
-  osg::Vec3 t= m_current_state.transformation.getTrans();
+  /*m_current_state.proxy_transformation.postMult(m_world_to_workspace_matrix);
+  osg::Vec3 t= m_current_state.proxy_transformation.getTrans();
   t.set(t[0] * m_position_scale[0], t[1] * m_position_scale[1], t[2] * m_position_scale[2]); 
   t += m_position_offset;
-  m_current_state.transformation.setTrans(t);*/
+  m_current_state.proxy_transformation.setTrans(t);*/
 }
 
 void HapticDevice::shutdown(float time)
@@ -744,6 +772,8 @@ void HapticDevice::shutdown(float time)
 
   if (!m_initialized)
     return;
+
+  makeCurrent();
 
   //--by SophiaSoo/CUHK: for two arms, unschedule process should do before m_hd_handles.clear 
   for( HDHandlerVector::iterator it = m_hd_handles.begin(); it != m_hd_handles.end();  it++ ) {
@@ -881,8 +911,11 @@ void HapticDevice::beginFrame()
   makeCurrent();
 
   if (getWorkspaceModel() == VIEW_WORKSPACE) {
-    OpenThreads::ScopedLock<OpenThreads::Mutex> sl(m_modelview_mutex);
+   /* OpenThreads::ScopedLock<OpenThreads::Mutex> sl(m_modelview_mutex);
     glGetDoublev(GL_MODELVIEW_MATRIX, m_modelview_matrix.ptr());
+		std::cerr << "beginFrame: ModelView: " << std::endl;
+		printMatrix(m_modelview_matrix);*/
+
   }
 
   hlBeginFrame();
@@ -920,7 +953,7 @@ osg::Matrix HapticDevice::getProxyTransform() const
 
   return m;;
   */
-	return m_current_state.transformation;
+	return m_current_state.proxy_transformation;
 }
 
 
@@ -931,7 +964,7 @@ osg::Vec3 HapticDevice::getProxyPosition() const
   hlGetDoublev(HL_PROXY_TRANSFORM, m.ptr());
   return m.getTrans();
 */
-  return m_current_state.transformation.getTrans();
+  return m_current_state.proxy_transformation.getTrans();
 }
 
 osg::Vec3 HapticDevice::getLinearVelocity() const 
@@ -977,7 +1010,7 @@ osg::Quat HapticDevice::getProxyOrientation() const
 
   q.set(m);
 */
-  q.set(m_current_state.transformation);
+  q.set(m_current_state.proxy_transformation);
   return q;
 }
 
@@ -1093,8 +1126,8 @@ void HapticDevice::unScheduleForceEffectCallback(ForceEffect *fe)
 
 int HapticDevice::read(osg::Vec3& p, osg::Quat& q)
 {
-  p = getProxyPosition(); //m_current_state.transformation.getTrans();
-  q = getProxyOrientation(); //.set(m_current_state.transformation);
+  p = getProxyPosition(); //m_current_state.proxy_transformation.getTrans();
+  q = getProxyOrientation(); //.set(m_current_state.proxy_transformation);
 
   //osg::Matrix m;
   //hdGetDoublev(HD_CURRENT_TRANSFORM, m.ptr());

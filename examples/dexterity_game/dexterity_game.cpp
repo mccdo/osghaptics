@@ -36,6 +36,13 @@
 #include <osgHaptics/Material.h>
 
 
+#include <osgGA/TrackballManipulator>
+#include <osgGA/FlightManipulator>
+#include <osgGA/DriveManipulator>
+#include <osgViewer/ViewerEventHandlers>
+#include <osgGA/KeySwitchMatrixManipulator>
+
+
 #include <osgViewer/Viewer>
 
 #include <osgDB/ReadFile>
@@ -79,9 +86,20 @@ int main( int argc, char **argv )
 
   // construct the viewer.
   osgViewer::Viewer viewer(arguments);
-  //viewer.getCullSettings();
-  // set up the value with sensible default event handlers.
-  //viewer.setUpViewer(osgViewer::Viewer::STANDARD_SETTINGS);
+	osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator = new osgGA::KeySwitchMatrixManipulator;
+	keyswitchManipulator->addMatrixManipulator( '1', "Trackball", new osgGA::TrackballManipulator() );
+	viewer.setCameraManipulator( keyswitchManipulator.get() );
+
+
+	// add the window size toggle handler
+	viewer.addEventHandler(new osgViewer::WindowSizeHandler);
+
+	// add the stats handler
+	viewer.addEventHandler(new osgViewer::StatsHandler);
+
+	// add the help handler
+	viewer.addEventHandler(new osgViewer::HelpHandler(arguments.getApplicationUsage()));
+
 
   // get details on keyboard and mouse bindings used by the viewer.
   viewer.getUsage(*arguments.getApplicationUsage());

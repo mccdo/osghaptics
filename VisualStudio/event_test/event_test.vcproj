@@ -64,7 +64,7 @@
 				OutputFile="$(OutDir)/event_testd.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/event_test.pdb"
+				ProgramDatabaseFile="$(OutDir)/$(TargetName)d.pdb"
 				SubSystem="1"
 				TargetMachine="1"
 			/>

@@ -67,7 +67,7 @@
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../../lib;$(3DTOUCH_BASE)\lib;$(3DTOUCH_BASE)\utilities\lib"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/osgHapticViewer.pdb"
+				ProgramDatabaseFile="$(OutDir)/$(TargetName)d.pdb"
 				SubSystem="1"
 				TargetMachine="1"
 			/>

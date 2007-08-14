@@ -28,6 +28,11 @@
 
 #include <osgViewer/Viewer>
 #include <osgGA/TrackballManipulator>
+#include <osgGA/FlightManipulator>
+#include <osgGA/DriveManipulator>
+#include <osgViewer/ViewerEventHandlers>
+#include <osgGA/KeySwitchMatrixManipulator>
+
 
 #include <osgDB/ReadFile>
 
@@ -189,10 +194,20 @@ int main( int argc, char **argv )
 
   // construct the viewer.
   osgViewer::Viewer viewer(arguments);
-//  viewer.getCullSettings();
-  // set up the value with sensible default event handlers.
-  //viewer.setUpViewer(osgViewer::Viewer::STANDARD_SETTINGS);
-  viewer.setCameraManipulator(new osgGA::TrackballManipulator());
+
+	osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator = new osgGA::KeySwitchMatrixManipulator;
+	keyswitchManipulator->addMatrixManipulator( '1', "Trackball", new osgGA::TrackballManipulator() );
+	viewer.setCameraManipulator( keyswitchManipulator.get() );
+
+
+	// add the window size toggle handler
+	viewer.addEventHandler(new osgViewer::WindowSizeHandler);
+
+	// add the stats handler
+	viewer.addEventHandler(new osgViewer::StatsHandler);
+
+	// add the help handler
+	viewer.addEventHandler(new osgViewer::HelpHandler(arguments.getApplicationUsage()));
 
 
   // get details on keyboard and mouse bindings used by the viewer.
@@ -303,8 +318,7 @@ int main( int argc, char **argv )
 
 
     // Root of the haptic scene
-//    osgProducer::OsgSceneHandler* sceneHandler = viewer.getSceneHandlerList().front().get();
-    osg::Camera *camera = viewer.getCamera();//sceneHandler->getSceneView();
+    osg::Camera *camera = viewer.getCamera();
 
     osg::ref_ptr<osgHaptics::HapticRootNode> haptic_root = new osgHaptics::HapticRootNode(camera);
     root->addChild(haptic_root.get());
@@ -455,9 +469,12 @@ int main( int argc, char **argv )
     Usually the far-field is set to something like 1000, which is not appropriate.
 
     setWorkspaceMode(VIEW_MODE) will effectively use the viewfrustum as a haptic workspace.
+
     This will also make the haptic device follow the camera
     */
-    if (bbox_volume)
+
+		
+			if (bbox_volume)
       haptic_device->setWorkspaceMode(osgHaptics::HapticDevice::BBOX_MODE);
     else
       haptic_device->setWorkspaceMode(osgHaptics::HapticDevice::VIEW_MODE);
@@ -539,8 +556,6 @@ int main( int argc, char **argv )
       viewer.frame();        
     }
 
-    // wait for all cull and draw threads to complete before exit.
-//    viewer.sync();
 
     // Shutdown all registrated sensors
     osgSensor::SensorMgr::instance()->shutdown();
