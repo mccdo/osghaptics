@@ -133,6 +133,8 @@ int main( int argc, char **argv )
 	//-----------------------------------------------------------------------------------------
 
 	osgViewer::Viewer viewer;
+	// Set threading model to SingleThreaded, otherwise we will get a hang in OpenHaptics.
+	viewer.setThreadingModel(osgViewer::Viewer::SingleThreaded); // CullDrawThreadPerContext also works
 
 	osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator = new osgGA::KeySwitchMatrixManipulator;
 	keyswitchManipulator->addMatrixManipulator( '1', "Trackball", new osgGA::TrackballManipulator() );

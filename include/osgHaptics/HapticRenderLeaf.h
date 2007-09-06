@@ -39,6 +39,20 @@
   {
   public:
 
+#ifdef OSGUTIL_RENDERBACKEND_USE_REF_PTR
+    inline HapticRenderLeaf(osgUtil::RenderLeaf *leaf, HapticRenderBin *renderbin) : 
+    RenderLeaf(leaf->_drawable.get(), leaf->_projection.get(), leaf->_modelview.get(), leaf->_depth),
+      m_renderbin(renderbin)
+    {
+      _parent=leaf->_parent;
+    }
+
+    inline void set(osgUtil::RenderLeaf *leaf) {
+      RenderLeaf::set(leaf->_drawable.get(), leaf->_projection.get(), leaf->_modelview.get(), leaf->_depth);
+      _parent=leaf->_parent;
+    }
+
+#else
     inline HapticRenderLeaf(osgUtil::RenderLeaf *leaf, HapticRenderBin *renderbin) : 
       RenderLeaf(leaf->_drawable, leaf->_projection.get(), leaf->_modelview.get(), leaf->_depth),
         m_renderbin(renderbin)
@@ -50,7 +64,7 @@
       RenderLeaf::set(leaf->_drawable, leaf->_projection.get(), leaf->_modelview.get(), leaf->_depth);
       _parent=leaf->_parent;
     }
-
+#endif
     virtual void render(osg::RenderInfo& renderInfo, osgUtil::RenderLeaf* previous);
 
   protected:

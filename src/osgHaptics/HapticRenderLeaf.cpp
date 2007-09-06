@@ -58,14 +58,14 @@ void HapticRenderLeaf::render(osg::RenderInfo& renderInfo,osgUtil::RenderLeaf* p
       osgUtil::StateGraph::moveStateGraph(*renderInfo.getState(),prev_rg_parent,rg->_parent);
 
       // send state changes and matrix changes to OpenGL.
-      renderInfo.getState()->apply(rg->_stateset);
+      renderInfo.getState()->apply(rg->_stateset.get());
 
     }
     else if (rg!=prev_rg)
     {
 
       // send state changes and matrix changes to OpenGL.
-      renderInfo.getState()->apply(rg->_stateset);
+      renderInfo.getState()->apply(rg->_stateset.get());
 
     }
 
@@ -95,7 +95,11 @@ void HapticRenderLeaf::render(osg::RenderInfo& renderInfo,osgUtil::RenderLeaf* p
 			shape->preDraw();      
     }
 
+#ifdef OSGUTIL_RENDERBACKEND_USE_REF_PTR
+    osg::Geometry* geom = dynamic_cast<osg::Geometry *>(_drawable.get());
+#else
     osg::Geometry* geom = dynamic_cast<osg::Geometry *>(_drawable);
+#endif
     if (geom) {
       RenderTriangleOperator op;
       geom->accept(op);
@@ -120,7 +124,11 @@ void HapticRenderLeaf::render(osg::RenderInfo& renderInfo,osgUtil::RenderLeaf* p
     // apply state if required.
     osgUtil::StateGraph::moveStateGraph(*renderInfo.getState(),NULL,_parent->_parent);
 
+#ifdef OSGUTIL_RENDERBACKEND_USE_REF_PTR
+    renderInfo.getState()->apply(_parent->_stateset.get());
+#else
     renderInfo.getState()->apply(_parent->_stateset);
+#endif
 
     // draw the drawable
     _drawable->draw(renderInfo);
