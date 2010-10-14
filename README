@@ -1,0 +1,95 @@
+/**
+ * OpenSceneGraph Haptic Library, OsgHaptics
+ * Copyright (C) 2006 VRlab, Umeå University
+ *
+ * OsgHaptics was created using the libraries:
+ *              OpenSceneGraph (http://www.openscenegraph.org), 
+ *              OpenHaptics (http://www.sensable.com
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+ */
+
+OpenSceneGraph Haptic Library - OsgHaptics is a library that integrates haptic rendering 
+to the open source scenegraph OpenSceneGraph.
+
+There are demo applications in the examples sub-directory
+
+osgHapticviewer
+---------------
+
+Description: The use of a visitor to make any osg-model haptically rendereable.
+Loads any model that osg supports and allows the user to touch it with the proxy.
+
+Usage: osgHapticViewer <modelfile>
+Example: osgHapticViewer cow.osg
+
+Command-line options: 
+  --proxy-scale <float>  - Scale the size of the model used as a visual proxy
+  --constraint <float>   - Set the surface to be a constraint surface with snap_force specified
+  --dynamic-friction <float> - Set the dynamic friction of the haptic surface 
+  --static-friction <float> - Set the static friction of the haptic surface
+  --damping <float> - Set the damping in the friction equation (spring)
+  --stiffness <float> - Set the stiffness in the friction equation (spring)
+
+Example: osgHapticViewer cow.osg --dynamic-friction 0 --static-friction 0 --stiffness 1 --damping 1
+
+For more information look at: http://www.vrlab.umu.se/research/osgHaptics/osghapticviewer.shtml
+
+  
+dexterity_game
+--------------
+Description: A very simple version of the dexterity game. Try to move the ring object over
+a wire without touching it.
+
+Usage: dexterity_game <background model>
+Example: dexterity_game room.ac
+
+Make sure your current directory is the data sub-directory, or that you have OSG_FILE_PATH
+referring to that directory.
+
+material_demo
+--------------
+Description:   Demonstrates different surface properties in osgHaptics.
+Uses a visitor (HapticMaterialVisitor that parses strings in node-descriptions 
+to create an set properties on surfaces.
+
+Usage: material_demo material_demo.osg
+
+Make sure your current directory is the data sub-directory, or that you have OSG_FILE_PATH
+referring to that directory.
+
+forceoperator_demo
+--------------------
+Description: Demonstrates the use of a SpringForce operator (inside a HapticSpringNode)
+to generate spring forces. In this example an animated named node is found, and the 
+HapticSpringNode is attached as a child. The motion of the animated node is then transferred automatically
+to the haptic spring. When enabled (F1) the haptic device will follow the motion.
+
+Keys: F1 - Toggle spring on/off
+F2 - Increase spring stiffness
+Shift+F2 - Decrease spring stiffness
+
+
+Usage: forceoperator_demo forceoperator_scene.osg
+
+sensorEventHandler_demo
+-----------------------
+Description: Demonstrates the osgSensor::SensorEventHandler that is used to handle
+events from the Sensor devices, i.e. BUTTON events and UPDATE.
+
+Usage: sensorEventHandler_demo <osg-filename>
+
+Contact:
+Anders Backman, VRlab, andersb@cs.umu.se

@@ -1,0 +1,44 @@
+NEWS
+
+* 070814: 
+
+  - Updated to match osg2.0. Handling of near/far clip plane is still not clear. If --bbox-volume is used it works.
+    If not, the position of the proxy depends on the bounding volume of the scene. If that volume changes due to the proxy, well, then we
+    have a loop. So thats something that has be looked at.
+  - --SingleThreaded has to be specified, otherwise the rendering hangs the whole application.
+
+
+* 070425: Removed osgSensor::Event in favour for the new OpenThreads::Block class that does the same thing. Update to reflect svn version of OpenSceneGraph.
+  Naming of OpenThreadWin32.lib -> OpenThreads.lib
+
+* Support for two (or more) Phantoms
+  Thanks to the people at R&D Lab of the CUHK Jockey Club Minimally Invasive Surgical Skills Centre, Hong-Kong
+  This required some changes both here and there.
+  For example the HapticDevice::init() method is gone and is replaced by a setup scheme such as:
+  
+  Create new device
+  call initDevice() <--- New method
+  call createContext() <--- New method
+  
+  For dual devices the process is (has to be)
+  
+  Create device1
+  Create device2
+  
+  call initDevice() for device1
+  call createContext() for device1
+  
+  call initDevice() for device2
+  call createContext() for device2
+  
+* 061119: VisualStudio 8 is now default for the project files.
+  Older versions is available but will not be updated from now on.
+
+* 061106: Removed the EventHandler class and replaced with a more general SensorEventHandler
+  This will affect the code using the HapticDevice. Have a look into the pick_example_demo (pick_scene.cpp)
+  for an example of how to use the new SensorEventHandler.
+  
+* 061108: Added sensorEventHandler_demo to demonstrate the osgSensor::SensorEventHandler.
+* 060911: Added pick_example for demonstrating how to pick and manipulate objects in a scene.
+* 060515 New demos: material_demo, forceoperator_demo
+* 060509 Initial version, early stage.
