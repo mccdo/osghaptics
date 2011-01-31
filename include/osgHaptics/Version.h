@@ -1,7 +1,7 @@
 #ifndef OSGHAPTICS_VERSION
 #define OSGHAPTICS_VERSION 1
 
-#include <OSGHAPTICS/export.h>
+#include <osgHaptics/export.h>
 
 extern "C" {
 

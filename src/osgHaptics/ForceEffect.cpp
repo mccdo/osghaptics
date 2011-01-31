@@ -28,7 +28,7 @@
 
 using namespace osgHaptics;
 
-ForceEffect::ForceEffect(HapticDevice *device, Type type) : m_device(device), m_started(false)
+ForceEffect::ForceEffect(HapticDevice *device, Type type) : m_started(false), m_device(device) 
 {
   assert(device);
   m_effect_id = hlGenEffects(1);

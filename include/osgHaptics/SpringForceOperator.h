@@ -39,8 +39,8 @@
         \param fadein_ms - The time to interpolate from current position to the specified one.
         If fadein_ms == 0, then jump to the new position immediately.
       */
-      void setPosition( osg::Vec3d& position, double fadein_ms=0 );
-      void setPosition( osg::Vec3& position, double fadein_ms=0 ) { setPosition(osg::Vec3d(position), fadein_ms); }
+      void setPosition( const osg::Vec3d& position, double fadein_ms=0 );
+      void setPosition( const osg::Vec3& position, double fadein_ms=0 ) { setPosition(osg::Vec3d(position), fadein_ms); }
 
       /*!
         Toggle the SpringForce

@@ -18,17 +18,24 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 */
 
+#include <stdlib.h>
 #include <osgHaptics/SpringForceOperator.h>
 
-#include <hd/hd.h>
-#include <vrutils/Math.h>
+#include <HD/hd.h>
+#include <vrutils/math.h>
 #include <iostream>
 #include <osg/io_utils>
 
 using namespace osgHaptics;
 
-SpringForceOperator::SpringForceOperator() : ForceOperator(), m_stiffness(1), m_fadein_ms(0),
-  m_fade(false), m_fade_started(false), m_fade_start_time(0), m_damping(0.001)
+SpringForceOperator::SpringForceOperator() : 
+    ForceOperator(), 
+    m_stiffness(1), 
+    m_damping(0.001),
+    m_fade(false), 
+    m_fade_started(false), 
+    m_fadein_ms(0),
+    m_fade_start_time(0)
 {
   m_max_stiffness = 200;
   //hdGetDoublev(HD_NOMINAL_MAX_STIFFNESS, &m_max_stiffness);
@@ -119,7 +126,7 @@ void SpringForceOperator::calculateForce(const osg::Vec3d& in, osg::Vec3d& out, 
 
 }
 
-void SpringForceOperator::setPosition(osg::Vec3d& position, double fadein_ms)
+void SpringForceOperator::setPosition(const osg::Vec3d& position, double fadein_ms)
 {
   OpenThreads::ScopedLock<OpenThreads::Mutex> sl(m_mutex);
   const double epsilon=1E-10;

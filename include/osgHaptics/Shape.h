@@ -102,8 +102,8 @@
       /** Copy constructor using CopyOp to manage deep vs shallow copy. */
       Shape(const Shape& trans,const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY):
         StateAttribute(trans,copyop),
-          m_shape_id(trans.m_shape_id),
           m_name(trans.m_name),
+          m_shape_id(trans.m_shape_id),
           m_enabled(trans.m_enabled),
           m_device(trans.m_device)
           {}
@@ -118,7 +118,7 @@
 			return 0;
 	  }
 
-      //#define META_StateAttribute(library,name,type) \
+      //#define META_StateAttribute(library,name,type) 
 
       virtual osg::Object* cloneType() const { return new Shape(m_device.get(),0); } 
       virtual osg::Object* clone(const osg::CopyOp& copyop) const { return new Shape (*this,copyop); } 

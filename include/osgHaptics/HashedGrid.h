@@ -181,7 +181,7 @@ class HashedGrid : public osg::Referenced
     calcCell(p,x,y,z);
 
     unsigned long idx = computeHashBucketIndex(x,y,z);
-    HashMap::iterator it = m_hash_vector.find(idx);
+    iterator it = m_hash_vector.find(idx);
     
     if (it == m_hash_vector.end()) {
       HashedDataVector *v = new HashedDataVector;

@@ -129,9 +129,12 @@ void ThreadedSensor::run()
   SensorData data;
   data.resize(m_sensor->getNumberOfSensors());
   int n=0;
-  osg::Timer_t begin = osg::Timer::instance()->tick();
-	double t = 0.0;
-	osg::Timer_t start, stop=osg::Timer::instance()->tick();
+  // Unused
+  //osg::Timer_t begin = osg::Timer::instance()->tick();
+  //double t = 0.0;
+	osg::Timer_t start; 
+    // unused
+    //osg::Timer_t stop=osg::Timer::instance()->tick();
   while(1) {
 		start = osg::Timer::instance()->tick();
     n++;

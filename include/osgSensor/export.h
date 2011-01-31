@@ -40,7 +40,7 @@
 #endif
 
 #else
-#define OSGSENSORS_EXPORT
+#define OSGSENSOR_EXPORT
 #endif
 
 #endif

@@ -22,6 +22,9 @@
 #include <osgHaptics/HapticDevice.h>
 #include <osgHaptics/ShapeComposite.h>
 
+#include <stdlib.h>
+
+#include <stdexcept>
 #include <iostream>
 #include <cassert>
 #include <strstream>
@@ -51,10 +54,28 @@ osg::Timer_t HapticDevice::m_start_tick=0;
 bool HapticDevice::m_scheduler_started = false;
 
 
-HapticDevice::HapticDevice(HDstring pConfigName) : Sensor(), m_hHDHandle(HD_INVALID_HANDLE), m_hHLRContext(0), m_cursor_scale(10),
- m_width(0), m_height(0), m_proxy_damping(0), m_proxy_stiffness(0.3), m_shutting_down(false), 
-m_valid_world_to_workspace_matrix(false), m_enable_shape_render(true), m_max_force(0), m_device_model(NONE_DEVICE), m_workspace_model(VIEW_WORKSPACE),
-m_workspace_mode(VIEW_MODE), m_initDevice(false)
+HapticDevice::HapticDevice(HDstring pConfigName) : 
+    Sensor(), 
+
+    m_workspace_mode(VIEW_MODE), 
+
+    m_cursor_scale(10),
+    m_hHDHandle(HD_INVALID_HANDLE), 
+    m_hHLRContext(0), 
+    m_width(0), 
+    m_height(0), 
+
+    m_valid_world_to_workspace_matrix(false), 
+    m_proxy_damping(0), 
+    m_proxy_stiffness(0.3), 
+    m_shutting_down(false), 
+    m_enable_shape_render(true), 
+    m_max_force(0), 
+    m_device_model(NONE_DEVICE), 
+    m_workspace_model(VIEW_WORKSPACE),
+
+
+    m_initDevice(false)
 
 
 {
@@ -267,7 +288,7 @@ void HapticDevice::updateForceEffects()
 	}
 }
 
-/* Anders Backman 070215: Not used anymore, Use initDevice()
+/* Anders Backman 070215: Not used anymore, Use initDevice() */
 /*******************************************************************************
  Initialize the HDAPI. This involves initing a device configuration, enabling
  forces, and scheduling a haptic thread callback for servicing the device.
@@ -843,7 +864,8 @@ HDCallbackCode HDCALLBACK  HapticDevice::beginFrameCB( void *data)
   assert(data);
   HapticDevice *device = static_cast< HapticDevice * >(data);
   
-  HHD hHD = hdGetCurrentDevice();   
+  // Unused variable
+  //HHD hHD = hdGetCurrentDevice();   
   hdBeginFrame( device->getHandle() );
 
   return HD_CALLBACK_CONTINUE;  
@@ -887,7 +909,8 @@ HDCallbackCode HDCALLBACK  HapticDevice::endFrameCB( void *data)
   assert(data);
   HapticDevice *device = static_cast< HapticDevice * >(data);
   
-  HHD hHD = hdGetCurrentDevice();    
+  // Unused variable
+ // HHD hHD = hdGetCurrentDevice();    
   hdEndFrame( device->getHandle() );
 
   return HD_CALLBACK_CONTINUE;  
@@ -1295,8 +1318,13 @@ void HapticDevice::unRegisterContactEventHandler(ContactEventHandler *cb)
         HL_CLIENT_THREAD,
         HapticDevice::motionCallback );
 
-      it = m_contact_events.erase(it);
-      //break;
+      //Original Code  (break statement was commented out) - will not compile on gnu g++ 4.4
+      //it = m_contact_events.erase(it);
+      //  //break;  
+
+      //Changed to:
+        m_contact_events.erase(it);
+        break;  
     }
   }
 }
@@ -1613,7 +1641,8 @@ T HapticDevice::filter( std::vector<T>& in_data,
     unsigned int M = coefficients.size();
 
     if (in_data.size() < M) {
-      warning("filter") << "Unable to calculated filtered value due to few sample points" << std::endl;
+        //warning("filter") << "Unable to calculated filtered value due to few sample points" << std::endl;
+        std::cerr << "Unable to calculated filtered value due to few sample points" << std::endl;
     }
 
     T sum;

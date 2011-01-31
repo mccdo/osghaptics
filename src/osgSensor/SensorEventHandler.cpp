@@ -25,9 +25,15 @@
 using namespace osgSensor;
 
 SensorEventHandler::SensorEventHandler(const std::string& name) : 
-  m_buttonMask(0), m_useIndividualEvents(false),  m_eventType(TYPE_NONE), m_numberOfButtons(0),
-    m_initialized(false), m_name(name), m_beginCalled(false),
-    m_eventMode(QUEUE_EVENTS), m_sensor(0L)
+    m_initialized(false), 
+    m_buttonMask(0), 
+    m_useIndividualEvents(false),  
+    m_eventType(TYPE_NONE), 
+    m_numberOfButtons(0),
+    m_name(name), 
+    m_beginCalled(false),
+    m_eventMode(QUEUE_EVENTS), 
+    m_sensor(0L)
 {
   m_activationMask.set(); // Enable all activation events
 
@@ -152,7 +158,8 @@ void SensorEventHandler::setButtonState(Button b, ButtonState state)
 
 SensorEventHandler::ButtonState SensorEventHandler::getButtonState(Button b) const
 { 
-  unsigned int i = m_buttonState.size();
+    // Unused warning
+  //unsigned int i = m_buttonState.size();
 
   if ((unsigned int)b < m_buttonState.size() ) {
     // If b== BUTTON_NONE, then return the state of the button that generated a button event.

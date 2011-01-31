@@ -23,7 +23,10 @@
 
 using namespace osgSensor;
 
-OsgSensorCallback::OsgSensorCallback(OsgSensor *sensor) : m_sensor(sensor), m_previousTraversalNumber(-1), m_enable(true)
+OsgSensorCallback::OsgSensorCallback(OsgSensor *sensor) : 
+    m_sensor(sensor), 
+    m_enable(true),
+    m_previousTraversalNumber(-1)
 {
   if (!m_sensor)
     osg::notify(osg::FATAL) << "OsgSensorCallback: Null pointer as sensor is invalid: " << __FILE__ << ": " << __LINE__ << std::endl;

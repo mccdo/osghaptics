@@ -96,9 +96,9 @@ void HapticDevicePreRenderCallback::operator()( const osg::Camera & camera) cons
 
 	view = camera.getViewMatrix();
 	projection = camera.getProjectionMatrix();
-	osg::MatrixList& matrixList = camera.getWorldMatrices();
+	const osg::MatrixList& matrixList = camera.getWorldMatrices();
 
-	osg::MatrixList::iterator it = matrixList.begin();
+	osg::MatrixList::const_iterator it = matrixList.begin();
 
 	for(; it != matrixList.end(); it++)
 	{

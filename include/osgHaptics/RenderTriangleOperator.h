@@ -23,7 +23,7 @@
 
 #include <osg/TriangleFunctor>
 #include <osg/Vec3>
-#include <GL/GL.h>
+#include <GL/gl.h>
 
 
 

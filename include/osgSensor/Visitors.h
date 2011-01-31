@@ -193,7 +193,7 @@ public:
   ///
   FindDescriptionVisitor(TraversalMode tm=TRAVERSE_ALL_CHILDREN, int max_depth=-1 ) : 
     NodeVisitor(tm), 
-    m_result(0), m_max_depth(max_depth), m_curr_depth(0) {}
+    m_result(0), m_curr_depth(0) , m_max_depth(max_depth) {}
 
   ///
   virtual ~FindDescriptionVisitor(){}

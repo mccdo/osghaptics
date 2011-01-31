@@ -24,7 +24,7 @@
 #include <iostream>
 
 #include "osgHaptics/BBoxVisitor.h"
-#include <vrutils/Math.h>
+#include <vrutils/math.h>
 using namespace osgHaptics;
 
 BBoxVisitor::BBoxVisitor() : NodeVisitor()
