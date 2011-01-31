@@ -4,7 +4,7 @@
 using namespace osgHaptics;
 
 HashedGridDrawable::HashedGridDrawable(TriangleHashGrid *grid, HapticDevice *device) : 
-  Drawable(), m_haptic_device(device), m_hashed_grid(grid), m_number_of_drawn_triangles(0)
+  Drawable(), m_hashed_grid(grid), m_haptic_device(device), m_number_of_drawn_triangles(0)
 {
   setUseDisplayList(false);
 }
@@ -41,7 +41,8 @@ void HashedGridDrawable::drawImplementation(osg::RenderInfo& state) const
   // So first add them to a set, where only unique triangles are stored.
   typedef std::set<const Triangle *> TriangleSet;
   TriangleSet triangles;
-  unsigned int n=0;
+  // Unused variable
+  //unsigned int n=0;
   for (; it != result.end(); it++) {
     TriangleHashGrid::HashedDataVector::const_iterator vit = (*it)->begin();  
   

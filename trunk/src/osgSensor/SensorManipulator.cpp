@@ -77,7 +77,8 @@ bool SensorManipulator::handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIAction
 
   bool handled = false;
 
-  unsigned int buttonMask = ea.getButtonMask();
+  // Unused
+  //unsigned int buttonMask = ea.getButtonMask();
   switch(ea.getEventType()) {
 
     case(osgGA::GUIEventAdapter::FRAME):

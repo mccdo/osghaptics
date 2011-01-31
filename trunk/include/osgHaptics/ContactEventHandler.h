@@ -101,6 +101,9 @@
     case (ContactState::Motion):
       motion(state);
       break;
+
+    default:
+      break;
     }
   }
 

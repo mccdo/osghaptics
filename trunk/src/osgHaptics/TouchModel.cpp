@@ -22,7 +22,7 @@
 #include <osgHaptics/TouchModel.h>
 using namespace osgHaptics;
 
-TouchModel::TouchModel(Mode m) : m_mode(m), m_snap_distance(0.01)
+TouchModel::TouchModel(Mode m) : m_snap_distance(0.01), m_mode(m)
 {
 
 }

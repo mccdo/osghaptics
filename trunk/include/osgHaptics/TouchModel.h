@@ -69,8 +69,8 @@
       /** Copy constructor using CopyOp to manage deep vs shallow copy. */
       TouchModel(const TouchModel& trans,const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY):
       StateAttribute(trans,copyop),
-        m_mode(trans.m_mode),
-        m_snap_distance(trans.m_snap_distance)
+        m_snap_distance(trans.m_snap_distance),
+        m_mode(trans.m_mode)
       {}
 
       META_StateAttribute(osg, TouchModel,osg::StateAttribute::Type(OSGHAPTICS_TOUCH_MODEL));

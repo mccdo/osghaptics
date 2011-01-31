@@ -17,11 +17,17 @@
 * License along with this library; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 */
+#include <stdexcept>
 #include <osgSensor/Sensor.h>
 #include <osgSensor/SensorMgr.h>
 using namespace osgSensor;
 
-Sensor::Sensor() : Referenced(), m_timeout(5000), m_name("NO_NAME"), m_shutdown(false), m_initialized(false)
+Sensor::Sensor() : 
+    Referenced(), 
+    m_name("NO_NAME"), 
+    m_initialized(false),
+    m_timeout(5000), 
+    m_shutdown(false)
 {
   SensorMgr::instance()->registerSensor(this); 
 }

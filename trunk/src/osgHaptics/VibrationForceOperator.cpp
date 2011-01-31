@@ -19,8 +19,8 @@
 */
 
 #include <osgHaptics/VibrationForceOperator.h>
-#include <hd/hd.h>
-#include <vrutils/Math.h>
+#include <HD/hd.h>
+#include <vrutils/math.h>
 
 using namespace osgHaptics;
 

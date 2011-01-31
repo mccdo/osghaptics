@@ -37,7 +37,7 @@
 
     class OSGHAPTICS_EXPORT ForceOperator : public osg::Referenced {
     public:
-      ForceOperator() : m_enabled(true), m_trigged(false), m_duration(0), m_start(0) {}
+      ForceOperator() : m_trigged(false), m_start(0) , m_duration(0), m_enabled(true) {}
 
       friend class HapticDevice;
       /// Calculate the force this Operator should affect the haptic device

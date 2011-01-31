@@ -56,11 +56,11 @@ class OSGHAPTICS_EXPORT Material : public osg::StateAttribute
     /** Copy constructor using CopyOp to manage deep vs shallow copy. */
     Material(const Material& trans,const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY):
       StateAttribute(trans,copyop),
+      m_stiffness(trans.m_stiffness),
       m_damping(trans.m_damping),
       m_static_friction(trans.m_static_friction),
       m_dynamic_friction(trans.m_dynamic_friction),
-      m_side(trans.m_side),    
-      m_stiffness(trans.m_stiffness)
+      m_side(trans.m_side)
       {}
 
     META_StateAttribute(osg, Material,osg::StateAttribute::Type(OSGHAPTICS_MATERIAL))

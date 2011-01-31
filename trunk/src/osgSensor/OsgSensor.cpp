@@ -26,16 +26,22 @@
 #include <osg/io_utils>
 
 #ifndef _WIN32
-#define FLT_EPSILON     1.192092896e-07F        /* smallest such that 1.0+FLT_EPSILON != 1.0 */
+#  ifndef FLT_EPSILON
+#    define FLT_EPSILON     1.192092896e-07F        /* smallest such that 1.0+FLT_EPSILON != 1.0 */
+#  endif
 #endif
 
 
 using namespace osgSensor;
 
 
-OsgSensor::OsgSensor() : m_refresh_delay(0) /* In hz!! */, m_freeze_sensor(false),
-  m_enable_flag(OsgSensor::EnableDefault), m_enabled(true), 
-  m_matrix_propagate_flag(OsgSensor::MatrixKeep), m_sensor_id(SENSOR_NOT_SET)
+OsgSensor::OsgSensor() : 
+    m_enable_flag(OsgSensor::EnableDefault), 
+    m_enabled(true), 
+    m_sensor_id(SENSOR_NOT_SET),
+    m_matrix_propagate_flag(OsgSensor::MatrixKeep), 
+    m_refresh_delay(0) /* In hz!! */, 
+    m_freeze_sensor(false)
 {
   m_scale.set(1,1,1);
   m_last_frame = m_timer.tick();
@@ -81,13 +87,14 @@ void OsgSensor::calcMatrix()
   }
 }
 
-OsgSensor::OsgSensor(Sensor *sensor_device, int sensor_id) : m_sensor_device(sensor_device),
-    m_refresh_delay(0) /* In hz!! */, 
-    m_freeze_sensor(false),
+OsgSensor::OsgSensor(Sensor *sensor_device, int sensor_id) : 
     m_enable_flag(OsgSensor::EnableDefault), 
     m_enabled(true), 
+    m_sensor_id(sensor_id),
     m_matrix_propagate_flag(OsgSensor::MatrixKeep),
-    m_sensor_id(sensor_id)
+    m_refresh_delay(0) /* In hz!! */, 
+    m_freeze_sensor(false),
+    m_sensor_device(sensor_device)
 
 {
   m_scale.set(1,1,1);

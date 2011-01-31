@@ -50,7 +50,7 @@ Shape::Shape(HapticDevice *device, int enabled) : m_name("no name"), m_enabled(e
 
 
 //--by SophiaSoo/CUHK: for two arms, NEW CONSTRUCTOR
-Shape::Shape() : m_name("no name"), m_enabled(1), m_shape_id(0) {}
+Shape::Shape() : m_name("no name"), m_shape_id(0) , m_enabled(1) {}
 
 
 Shape::~Shape()

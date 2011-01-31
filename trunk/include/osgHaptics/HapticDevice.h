@@ -286,7 +286,7 @@ public:
 
 
   /// 
-  void setWorldToWorkSpaceMatrix(osg::Matrix& m) { 
+  void setWorldToWorkSpaceMatrix(const osg::Matrix& m) { 
     OpenThreads::ScopedLock<OpenThreads::Mutex> sl(m_world_to_workspace_matrix_mutex);
     m_world_to_workspace_matrix = m; 
     m_valid_world_to_workspace_matrix = true;
