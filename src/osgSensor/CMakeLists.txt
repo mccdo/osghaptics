@@ -1,3 +1,7 @@
+set ( osgSensor_LIBS) 
+
+include (FindOSGHelper)
+
 set( HEADER_PATH ${CMAKE_SOURCE_DIR}/include/osgSensor )
 
 include_directories( 
@@ -5,6 +9,9 @@ include_directories(
     ${OPENSCENEGRAPH_INCLUDE_DIRS}
     )
 
+if(WIN32)
+  add_definitions( -DEXPORT_OSGSENSOR )
+endif(WIN32)
 
 set(TARGET_SRC
     KeyboardSensor.cpp
