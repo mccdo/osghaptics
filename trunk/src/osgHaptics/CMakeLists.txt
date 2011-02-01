@@ -3,14 +3,14 @@ set( HEADER_PATH ${CMAKE_SOURCE_DIR}/include/osgHaptics )
 set ( osgHaptics_LIBS) 
 
 include (FindOSGHelper)
-include (FindSensable)
+include (Find3DTouch)
 
 
 include_directories( 
     ${CMAKE_SOURCE_DIR}/include 
     ${OPENSCENEGRAPH_INCLUDE_DIRS}
-    ${SENSABLE_INCLUDE}
-    ${SENSABLE_INCLUDE_UTS}
+    ${3DTOUCH_INCLUDE}
+    ${3DTOUCH_INCLUDE_UTS}
     )
 
 if(WIN32)
@@ -74,7 +74,7 @@ set(TARGET_H
 
 add_library( osgHaptics SHARED ${TARGET_SRC} ${TARGET_H} )
 
-target_link_libraries( osgHaptics osgSensor ${OPENSCENEGRAPH_LIBRARIES} )
+target_link_libraries( osgHaptics osgSensor ${OPENSCENEGRAPH_LIBRARIES} ${3DTOUCH_LIBS} ${OPENGL_LIBRARIES} )
 
 #SET(INSTALL_INCDIR include)
 #SET(INSTALL_BINDIR bin)
