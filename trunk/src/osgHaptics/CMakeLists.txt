@@ -8,7 +8,7 @@ include (Find3DTouch)
 
 include_directories( 
     ${CMAKE_SOURCE_DIR}/include 
-    ${OPENSCENEGRAPH_INCLUDE_DIRS}
+    ${OSG_INCLUDE_DIRS}
     ${3DTOUCH_INCLUDE}
     ${3DTOUCH_INCLUDE_UTS}
     )

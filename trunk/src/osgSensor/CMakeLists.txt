@@ -6,7 +6,7 @@ set( HEADER_PATH ${CMAKE_SOURCE_DIR}/include/osgSensor )
 
 include_directories( 
     ${CMAKE_SOURCE_DIR}/include 
-    ${OPENSCENEGRAPH_INCLUDE_DIRS}
+    ${OSG_INCLUDE_DIRS}
     )
 
 if(WIN32)
