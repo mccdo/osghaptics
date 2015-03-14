@@ -1,0 +1,1 @@
+osgHaptics is an [OpenSceneGraph](http://www.openscenegraph.org) nodekit that enables haptics in OSG.
